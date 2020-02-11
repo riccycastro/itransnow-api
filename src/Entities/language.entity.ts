@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Translation } from './translation.entity';
 import {Application} from "./application.entity";
+import { LanguageTeam } from './language-team.entity';
 
 @Entity('languages')
 export class Language {
@@ -21,6 +22,7 @@ export class Language {
     private _updatedAt: string;
     private _translations: Translation[];
     private _applications: Application[];
+    private _languageTeams: LanguageTeam[];
 
     @PrimaryGeneratedColumn({type: 'bigint'})
     get id(): number { return this._id; }
@@ -57,4 +59,8 @@ export class Language {
     @ManyToMany(type => Application, application => application.languages)
     get applications(): Application[] { return this._applications; }
     set applications(applications: Application[]) { this._applications = applications; }
+
+    @OneToMany(type => LanguageTeam, languageTeam => languageTeam.language)
+    get languageTeams(): LanguageTeam[] { return this._languageTeams; }
+    set languageTeams(languageTeams: LanguageTeam[]) { this._languageTeams = languageTeams; }
 }

@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {User} from "./user.entity";
 import {LanguageTeam} from "./language-team.entity";
 
@@ -18,10 +18,12 @@ export class LanguageTeamUser {
     set isManager(isManager: boolean) { this._isManager = isManager; }
 
     @ManyToOne(type => User, user => user.languageTeamUsers)
+    @JoinColumn({ name: 'user_id' })
     get user(): User { return this._user; }
     set user(user: User) { this._user = user; }
 
     @ManyToOne(type => LanguageTeam, languageTeam => languageTeam.languageTeamUsers)
+    @JoinColumn({ name: 'language_team_id' })
     get languageTeam(): LanguageTeam { return this._languageTeam; }
     set languageTeam(languageTeam: LanguageTeam) { this._languageTeam = languageTeam; }
 }

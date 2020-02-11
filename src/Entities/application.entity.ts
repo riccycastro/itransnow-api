@@ -66,6 +66,13 @@ export class Application {
     get languages(): Language[] { return this._languages; }
     set languages(languages: Language[]) { this._languages = languages; }
 
+    addLanguage(language: Language) {
+        if (!Array.isArray(this._languages)) {
+            this._languages = [];
+        }
+        this._languages.push(language);
+    }
+
     @ManyToMany(type => LanguageTeam, languageTeam => languageTeam.applications)
     @JoinTable({name: 'application_language_teams', inverseJoinColumn: {name: 'language_team_id'}, joinColumn: {name: 'application_id'}})
     get languageTeams(): LanguageTeam[] { return this._languageTeams; }

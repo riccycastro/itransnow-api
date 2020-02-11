@@ -1,15 +1,16 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, ManyToMany,
+    Entity, JoinColumn, ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
-} from "typeorm";
+    UpdateDateColumn,
+} from 'typeorm';
 import {Company} from "./company.entity";
 import {LanguageTeamUser} from "./language-team-user.entity";
 import {Application} from "./application.entity";
+import { Language } from './language.entity';
 
 @Entity('language_teams')
 export class LanguageTeam {
@@ -21,6 +22,7 @@ export class LanguageTeam {
     private _createdAt: string;
     private _updatedAt: string;
     private _company: Company;
+    private _language: Language;
     private _languageTeamUsers: LanguageTeamUser[];
     private _applications: Application[];
 
@@ -53,6 +55,7 @@ export class LanguageTeam {
     set updatedAt(updatedAt: string) { this._updatedAt = updatedAt; }
 
     @ManyToOne(type => Company, company => company.languageTeams)
+    @JoinColumn({ name: 'company_id' })
     get company(): Company { return this._company; }
     set company(company: Company) { this._company = company; }
 
@@ -63,4 +66,14 @@ export class LanguageTeam {
     @ManyToMany(type => Application, application => application.languageTeams)
     get applications(): Application[] { return this._applications; }
     set applications(applications: Application[]) { this._applications = applications; }
+
+    @ManyToOne(type => Language, language => language.languageTeams)
+    @JoinColumn({ name: 'language_id' })
+    get language(): Language {
+        return this._language;
+    }
+
+    set language(language: Language) {
+        this._language = language;
+    }
 }
