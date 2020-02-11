@@ -1,4 +1,15 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import {Section} from './section.entity';
 import { Company } from './company.entity';
 import {Language} from "./language.entity";
@@ -46,6 +57,7 @@ export class Application {
     set sections(sections: Section[]) { this._sections = sections; }
 
     @ManyToOne(type => Company, company => company.applications)
+    @JoinColumn({ name : "company_id" })
     get company(): Company { return this._company; }
     set company(company: Company) { this._company = company; }
 
