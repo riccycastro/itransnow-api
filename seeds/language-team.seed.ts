@@ -1,4 +1,10 @@
-export const LanguageTeamSeed = [
+interface LanguageTeamSeedInterface {
+  name: string,
+  alias: string,
+  language: string,
+}
+
+export const LanguageTeamSeed: LanguageTeamSeedInterface[] = [
   {
     name: "Os navegadores",
     alias: "the_navidators",

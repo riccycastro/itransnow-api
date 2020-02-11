@@ -11,6 +11,7 @@ import {Company} from "./company.entity";
 import {LanguageTeamUser} from "./language-team-user.entity";
 import {Application} from "./application.entity";
 import { Language } from './language.entity';
+import { Translation } from './translation.entity';
 
 @Entity('language_teams')
 export class LanguageTeam {
@@ -25,6 +26,7 @@ export class LanguageTeam {
     private _language: Language;
     private _languageTeamUsers: LanguageTeamUser[];
     private _applications: Application[];
+    private _translations: Translation[];
 
     @PrimaryGeneratedColumn({type: 'bigint'})
     get id(): number { return this._id; }
@@ -69,11 +71,10 @@ export class LanguageTeam {
 
     @ManyToOne(type => Language, language => language.languageTeams)
     @JoinColumn({ name: 'language_id' })
-    get language(): Language {
-        return this._language;
-    }
+    get language(): Language { return this._language; }
+    set language(language: Language) { this._language = language; }
 
-    set language(language: Language) {
-        this._language = language;
-    }
+    @OneToMany(type => Translation, translation => translation.languageTeam)
+    get translations(): Translation[] { return this._translations; }
+    set translations(translations: Translation[]) { this._translations = translations }
 }

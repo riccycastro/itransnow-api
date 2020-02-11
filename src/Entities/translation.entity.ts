@@ -12,6 +12,7 @@ import { Language } from './language.entity';
 import { Comment } from './comment.entity';
 import { User } from './user.entity';
 import { TranslationStatus } from './translation-status.entity';
+import { LanguageTeam } from './language-team.entity';
 
 @Entity('translations')
 export class Translation {
@@ -26,6 +27,7 @@ export class Translation {
     private _acceptedBy: User;
     private _createdBy: User;
     private _translationStatus: TranslationStatus;
+    private _languageTeam: LanguageTeam;
 
     @PrimaryGeneratedColumn({type: 'bigint'})
     get id(): number { return this._id; }
@@ -72,4 +74,8 @@ export class Translation {
     @OneToMany(type => TranslationStatus, translationStatus => translationStatus.translations)
     get translationStatus(): TranslationStatus { return this._translationStatus }
     set translationStatus(translationStatus: TranslationStatus) { this._translationStatus = translationStatus; }
+
+    @ManyToOne(type => LanguageTeam, languageTeam => languageTeam.translations)
+    get languageTeam(): LanguageTeam { return this._languageTeam; }
+    set languageTeam(languageTeam: LanguageTeam) { this._languageTeam = languageTeam; }
 }
