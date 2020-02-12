@@ -45,23 +45,21 @@ export class Version1580911246946 implements MigrationInterface {
 
   private async populateUser(company: Company): Promise<User[]> {
     const userSeed: any = UserSeed;
-
     const bcryptProvider = new BcryptProvider();
-
-    const insertUserTaskPromise = [];
+    const users = [];
 
     for (const user of userSeed) {
       user.company = company;
       user.password = await bcryptProvider.hash(user.password);
-      insertUserTaskPromise.push(getRepository(User).save(user));
+      users.push(await getRepository(User).save(user));
     }
 
-    return await Promise.all(insertUserTaskPromise) as User[];
+    return users;
   }
 
   private async populateLanguageTeam(company: Company, application: Application): Promise<LanguageTeam[]> {
     const languageTeamsSeed: any = LanguageTeamSeed;
-    const insertLanguageTeamTaskPromise = [];
+    const languageTeams = [];
 
     for (const languageTeamSeed of languageTeamsSeed) {
       await this.isLanguageLoaded(languageTeamSeed.language);
@@ -69,25 +67,25 @@ export class Version1580911246946 implements MigrationInterface {
       languageTeamSeed.language = this.languages[languageTeamSeed.language];
       languageTeamSeed.applications = [application];
       languageTeamSeed.company = company;
-      insertLanguageTeamTaskPromise.push(await getRepository(LanguageTeam).save(languageTeamSeed));
+      languageTeams.push(await getRepository(LanguageTeam).save(languageTeamSeed));
     }
 
-    return await Promise.all(insertLanguageTeamTaskPromise);
+    return languageTeams;
   }
 
   private async joinUsersWithLanguageTeams(users: User[], languageTeams: LanguageTeam[]): Promise<LanguageTeamUser[]> {
-    const insertLanguageTeamUserTaskPromise = [];
+    const languageTeamUsers = [];
 
     for (const languageTeam of languageTeams) {
       for (const user of users) {
         if (user.username !== 'system') {
           const languageTeamUser: any = { isManager: true, user: user, languageTeam: languageTeam };
-          insertLanguageTeamUserTaskPromise.push(getRepository(LanguageTeamUser).save(languageTeamUser));
+          languageTeamUsers.push(await getRepository(LanguageTeamUser).save(languageTeamUser));
         }
       }
     }
 
-    return Promise.all(insertLanguageTeamUserTaskPromise);
+    return languageTeamUsers;
   }
 
   private async joinApplicationWithLanguages(application: Application): Promise<Application> {

@@ -50,10 +50,12 @@ export class Translation {
     set updatedAt(updatedAt: string) { this._updatedAt = updatedAt; }
 
     @ManyToOne(type => TranslationKey, translationKey => translationKey.translations)
+    @JoinColumn({ name: 'translation_key_id' })
     get translationKey(): TranslationKey { return this._translationKey; }
     set TranslationKey(translationKey: TranslationKey) { this._translationKey = translationKey; }
 
     @ManyToOne(type => Language, language => language.translations)
+    @JoinColumn({ name: 'language_id' })
     get language(): Language { return this._language; }
     set language(language: Language) { this._language = language; }
 
@@ -61,21 +63,23 @@ export class Translation {
     get comments(): Comment[] { return this._comments }
     set comments(comments: Comment[]) { this._comments = comments; }
 
-    @OneToMany(type => User, user => user.acceptedTranslations)
+    @ManyToOne(type => User, user => user.acceptedTranslations)
     @JoinColumn({ name: "accepted_by" })
     get acceptedBy(): User { return this._acceptedBy }
     set acceptedBy(acceptedBy: User) { this._acceptedBy = acceptedBy; }
 
-    @OneToMany(type => User, user => user.createdTranslations)
+    @ManyToOne(type => User, user => user.createdTranslations)
     @JoinColumn({ name: "created_by" })
     get createdBy(): User { return this._createdBy }
     set createdBy(createdBy: User) { this._createdBy = createdBy; }
 
-    @OneToMany(type => TranslationStatus, translationStatus => translationStatus.translations)
+    @ManyToOne(type => TranslationStatus, translationStatus => translationStatus.translations)
+    @JoinColumn({ name: 'translation_status_id' })
     get translationStatus(): TranslationStatus { return this._translationStatus }
     set translationStatus(translationStatus: TranslationStatus) { this._translationStatus = translationStatus; }
 
     @ManyToOne(type => LanguageTeam, languageTeam => languageTeam.translations)
+    @JoinColumn({ name: 'language_team_id' })
     get languageTeam(): LanguageTeam { return this._languageTeam; }
     set languageTeam(languageTeam: LanguageTeam) { this._languageTeam = languageTeam; }
 }

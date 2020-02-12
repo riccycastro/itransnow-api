@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Language } from './language.entity';
 import { Translation } from './translation.entity';
 
@@ -16,7 +16,7 @@ export class TranslationStatus {
   get status(): string { return this._status; }
   set status(status: string) { this._status = status; }
 
-  @ManyToOne(type => Translation, translation => translation.translationStatus)
+  @OneToMany(type => Translation, translation => translation.translationStatus)
   get translations(): Translation[] { return this._translations; }
   set translations(translations: Translation[]) { this._translations = translations; }
 }

@@ -4,7 +4,7 @@ interface TranslationStatusSeedInterface {
 
 export const TranslationStatusSeed: TranslationStatusSeedInterface[] = [
   {
-    status: 'submitted',
+    status: 'approval_pending',
   },
   {
     status: 'approved',

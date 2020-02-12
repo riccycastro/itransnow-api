@@ -1,6 +1,16 @@
-import {Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity, JoinColumn,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import {Section} from './section.entity';
 import {Translation} from './translation.entity';
+import { Application } from './application.entity';
 
 @Entity('translation_keys')
 export class TranslationKey {
@@ -12,6 +22,7 @@ export class TranslationKey {
     private _updatedAt: string;
     private _sections: Section[];
     private _translations: Translation[];
+    private _application: Application;
 
     @PrimaryGeneratedColumn({type: 'bigint'})
     get id(): number { return this._id; }
@@ -44,4 +55,9 @@ export class TranslationKey {
     @OneToMany(type => Translation, translation => translation.translationKey)
     get translations(): Translation[] { return this._translations; }
     set translations(translations: Translation[]) { this._translations = translations; }
+
+    @ManyToOne(type => Application, application => application.translationKeys)
+    @JoinColumn({ name: "application_id" })
+    get application(): Application { return this._application; }
+    set application(application: Application) { this._application = application; }
 }

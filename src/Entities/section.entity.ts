@@ -1,4 +1,14 @@
-import {Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import {Application} from './application.entity';
 import {TranslationKey} from './translation-key.entity';
 
@@ -43,6 +53,7 @@ export class Section {
     set updatedAt(updatedAt: string) { this._updatedAt = updatedAt; }
 
     @ManyToOne(type => Application, application => application.sections)
+    @JoinColumn({ name: "application_id" })
     get application(): Application { return this._application; }
     set application(application: Application) { this._application = application; }
 

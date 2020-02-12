@@ -21,6 +21,7 @@ export class User {
     private _password: string;
     private _isActive: boolean;
     private _isDeleted: boolean;
+    private _isVisible: boolean;
     private _createdAt: string;
     private _updatedAt: string;
     private _company: Company;
@@ -49,13 +50,17 @@ export class User {
     get password(): string { return this._password; }
     set password(password: string) { this._password = password; }
 
-    @Column({name: 'is_active'})
+    @Column({ name: 'is_active' })
     get isActive(): boolean { return this._isActive; }
     set isActive(isActive: boolean) { this._isActive = isActive; }
 
-    @Column({name: 'is_deleted'})
+    @Column({ name: 'is_deleted' })
     get isDeleted(): boolean { return this._isDeleted; }
     set isDeleted(isDeleted: boolean) { this._isDeleted = isDeleted; }
+
+    @Column({ name: 'is_visible' })
+    get isVisible(): boolean { return this._isVisible; }
+    set isVisible(isVisible: boolean) { this._isVisible = isVisible; }
 
     @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP'})
     get createdAt(): string { return this._createdAt; }

@@ -14,6 +14,7 @@ import {Section} from './section.entity';
 import { Company } from './company.entity';
 import {Language} from "./language.entity";
 import {LanguageTeam} from "./language-team.entity";
+import { TranslationKey } from './translation-key.entity';
 
 @Entity('applications')
 export class Application {
@@ -27,6 +28,7 @@ export class Application {
     private _company: Company;
     private _languages: Language[];
     private _languageTeams: LanguageTeam[];
+    private _translationKeys: TranslationKey[];
 
     @PrimaryGeneratedColumn({type: 'bigint'})
     get id(): number { return this._id; }
@@ -66,15 +68,12 @@ export class Application {
     get languages(): Language[] { return this._languages; }
     set languages(languages: Language[]) { this._languages = languages; }
 
-    addLanguage(language: Language) {
-        if (!Array.isArray(this._languages)) {
-            this._languages = [];
-        }
-        this._languages.push(language);
-    }
-
     @ManyToMany(type => LanguageTeam, languageTeam => languageTeam.applications)
     @JoinTable({name: 'application_language_teams', inverseJoinColumn: {name: 'language_team_id'}, joinColumn: {name: 'application_id'}})
     get languageTeams(): LanguageTeam[] { return this._languageTeams; }
     set languageTeams(languageTeam: LanguageTeam[]) { this._languageTeams = languageTeam; }
+
+    @OneToMany(type => TranslationKey, translationKey => translationKey.application)
+    get translationKeys(): TranslationKey[] { return this._translationKeys; }
+    set translationKeys(translationKeys: TranslationKey[]) { this._translationKeys = translationKeys}
 }
