@@ -13,13 +13,37 @@ import { LanguageTeam } from '../src/Entities/language-team.entity';
 
 export class Version1580911246946 implements MigrationInterface {
 
-  public async up(queryRunner: QueryRunner): Promise<any> {
-    const company = await getRepository(Company).save(CompanySeed);
+  private languages: { [k: string]: Language } = {};
 
+  public async up(queryRunner: QueryRunner): Promise<any> {
+    const company = await this.populateCompany();
+    const application = await this.populateApplication(company);
+    const users = await this.populateUser(company);
+    const languageTeams = await this.populateLanguageTeam(company, application);
+    await this.joinUsersWithLanguageTeams(users, languageTeams);
+    await this.joinApplicationWithLanguages(application);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<any> {
+    await queryRunner.query('DELETE FROM `language_team_users` WHERE 1');
+    await queryRunner.query('DELETE FROM `application_language_teams` WHERE 1');
+    await queryRunner.query('DELETE FROM `language_teams` WHERE 1');
+    await queryRunner.query('DELETE FROM `users` WHERE 1');
+    await queryRunner.query('DELETE FROM `applications` WHERE 1');
+    await queryRunner.query('DELETE FROM `companies` WHERE 1');
+  }
+
+  private async populateCompany(): Promise<Company> {
+    return await getRepository(Company).save(CompanySeed);
+  }
+
+  private async populateApplication(company: Company): Promise<Application> {
     const applicationSeed: any = ApplicationSeed;
     applicationSeed.company = company;
-    const application = await getRepository(Application).save(applicationSeed);
+    return await getRepository(Application).save(applicationSeed);
+  }
 
+  private async populateUser(company: Company): Promise<User[]> {
     const userSeed: any = UserSeed;
 
     const bcryptProvider = new BcryptProvider();
@@ -32,45 +56,54 @@ export class Version1580911246946 implements MigrationInterface {
       insertUserTaskPromise.push(getRepository(User).save(user));
     }
 
-    const users = await Promise.all(insertUserTaskPromise);
+    return await Promise.all(insertUserTaskPromise) as User[];
+  }
 
+  private async populateLanguageTeam(company: Company, application: Application): Promise<LanguageTeam[]> {
     const languageTeamsSeed: any = LanguageTeamSeed;
-
-    const languages: { string?: Language } = {};
+    const insertLanguageTeamTaskPromise = [];
 
     for (const languageTeamSeed of languageTeamsSeed) {
+      await this.isLanguageLoaded(languageTeamSeed.language);
+
+      languageTeamSeed.language = this.languages[languageTeamSeed.language];
+      languageTeamSeed.applications = [application];
+      languageTeamSeed.company = company;
+      insertLanguageTeamTaskPromise.push(await getRepository(LanguageTeam).save(languageTeamSeed));
+    }
+
+    return await Promise.all(insertLanguageTeamTaskPromise);
+  }
+
+  private async joinUsersWithLanguageTeams(users: User[], languageTeams: LanguageTeam[]): Promise<LanguageTeamUser[]> {
+    const insertLanguageTeamUserTaskPromise = [];
+
+    for (const languageTeam of languageTeams) {
       for (const user of users) {
-
-        if (!languages[languageTeamSeed.language]) {
-          languages[languageTeamSeed.language] = await getRepository(Language).findOne({ where: { code: languageTeamSeed.language } });
+        if (user.username !== 'system') {
+          const languageTeamUser: any = { isManager: true, user: user, languageTeam: languageTeam };
+          insertLanguageTeamUserTaskPromise.push(getRepository(LanguageTeamUser).save(languageTeamUser));
         }
-
-        languageTeamSeed.language = languages[languageTeamSeed.language];
-        languageTeamSeed.applications = [application];
-        languageTeamSeed.company = company;
-        const languageTeam = await getRepository(LanguageTeam).save(languageTeamSeed);
-
-        const languageTeamUser: any = { isManager: true, user: user, languageTeam: languageTeam };
-
-        await getRepository(LanguageTeamUser).save(languageTeamUser);
       }
     }
 
+    return Promise.all(insertLanguageTeamUserTaskPromise);
+  }
+
+  private async joinApplicationWithLanguages(application: Application): Promise<Application> {
     application.languages = application.languages ?? [];
 
-    for (const languageCode of Object.keys(languages)) {
-      application.languages.push(languages[languageCode]);
+    for (const languageCode of Object.keys(this.languages)) {
+      application.languages.push(this.languages[languageCode]);
     }
 
-    await getRepository(Application).save(application)
+    return await getRepository(Application).save(application);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query('DELETE FROM `language_team_users` WHERE 1');
-    await queryRunner.query('DELETE FROM `application_language_teams` WHERE 1');
-    await queryRunner.query('DELETE FROM `language_teams` WHERE 1');
-    await queryRunner.query('DELETE FROM `users` WHERE 1');
-    await queryRunner.query('DELETE FROM `applications` WHERE 1');
-    await queryRunner.query('DELETE FROM `companies` WHERE 1');
+  private async isLanguageLoaded(languageCode) {
+    if (!this.languages[languageCode]) {
+      this.languages[languageCode] = await getRepository(Language).findOne({ where: { code: languageCode } });
+    }
   }
+
 }
