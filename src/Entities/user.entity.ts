@@ -22,6 +22,7 @@ export class User {
     private _isActive: boolean;
     private _isDeleted: boolean;
     private _isVisible: boolean;
+    private _isAdmin: boolean;
     private _createdAt: string;
     private _updatedAt: string;
     private _company: Company;
@@ -61,6 +62,10 @@ export class User {
     @Column({ name: 'is_visible' })
     get isVisible(): boolean { return this._isVisible; }
     set isVisible(isVisible: boolean) { this._isVisible = isVisible; }
+
+    @Column({ name: 'is_admin' })
+    get isAdmin(): boolean { return this._isAdmin; }
+    set isAdmin(isAdmin: boolean) { this._isAdmin = isAdmin; }
 
     @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP'})
     get createdAt(): string { return this._createdAt; }

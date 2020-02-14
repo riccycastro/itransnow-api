@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from '../app.service';
+import { Body, Controller, Post } from '@nestjs/common';
+import { RegisterUserDto } from '../Services/Dto/RegisterUserDto';
+import { UserService } from '../Services/user.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('register')
+  async registerAction(@Body() registerUserDto: RegisterUserDto) {
+    await this.userService.register(registerUserDto);
   }
 }

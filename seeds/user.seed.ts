@@ -5,6 +5,7 @@ interface UserSeedInterface {
   email: string,
   password: string,
   isVisible: boolean,
+  isAdmin: boolean,
 }
 
 export const UserSeed: UserSeedInterface[] = [
@@ -15,6 +16,7 @@ export const UserSeed: UserSeedInterface[] = [
     email: 'system@itransnow.com',
     password: process.env.SYSTEM_PASSWORD,
     isVisible: false,
+    isAdmin: true,
   },
   {
     id: 2,
@@ -23,5 +25,6 @@ export const UserSeed: UserSeedInterface[] = [
     email: "ricardo.castro@itransnow.com",
     password: "123456",
     isVisible: true,
+    isAdmin: true,
   }
 ];
