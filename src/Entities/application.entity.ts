@@ -20,6 +20,7 @@ import { TranslationKey } from './translation-key.entity';
 export class Application {
     private _id: number;
     private _name: string;
+    private _alias: string;
     private _isActive: boolean;
     private _isDeleted: boolean;
     private _createdAt: string;
@@ -37,6 +38,10 @@ export class Application {
     @Column()
     get name(): string { return this._name; }
     set name(name: string) { this._name = name; }
+
+    @Column()
+    get alias(): string { return this._alias; }
+    set alias(alias: string) { this._alias = alias; }
 
     @Column({name: 'is_active'})
     get isActive(): boolean { return this._isActive; }

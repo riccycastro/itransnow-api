@@ -4,7 +4,10 @@ import { UserService } from '../Services/user.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly userService: UserService) {
+  private readonly userService: UserService;
+
+  constructor(userService: UserService) {
+    this.userService = userService;
   }
 
   @Post('register')

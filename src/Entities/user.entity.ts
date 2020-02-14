@@ -25,7 +25,7 @@ export class User {
     private _isAdmin: boolean;
     private _createdAt: string;
     private _updatedAt: string;
-    private _company: Company;
+    private _company: Promise<Company>;
     private _languageTeamUsers: LanguageTeamUser[];
     private _comments: Comment[];
     private _acceptedTranslations: Translation[];
@@ -77,8 +77,8 @@ export class User {
 
     @ManyToOne(type => Company, company => company.users)
     @JoinColumn({ name : "company_id" })
-    get company(): Company { return this._company; }
-    set company(company: Company) { this._company = company; }
+    get company(): Promise<Company> { return this._company; }
+    set company(company: Promise<Company>) { this._company = company; }
 
     @OneToMany(type => LanguageTeamUser, languageTeamUser => languageTeamUser.user)
     get languageTeamUsers(): LanguageTeamUser[] { return this._languageTeamUsers }

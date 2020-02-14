@@ -5,7 +5,7 @@ import { remove as removeDiacritics } from 'diacritics';
 import { AbstractEntityService } from './AbstractEntityService';
 
 @Injectable()
-export class CompanyService extends AbstractEntityService{
+export class CompanyService extends AbstractEntityService {
 
   constructor(companyRepository: CompanyRepository) {
     super(companyRepository);
@@ -16,5 +16,9 @@ export class CompanyService extends AbstractEntityService{
     company.name = name;
       company.alias = removeDiacritics(name.trim().replace(/ /g, '_'));
     return company;
+  }
+
+  async findById(id: number): Promise<Company> {
+    return await this.repository.findOne(id) as Company;
   }
 }

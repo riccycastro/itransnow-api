@@ -49,9 +49,19 @@ export class Version1580911246946 implements MigrationInterface {
     const users = [];
 
     for (const user of userSeed) {
-      user.company = company;
       user.password = await bcryptProvider.hash(user.password);
-      users.push(await getRepository(User).save(user));
+
+      const userEntity = new User();
+      userEntity.id = user.id;
+      userEntity.name = user.name;
+      userEntity.username = user.username;
+      userEntity.email = user.email;
+      userEntity.password = user.password;
+      userEntity.isVisible = user.isVisible;
+      userEntity.isAdmin = user.isAdmin;
+      userEntity.company = Promise.resolve(company);
+
+      users.push(await getRepository(User).save(userEntity));
     }
 
     return users;
