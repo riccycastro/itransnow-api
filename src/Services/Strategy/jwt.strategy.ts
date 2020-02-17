@@ -1,15 +1,19 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { CompanyService } from '../company.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  private readonly companyService: CompanyService;
+
+  constructor(companyService: CompanyService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.SECRET,
     });
+    this.companyService = companyService;
   }
 
   async validate(payload: any) {
@@ -18,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       username: payload.username,
       email: payload.email,
       isAdmin: payload.isAdmin,
-      companyId: payload.companyId,
+      company: await this.companyService.findById(payload.companyId),
     };
   }
 }
