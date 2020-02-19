@@ -27,8 +27,8 @@ export class ApplicationService extends AbstractEntityService {
     return await this.save(applicationEntity);
   }
 
-  async findById(id: number) {
-    return await (this.repository as ApplicationRepository).findOne(git statusid);
+  async findById(company: Company, id: number) {
+    return await (this.repository as ApplicationRepository).findOne({where: {id: id, company: company.id}});
   }
 
   async findByAlias(alias: string) {

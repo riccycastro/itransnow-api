@@ -15,6 +15,7 @@ import { Company } from './company.entity';
 import {Language} from "./language.entity";
 import {LanguageTeam} from "./language-team.entity";
 import { TranslationKey } from './translation-key.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('applications')
 export class Application {
@@ -22,6 +23,8 @@ export class Application {
     private _name: string;
     private _alias: string;
     private _isActive: boolean;
+    @Exclude()
+    @Column({ name: 'is_deleted' }, )
     private _isDeleted: boolean;
     private _createdAt: string;
     private _updatedAt: string;
@@ -47,7 +50,7 @@ export class Application {
     get isActive(): boolean { return this._isActive; }
     set isActive(isActive: boolean) { this._isActive = isActive; }
 
-    @Column({name: 'is_deleted'})
+
     get isDeleted(): boolean { return this._isDeleted; }
     set isDeleted(isDeleted: boolean) { this._isDeleted = isDeleted; }
 
