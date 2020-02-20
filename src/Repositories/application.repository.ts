@@ -1,13 +1,14 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository } from 'typeorm';
 import { Application } from '../Entities/application.entity';
-import { Company } from '../Entities/company.entity';
+import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
 
 @EntityRepository(Application)
-export class ApplicationRepository extends Repository<Application> {
-  async findInList(company: Company, query: any): Promise<Application[]> {
+export class ApplicationRepository extends AbstractRepository<Application> {
+
+  async findByCompany(companyId: number, query: QueryPaginationInterface): Promise<Application[]> {
     const queryBuilder = this.createQueryBuilder('applications')
       .innerJoin('applications.company', 'company')
-      .where('company.id = :companyId', { companyId: company.id })
+      .where('company.id = :companyId', { companyId: companyId })
       .andWhere('applications.isDeleted = \'0\'');
 
     if (query.search.name) {
@@ -25,10 +26,6 @@ export class ApplicationRepository extends Repository<Application> {
         .andWhere('applications.isActive = :active', { active: query.search.active });
     }
 
-    queryBuilder
-      .limit(query.limit)
-      .offset(query.offset);
-
-    return await queryBuilder.getMany();
+    return await this.applyPagination(queryBuilder, query).getMany();
   }
 }

@@ -18,11 +18,13 @@ import { ApplicationController } from './Controllers/application.controller';
 import { ApplicationRepository } from './Repositories/application.repository';
 import { ApplicationService } from './Services/application.service';
 import { TableListMiddleware } from './Middleware/table-list.middleware';
+import { LanguageService } from './Services/language.service';
+import { LanguageRepository } from './Repositories/language.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    TypeOrmModule.forFeature([ApplicationRepository, CompanyRepository, UserRepository]),
+    TypeOrmModule.forFeature([ApplicationRepository, CompanyRepository, UserRepository, LanguageRepository]),
     PassportModule,
     JwtModule.register({
       secret: process.env.SECRET,
@@ -31,7 +33,7 @@ import { TableListMiddleware } from './Middleware/table-list.middleware';
   ],
   controllers: [AppController, AuthController, UserController, ApplicationController],
   providers: [
-    UserService, AppService, AuthService, CompanyService, ApplicationService,
+    UserService, AppService, AuthService, CompanyService, ApplicationService, LanguageService,
     BcryptProvider,
     LocalStrategy, JwtStrategy,
   ],

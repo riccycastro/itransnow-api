@@ -10,9 +10,10 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApplicationService } from '../Services/application.service';
-import { CreateApplicationDto } from '../Dto/CreateApplicationDto';
+import { ApplicationDto } from '../Dto/ApplicationDto';
 import { AuthGuard } from '@nestjs/passport';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
 @Controller('applications')
 export class ApplicationController {
@@ -29,14 +30,13 @@ export class ApplicationController {
     return await this.applicationService.findInList(req.user.company, req.query);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Get(':id')
-  async getApplication(@Request() req, @Param('id') id) {
-    return await this.applicationService.findById(req.user.company, id);
+  @Get(':alias')
+  async getApplication(@Request() req, @Param('alias') alias) {
+    return await this.applicationService.findById(req.user.company.id, alias);
   }
 
   @Post()
-  async createApplicationAction(@Body() createApplicationDto: CreateApplicationDto, @Request() req) {
+  async createApplicationAction(@Body() createApplicationDto: ApplicationDto, @Request() req) {
     await this.applicationService.create(createApplicationDto, req.user.company);
   }
 }
