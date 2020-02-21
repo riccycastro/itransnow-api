@@ -43,6 +43,6 @@ export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer): void {
     consumer
       .apply(TableListMiddleware)
-      .forRoutes({path: 'applications', method: RequestMethod.GET});
+      .forRoutes({path: 'applications*', method: RequestMethod.GET});
   }
 }

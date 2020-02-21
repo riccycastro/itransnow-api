@@ -7,10 +7,10 @@ import {
   Get,
   Param,
   UseInterceptors,
-  ClassSerializerInterceptor,
+  ClassSerializerInterceptor, Delete,
 } from '@nestjs/common';
 import { ApplicationService } from '../Services/application.service';
-import { ApplicationDto } from '../Dto/ApplicationDto';
+import { CreateApplicationDto } from '../Dto/ApplicationDto';
 import { AuthGuard } from '@nestjs/passport';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -25,18 +25,23 @@ export class ApplicationController {
     this.applicationService = applicationService;
   }
 
-  @Get()
-  async getApplicationsAction(@Request() req) {
-    return await this.applicationService.findInList(req.user.company, req.query);
+  @Get(':alias')
+  async getApplicationAction(@Request() req, @Param('alias') alias) {
+    return await this.applicationService.findByAlias(req.user.company.id, alias, req.query);
   }
 
-  @Get(':alias')
-  async getApplication(@Request() req, @Param('alias') alias) {
-    return await this.applicationService.findById(req.user.company.id, alias);
+  @Get()
+  async getApplicationsAction(@Request() req) {
+    return await this.applicationService.findInList(req.user.company.id, req.query);
   }
 
   @Post()
-  async createApplicationAction(@Body() createApplicationDto: ApplicationDto, @Request() req) {
+  async createApplicationAction(@Body() createApplicationDto: CreateApplicationDto, @Request() req) {
     await this.applicationService.create(createApplicationDto, req.user.company);
+  }
+
+  @Delete(':alias')
+  async deleteApplicationAction(@Request() req, @Param('alias') alias) {
+    await this.applicationService.delete(req.user, req.user.company.id, alias);
   }
 }

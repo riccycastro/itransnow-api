@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from '../Entities/user.entity';
 import { UserRepository } from '../Repositories/user.repository';
 import { RegisterUserDto } from '../Dto/RegisterUserDto';
@@ -8,7 +8,7 @@ import { Connection } from 'typeorm';
 import { AbstractEntityService } from './AbstractEntityService';
 
 @Injectable()
-export class UserService extends AbstractEntityService {
+export class UserService extends AbstractEntityService<User> {
 
   private readonly bcryptProvider: BcryptProvider;
   private readonly companyService: CompanyService;
@@ -28,6 +28,16 @@ export class UserService extends AbstractEntityService {
 
   async findByCredentials(username: string): Promise<User | undefined> {
     return await (this.repository as UserRepository).findUserByCredentials(username);
+  }
+
+  async findById(id: number): Promise<User> {
+    const user = await this.repository.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
   async register(registerUserDto: RegisterUserDto): Promise<User | undefined> {

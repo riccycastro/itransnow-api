@@ -6,6 +6,12 @@ import { AbstractRepository, QueryPaginationInterface } from './abstract.reposit
 export class ApplicationRepository extends AbstractRepository<Application> {
 
   async findByCompany(companyId: number, query: QueryPaginationInterface): Promise<Application[]> {
+
+    /**
+     * sta da erro pamo kel jwt strategy
+     */
+    console.log(companyId);
+
     const queryBuilder = this.createQueryBuilder('applications')
       .innerJoin('applications.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })
@@ -26,6 +32,6 @@ export class ApplicationRepository extends AbstractRepository<Application> {
         .andWhere('applications.isActive = :active', { active: query.search.active });
     }
 
-    return await this.applyPagination(queryBuilder, query).getMany();
+    return await this.setPagination(queryBuilder, query).getMany();
   }
 }

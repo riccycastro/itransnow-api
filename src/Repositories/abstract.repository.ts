@@ -1,27 +1,46 @@
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
 export interface QueryPaginationInterface {
-  offset: number;
-  limit: number;
-  search: { [k: string]: string }
+  offset?: number;
+  limit?: number;
+  search?: { [k: string]: string };
+  orderField?: string;
+  orderDirection?: OrderDirection;
 }
+
+export type OrderDirection = 'ASC' | 'DESC';
 
 export class AbstractRepository<Entity> extends Repository<Entity> {
+  private isQueryInitialized = false;
   private initQuery(query: QueryPaginationInterface) {
-    query.offset = query.offset ?? 0;
-    query.limit = query.limit ?? 10;
-    query.search = query.search ?? {};
+    if (!this.isQueryInitialized) {
+      query.offset = query.offset ?? 0;
+      query.limit = query.limit ?? 10;
+      query.search = query.search ?? {};
+      query.orderDirection = query.orderDirection ?? 'ASC';
+    }
   }
 
-  applyPagination(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
+  protected setLimit(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
     this.initQuery(query);
 
-    queryBuilder
+    return queryBuilder
       .limit(query.limit)
       .offset(query.offset);
+  }
 
-    return queryBuilder;
+  protected setOrderBy(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
+    this.initQuery(query);
+    if (!query.orderField) {
+      return queryBuilder;
+    }
+    return queryBuilder
+      .orderBy(query.orderField, query.orderDirection);
+  }
+
+  protected setPagination(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
+    this.initQuery(query);
+    queryBuilder = this.setLimit(queryBuilder, query);
+    return this.setOrderBy(queryBuilder, query);
   }
 }
-
-

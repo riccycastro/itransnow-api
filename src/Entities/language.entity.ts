@@ -15,6 +15,7 @@ import { Exclude } from 'class-transformer';
 @Entity('languages')
 export class Language {
 
+    @Exclude()
     @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
 

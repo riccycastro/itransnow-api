@@ -1,9 +1,9 @@
-import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
-export abstract class AbstractEntityService {
-  protected readonly repository: Repository<ObjectLiteral>;
+export abstract class AbstractEntityService<Entity> {
+  protected readonly repository: Repository<Entity>;
 
-  protected constructor(repository: Repository<ObjectLiteral>) {
+  protected constructor(repository: Repository<Entity>) {
     this.repository = repository;
   }
 

@@ -1,10 +1,10 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository } from 'typeorm';
 import { Language } from '../Entities/language.entity';
-import { Company } from '../Entities/company.entity';
+import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
 
 @EntityRepository(Language)
-export class LanguageRepository extends Repository<Language>{
-  async findByApplication(companyId: number, applicationId: number, query: any): Promise<Language[]> {
+export class LanguageRepository extends AbstractRepository<Language>{
+  async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Language[]> {
     const queryBuilder = this
       .createQueryBuilder('languages')
       .innerJoin('languages.applications', 'applications')
@@ -12,6 +12,6 @@ export class LanguageRepository extends Repository<Language>{
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('applications.id = :applicationId', { applicationId: applicationId })
       .andWhere('languages.isDeleted = \'0\'');
-    return await queryBuilder.getMany();
+    return await this.setPagination(queryBuilder, query).getMany();
   }
 }

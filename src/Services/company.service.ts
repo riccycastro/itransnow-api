@@ -5,7 +5,7 @@ import { remove as removeDiacritics } from 'diacritics';
 import { AbstractEntityService } from './AbstractEntityService';
 
 @Injectable()
-export class CompanyService extends AbstractEntityService {
+export class CompanyService extends AbstractEntityService<Company> {
 
   constructor(companyRepository: CompanyRepository) {
     super(companyRepository);
