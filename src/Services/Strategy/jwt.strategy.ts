@@ -27,6 +27,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userService.findById(payload.sub);
     await user.company;
 
+    //todo@rcastro - validate if company is active/not deleted
+    //               validate if user is active/not deleted
+
     return user;
   }
 }

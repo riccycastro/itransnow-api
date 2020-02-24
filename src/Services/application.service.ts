@@ -1,7 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { AbstractEntityService } from './AbstractEntityService';
 import { ApplicationRepository } from '../Repositories/application.repository';
-import { CreateApplicationDto } from '../Dto/ApplicationDto';
+import { ApplicationDto } from '../Dto/ApplicationDto';
 import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { Company } from '../Entities/company.entity';
@@ -21,7 +21,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
     this.languageService = languageService;
   }
 
-  async create(createApplicationDto: CreateApplicationDto, company: Company): Promise<Application> {
+  async create(createApplicationDto: ApplicationDto, company: Company): Promise<Application> {
     createApplicationDto.alias = removeDiacritics(createApplicationDto.alias.trim().toLowerCase().replace(/ /g, '_'));
 
     if (await this.findByAlias(company.id, createApplicationDto.alias)) {
@@ -62,12 +62,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return applications;
   }
 
-  async delete(user: User, companyId: number, alias: string) {
-    if (!user.isAdmin) {
-      throw new ForbiddenException();
-    }
-
-    const application = await this.findByAlias(companyId, alias);
+  async delete(application: Application | null) {
 
     if (!application) {
       return;
@@ -75,6 +70,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
 
     application.isDeleted = true;
     await this.repository.save(application);
+  }
+
+  async update(application: Application, updateApplicationDto: ApplicationDto): Promise<Application> {
+    application.name = updateApplicationDto.name;
+    return await this.repository.save(application);
   }
 
   private async getIncludes(companyId: number, application: Application, query: any): Promise<Application> {

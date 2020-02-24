@@ -1,10 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateApplicationDto {
+export class ApplicationDto {
+  @IsDefined({ groups: ['post', 'patch'] })
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @IsDefined({ groups: ['post'] })
+  @IsOptional({groups: ['patch']})
   @IsNotEmpty()
   @IsString()
   alias: string;
