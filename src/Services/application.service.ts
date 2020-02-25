@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { AbstractEntityService } from './AbstractEntityService';
 import { ApplicationRepository } from '../Repositories/application.repository';
 import { ApplicationDto } from '../Dto/ApplicationDto';
@@ -6,8 +6,6 @@ import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { Company } from '../Entities/company.entity';
 import { LanguageService } from './language.service';
-import { QueryPaginationInterface } from '../Repositories/abstract.repository';
-import { User } from '../Entities/user.entity';
 
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
@@ -32,8 +30,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
     applicationEntity.name = createApplicationDto.name;
     applicationEntity.alias = createApplicationDto.alias;
     applicationEntity.company = company;
-
-    return await this.save(applicationEntity);
+    return applicationEntity;
   }
 
   async findByAlias(companyId: number, alias: string, query?: any): Promise<Application> {

@@ -37,7 +37,9 @@ export class ApplicationController {
 
   @Post()
   async createApplicationAction(@Body() createApplicationDto: ApplicationDto, @Request() req) {
-    await this.applicationService.create(createApplicationDto, req.user.company);
+    await this.applicationService.save(
+      await this.applicationService.create(createApplicationDto, req.user.company),
+    );
   }
 
   @Delete(':alias')
@@ -49,7 +51,6 @@ export class ApplicationController {
 
   @Patch(':alias')
   async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias) {
-    console.log(req.params);
     await this.applicationService.update(
       await this.applicationService.findByAlias((await req.user.company).id, alias),
       updateApplicationDto
