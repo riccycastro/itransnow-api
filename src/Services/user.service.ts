@@ -71,4 +71,8 @@ export class UserService extends AbstractEntityService<User> {
       throw new InternalServerErrorException();
     }
   }
+
+  protected getIncludes(companyId: number, entity: any, query: any): Promise<any> {
+    return undefined;
+  }
 }

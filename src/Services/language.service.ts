@@ -17,7 +17,11 @@ export class LanguageService extends AbstractEntityService<Language> {
     return (this.repository as LanguageRepository).findByApplication(
       companyId,
       applicationId,
-      {}
+      query
     );
+  }
+
+  protected getIncludes(companyId: number, entity: any, query: any): Promise<any> {
+    return undefined;
   }
 }

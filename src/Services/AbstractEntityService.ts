@@ -14,4 +14,6 @@ export abstract class AbstractEntityService<Entity> {
 
     return await this.repository.save(entity);
   }
+
+  protected abstract getIncludes(companyId: number, entity: any, query: any): Promise<any>
 }

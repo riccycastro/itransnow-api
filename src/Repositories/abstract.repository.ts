@@ -43,4 +43,28 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
     queryBuilder = this.setLimit(queryBuilder, query);
     return this.setOrderBy(queryBuilder, query);
   }
+
+  protected queryName(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
+    if (search.name) {
+      queryBuilder
+        .andWhere(`${tableName}.name LIKE :name`, { name: '%' + search.name + '%' });
+    }
+    return queryBuilder;
+  }
+
+  protected queryAlias(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
+    if (search.alias) {
+      queryBuilder
+        .andWhere(`${tableName}.alias LIKE :alias`, { alias: '%' + search.alias + '%' });
+    }
+    return queryBuilder;
+  }
+
+  protected queryActive(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
+    if (search.active) {
+      queryBuilder
+        .andWhere(`${tableName}.isActive = :active`, { active: search.active });
+    }
+    return queryBuilder;
+  }
 }

@@ -12,6 +12,9 @@ import {
 import { ApplicationService } from '../Services/application.service';
 import { ApplicationDto } from '../Dto/ApplicationDto';
 import { AuthGuard } from '@nestjs/passport';
+import { SectionDto } from '../Dto/SectionDto';
+import { Section } from '../Entities/section.entity';
+import { Application } from '../Entities/application.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -26,12 +29,12 @@ export class ApplicationController {
   }
 
   @Get(':alias')
-  async getApplicationAction(@Request() req, @Param('alias') alias) {
+  async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
     return await this.applicationService.findByAlias((await req.user.company).id, alias, req.query);
   }
 
   @Get()
-  async getApplicationsAction(@Request() req) {
+  async getApplicationsAction(@Request() req): Promise<Application[]> {
     return await this.applicationService.findInList((await req.user.company).id, req.query);
   }
 
@@ -50,10 +53,22 @@ export class ApplicationController {
   }
 
   @Patch(':alias')
-  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias) {
+  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string) {
     await this.applicationService.update(
       await this.applicationService.findByAlias((await req.user.company).id, alias),
       updateApplicationDto
     );
+  }
+
+  @Post(':alias/sections')
+  async addSectionToApplicationAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
+    const section = await this.applicationService.createSection(
+      await this.applicationService.findByAlias((await req.user.company).id, alias),
+      sectionDto
+    );
+
+    section.application = undefined;
+
+    return section;
   }
 }
