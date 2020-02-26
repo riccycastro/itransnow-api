@@ -68,6 +68,12 @@ export class SectionService extends AbstractEntityService<Section> {
     this.save(section);
   }
 
+  async update(section: Section, sectionDto: SectionDto): Promise<Section> {
+    section.name = sectionDto.name;
+    section.alias = sectionDto.alias ?? section.alias;
+    return await this.save(section);
+  }
+
   protected async getIncludes(companyId: number, section: Section, query: any): Promise<Section> {
 
     if (!query || !query.includes) {
