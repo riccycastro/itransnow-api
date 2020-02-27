@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { LanguageRepository } from '../Repositories/language.repository';
 import { Language } from '../Entities/language.entity';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
+import { In } from 'typeorm';
 
 @Injectable()
 export class LanguageService extends AbstractEntityService<Language> {
@@ -21,7 +22,17 @@ export class LanguageService extends AbstractEntityService<Language> {
     );
   }
 
+  async findByCodes(codes: string[], indexBy?: string): Promise<{ [p: string]: Language } | Language[]> {
+    const languages = await (this.repository as LanguageRepository).find({ where: { code: In(codes) } });
+    if (indexBy) {
+      return this.indexBy(languages, 'code');
+    }
+
+    return languages;
+  }
+
   protected getIncludes(companyId: number, entity: any, query: any): Promise<any> {
+    //todo put some code here...
     return undefined;
   }
 }

@@ -15,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { SectionDto } from '../Dto/SectionDto';
 import { Section } from '../Entities/section.entity';
 import { Application } from '../Entities/application.entity';
+import { AddLanguageToApplicationDto } from '../Dto/language.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -56,7 +57,7 @@ export class ApplicationController {
   async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string) {
     await this.applicationService.update(
       await this.applicationService.findByAlias((await req.user.company).id, alias),
-      updateApplicationDto
+      updateApplicationDto,
     );
   }
 
@@ -64,7 +65,7 @@ export class ApplicationController {
   async addSectionToApplicationAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
     const section = await this.applicationService.createSection(
       await this.applicationService.findByAlias((await req.user.company).id, alias),
-      sectionDto
+      sectionDto,
     );
 
     section.application = undefined;
@@ -72,8 +73,11 @@ export class ApplicationController {
     return section;
   }
 
-  // @Post(':alias/languages')
-  // async addLanguageToApplication() {
-  //
-  // }
+  @Post(':alias/languages')
+  async addLanguageToApplication(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
+    await this.applicationService.addLanguages(
+      await this.applicationService.findByAlias(req.user.companyId, alias),
+      addLanguageToApplicationDto,
+    );
+  }
 }

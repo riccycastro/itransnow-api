@@ -9,6 +9,7 @@ import { LanguageService } from './language.service';
 import { SectionDto } from '../Dto/SectionDto';
 import { Section } from '../Entities/section.entity';
 import { SectionService } from './section.service';
+import { AddLanguageToApplicationDto } from '../Dto/language.dto';
 
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
@@ -84,6 +85,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return this.sectionService.save(
       await this.sectionService.create(sectionDto, application),
     );
+  }
+
+  async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
+    const languagesList = await this.languageService.findByCodes(addLanguageToApplicationDto.languagesCode, 'code');
+    console.log(languagesList);
   }
 
   protected async getIncludes(companyId: number, application: Application, query: any): Promise<Application> {
