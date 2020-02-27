@@ -7,7 +7,7 @@ import {
     ManyToMany,
     ManyToOne,
     OneToMany,
-    PrimaryGeneratedColumn,
+    PrimaryGeneratedColumn, RelationId,
     UpdateDateColumn,
 } from 'typeorm';
 import {Section} from './section.entity';
@@ -49,9 +49,17 @@ export class Application {
     @JoinColumn({ name : "company_id" })
     company: Company;
 
+    @Exclude()
+    @RelationId((application: Application) => application.company)
+    companyId: number;
+
     @ManyToMany(type => Language, language => language.applications)
     @JoinTable({name: 'application_languages', inverseJoinColumn: {name: 'language_id'}, joinColumn: {name: 'application_id'}})
     languages: Language[];
+
+    @Exclude()
+    @RelationId((application: Application) => application.languages)
+    languagesId: number[];
 
     @ManyToMany(type => LanguageTeam, languageTeam => languageTeam.applications)
     @JoinTable({name: 'application_language_teams', inverseJoinColumn: {name: 'language_team_id'}, joinColumn: {name: 'application_id'}})

@@ -1,21 +1,23 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
-  Post,
-  UseGuards,
-  Request,
+  Delete,
   Get,
   Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor, Delete, Patch,
 } from '@nestjs/common';
-import { ApplicationService } from '../Services/application.service';
-import { ApplicationDto } from '../Dto/ApplicationDto';
-import { AuthGuard } from '@nestjs/passport';
-import { SectionDto } from '../Dto/SectionDto';
-import { Section } from '../Entities/section.entity';
-import { Application } from '../Entities/application.entity';
-import { AddLanguageToApplicationDto } from '../Dto/language.dto';
+import {ApplicationService} from '../Services/application.service';
+import {ApplicationDto} from '../Dto/ApplicationDto';
+import {AuthGuard} from '@nestjs/passport';
+import {SectionDto} from '../Dto/SectionDto';
+import {Section} from '../Entities/section.entity';
+import {Application} from '../Entities/application.entity';
+import {AddLanguageToApplicationDto} from '../Dto/language.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -24,7 +26,7 @@ export class ApplicationController {
   private readonly applicationService: ApplicationService;
 
   constructor(
-    applicationService: ApplicationService,
+      applicationService: ApplicationService,
   ) {
     this.applicationService = applicationService;
   }
@@ -75,9 +77,11 @@ export class ApplicationController {
 
   @Post(':alias/languages')
   async addLanguageToApplication(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
-    await this.applicationService.addLanguages(
-      await this.applicationService.findByAlias(req.user.companyId, alias),
-      addLanguageToApplicationDto,
+    await this.applicationService.save(
+        await this.applicationService.addLanguages(
+            await this.applicationService.findByAlias(req.user.companyId, alias),
+            addLanguageToApplicationDto,
+        )
     );
   }
 }

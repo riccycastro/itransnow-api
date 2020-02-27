@@ -1,15 +1,16 @@
-import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AbstractEntityService } from './AbstractEntityService';
-import { ApplicationRepository } from '../Repositories/application.repository';
-import { ApplicationDto } from '../Dto/ApplicationDto';
-import { Application } from '../Entities/application.entity';
-import { remove as removeDiacritics } from 'diacritics';
-import { Company } from '../Entities/company.entity';
-import { LanguageService } from './language.service';
-import { SectionDto } from '../Dto/SectionDto';
-import { Section } from '../Entities/section.entity';
-import { SectionService } from './section.service';
-import { AddLanguageToApplicationDto } from '../Dto/language.dto';
+import {ConflictException, forwardRef, Inject, Injectable, NotFoundException} from '@nestjs/common';
+import {AbstractEntityService} from './AbstractEntityService';
+import {ApplicationRepository} from '../Repositories/application.repository';
+import {ApplicationDto} from '../Dto/ApplicationDto';
+import {Application} from '../Entities/application.entity';
+import {remove as removeDiacritics} from 'diacritics';
+import {Company} from '../Entities/company.entity';
+import {LanguageService} from './language.service';
+import {SectionDto} from '../Dto/SectionDto';
+import {Section} from '../Entities/section.entity';
+import {SectionService} from './section.service';
+import {AddLanguageToApplicationDto} from '../Dto/language.dto';
+import {Language} from "../Entities/language.entity";
 
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
@@ -17,10 +18,10 @@ export class ApplicationService extends AbstractEntityService<Application> {
   private readonly sectionService: SectionService;
 
   constructor(
-    applicationRepository: ApplicationRepository,
-    languageService: LanguageService,
-    @Inject(forwardRef(() => SectionService))
-      sectionService: SectionService,
+      applicationRepository: ApplicationRepository,
+      languageService: LanguageService,
+      @Inject(forwardRef(() => SectionService))
+          sectionService: SectionService,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -88,8 +89,19 @@ export class ApplicationService extends AbstractEntityService<Application> {
   }
 
   async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
-    const languagesList = await this.languageService.findByCodes(addLanguageToApplicationDto.languagesCode, 'code');
-    console.log(languagesList);
+    const languagesList = await this.languageService.findByCodes(addLanguageToApplicationDto.languagesCode) as Language[];
+
+    if (!application.languages) {
+      application.languages = await this.languageService.findByApplication(application.companyId, application.id, {});
+    }
+
+    for (const language of languagesList) {
+      if (!application.languagesId.includes(language.id)) {
+        application.languages.push(language);
+      }
+    }
+
+    return application;
   }
 
   protected async getIncludes(companyId: number, application: Application, query: any): Promise<Application> {
@@ -102,7 +114,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
       application.languages = await this.languageService.findByApplication(companyId, application.id, {});
     }
 
-    if(query.includes.includes('sections')) {
+    if (query.includes.includes('sections')) {
       application.sections = await this.sectionService.findByApplication(companyId, application.id, {});
     }
 
