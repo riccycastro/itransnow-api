@@ -1,17 +1,19 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
-  Param, Patch,
+  Param,
+  Patch,
   Request,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { SectionService } from '../Services/section.service';
-import { Section } from '../Entities/section.entity';
-import { SectionDto } from '../Dto/SectionDto';
+import {AuthGuard} from '@nestjs/passport';
+import {SectionService} from '../Services/section.service';
+import {Section} from '../Entities/section.entity';
+import {SectionDto} from '../Dto/section.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))

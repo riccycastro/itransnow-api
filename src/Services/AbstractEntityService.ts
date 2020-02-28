@@ -1,4 +1,4 @@
-import { EntityManager, Repository } from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 
 export abstract class AbstractEntityService<Entity> {
   protected readonly repository: Repository<Entity>;
@@ -15,7 +15,7 @@ export abstract class AbstractEntityService<Entity> {
     return await this.repository.save(entity);
   }
 
-  indexBy<Entity>(entities: Entity[], key: string): { [key: string]: Entity } {
+  protected indexBy<Entity>(entities: Entity[], key: string): { [key: string]: Entity } {
     const indexObject: { [key: string]: Entity } = {};
 
     for (const entity of entities) {
@@ -25,5 +25,7 @@ export abstract class AbstractEntityService<Entity> {
     return indexObject;
   }
 
-  protected abstract getIncludes(companyId: number, entity: any, query: any): Promise<any>
+  protected async getIncludes(companyId: number, entity: Entity, query: any): Promise<Entity> {
+    return entity;
+  }
 }

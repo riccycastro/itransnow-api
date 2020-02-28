@@ -1,5 +1,5 @@
 export abstract class AbstractConverter {
-  abstract convertToDto(entity: any): any;
+  abstract convertToDto<Entity>(entity: Entity): any;
 
   convertToDtoList(entities: any[]): any[] {
     const dtos: any[] = [];

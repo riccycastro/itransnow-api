@@ -1,12 +1,12 @@
 import {ConflictException, forwardRef, Inject, Injectable, NotFoundException} from '@nestjs/common';
 import {AbstractEntityService} from './AbstractEntityService';
 import {ApplicationRepository} from '../Repositories/application.repository';
-import {ApplicationDto} from '../Dto/ApplicationDto';
+import {ApplicationDto} from '../Dto/application.dto';
 import {Application} from '../Entities/application.entity';
 import {remove as removeDiacritics} from 'diacritics';
 import {Company} from '../Entities/company.entity';
 import {LanguageService} from './language.service';
-import {SectionDto} from '../Dto/SectionDto';
+import {SectionDto} from '../Dto/section.dto';
 import {Section} from '../Entities/section.entity';
 import {SectionService} from './section.service';
 import {AddLanguageToApplicationDto} from '../Dto/language.dto';

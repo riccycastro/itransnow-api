@@ -12,9 +12,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {ApplicationService} from '../Services/application.service';
-import {ApplicationDto} from '../Dto/ApplicationDto';
+import {ApplicationDto} from '../Dto/application.dto';
 import {AuthGuard} from '@nestjs/passport';
-import {SectionDto} from '../Dto/SectionDto';
+import {SectionDto} from '../Dto/section.dto';
 import {Section} from '../Entities/section.entity';
 import {Application} from '../Entities/application.entity';
 import {AddLanguageToApplicationDto} from '../Dto/language.dto';
@@ -76,7 +76,7 @@ export class ApplicationController {
   }
 
   @Post(':alias/languages')
-  async addLanguageToApplication(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
+  async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
     await this.applicationService.save(
         await this.applicationService.addLanguages(
             await this.applicationService.findByAlias(req.user.companyId, alias),

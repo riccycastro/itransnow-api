@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from '../Entities/user.entity';
 import { UserRepository } from '../Repositories/user.repository';
-import { RegisterUserDto } from '../Dto/RegisterUserDto';
+import { RegisterUserDto } from '../Dto/register-user.dto';
 import { BcryptProvider } from './Provider/bcrypt.provider';
 import { CompanyService } from './company.service';
 import { Connection } from 'typeorm';
