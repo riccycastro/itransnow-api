@@ -59,7 +59,7 @@ export class Version1580911246946 implements MigrationInterface {
       userEntity.password = user.password;
       userEntity.isVisible = user.isVisible;
       userEntity.isAdmin = user.isAdmin;
-      userEntity.company = Promise.resolve(company);
+      userEntity.company = company;
 
       users.push(await getRepository(User).save(userEntity));
     }

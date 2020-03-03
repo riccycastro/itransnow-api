@@ -16,6 +16,7 @@ import {Language} from "./language.entity";
 import {LanguageTeam} from "./language-team.entity";
 import { TranslationKey } from './translation-key.entity';
 import { Exclude } from 'class-transformer';
+import { WhiteLabel } from './white-label.entity';
 
 @Entity('applications')
 export class Application {
@@ -67,4 +68,7 @@ export class Application {
 
     @OneToMany(type => TranslationKey, translationKey => translationKey.application)
     translationKeys: TranslationKey[];
+
+    @OneToMany(type => WhiteLabel, whiteLabel => whiteLabel.application)
+    whiteLabels: WhiteLabel[];
 }

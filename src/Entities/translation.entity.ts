@@ -13,6 +13,7 @@ import { Comment } from './comment.entity';
 import { User } from './user.entity';
 import { TranslationStatus } from './translation-status.entity';
 import { LanguageTeam } from './language-team.entity';
+import { WhiteLabelTranslation } from './white-label-translation.entity';
 
 @Entity('translations')
 export class Translation {
@@ -58,4 +59,7 @@ export class Translation {
     @ManyToOne(type => LanguageTeam, languageTeam => languageTeam.translations)
     @JoinColumn({ name: 'language_team_id' })
     languageTeam: LanguageTeam;
+
+    @OneToMany(type => WhiteLabelTranslation, whiteLabelTranslation => whiteLabelTranslation.translation)
+    whiteLabelTranslations: WhiteLabelTranslation[];
 }

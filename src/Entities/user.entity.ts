@@ -51,7 +51,7 @@ export class User {
 
     @ManyToOne(type => Company, company => company.users)
     @JoinColumn({ name : "company_id" })
-    company: Promise<Company>;
+    company: Company;
 
     @Exclude()
     @RelationId((user: User) => user.company)

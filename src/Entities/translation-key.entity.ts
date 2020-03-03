@@ -11,6 +11,7 @@ import {
 import {Section} from './section.entity';
 import {Translation} from './translation.entity';
 import { Application } from './application.entity';
+import { WhiteLabelTranslation } from './white-label-translation.entity';
 
 @Entity('translation_keys')
 export class TranslationKey {
@@ -42,4 +43,7 @@ export class TranslationKey {
     @ManyToOne(type => Application, application => application.translationKeys)
     @JoinColumn({ name: "application_id" })
     application: Application;
+
+    @OneToMany(type => WhiteLabelTranslation, whiteLabelTranslation => whiteLabelTranslation.translationKey)
+    whiteLabelTranslations: WhiteLabelTranslation[];
 }

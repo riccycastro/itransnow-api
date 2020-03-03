@@ -49,7 +49,7 @@ export class UserService extends AbstractEntityService<User> {
     await queryRunner.startTransaction();
 
     try {
-      const company = this.companyService.save(this.companyService.create(registerUserDto.companyName), queryRunner.manager);
+      const company = await this.companyService.save(this.companyService.create(registerUserDto.companyName), queryRunner.manager);
 
       let user = new User();
       user.email = registerUserDto.email;
