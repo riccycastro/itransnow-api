@@ -18,6 +18,7 @@ import {SectionDto} from '../Dto/section.dto';
 import {Section} from '../Entities/section.entity';
 import {Application} from '../Entities/application.entity';
 import {AddLanguageToApplicationDto} from '../Dto/language.dto';
+import { WhiteLabelDto } from '../Dto/white-label.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -84,4 +85,10 @@ export class ApplicationController {
         )
     );
   }
+
+  @Post(':alias/white-labels')
+  async addWhiteLabelToApplicationAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string) {
+
+  }
+
 }

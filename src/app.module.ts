@@ -30,11 +30,13 @@ import {TranslationKeyRepository} from "./Repositories/translation-key.repositor
 import {TranslationKeyService} from "./Services/translation-key.service";
 import {TranslationStatusRepository} from "./Repositories/translation-status.repository";
 import {TranslationStatusService} from "./Services/translation-status.service";
+import { WhiteLabelRepository } from './Repositories/white-label.repository';
+import { WhiteLabelService } from './Services/white-label.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    TypeOrmModule.forFeature([ApplicationRepository, CompanyRepository, UserRepository, LanguageRepository, SectionRepository, TranslationRepository, TranslationKeyRepository, TranslationStatusRepository]),
+    TypeOrmModule.forFeature([ApplicationRepository, CompanyRepository, UserRepository, LanguageRepository, SectionRepository, TranslationRepository, TranslationKeyRepository, TranslationStatusRepository, WhiteLabelRepository]),
     PassportModule,
     JwtModule.register({
       secret: process.env.SECRET,
@@ -43,7 +45,7 @@ import {TranslationStatusService} from "./Services/translation-status.service";
   ],
   controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController],
   providers: [
-    UserService, AppService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService,
+    UserService, AppService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
     BcryptProvider,
     LocalStrategy, JwtStrategy,
   ],
