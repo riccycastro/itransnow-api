@@ -26,19 +26,19 @@ export class SectionController {
   }
 
   @Get(':alias')
-  async getSectionAction(@Request() req, @Param('alias') alias): Promise<Section> {
-    return await this.sectionService.findByAlias((await req.user.company).id, alias, req.query);
+  async getSectionAction(@Request() req, @Param('alias') alias: string): Promise<Section> {
+    return await this.sectionService.findByAlias(req.user.companyId, alias, req.query);
   }
 
   @Get()
   async getSectionsAction(@Request() req): Promise<Section[]> {
-    return await this.sectionService.findInList((await req.user.company).id, req.query);
+    return await this.sectionService.findInList(req.user.companyId, req.query);
   }
 
   @Delete(':alias')
-  async deleteSectionAction(@Request() req, @Param('alias') alias) {
+  async deleteSectionAction(@Request() req, @Param('alias') alias: string) {
     await this.sectionService.delete(
-      await this.sectionService.findByAlias((await req.user.company).id, alias)
+      await this.sectionService.findByAlias(req.user.companyId, alias)
     );
   }
 

@@ -32,6 +32,7 @@ import {TranslationStatusRepository} from "./Repositories/translation-status.rep
 import {TranslationStatusService} from "./Services/translation-status.service";
 import { WhiteLabelRepository } from './Repositories/white-label.repository';
 import { WhiteLabelService } from './Services/white-label.service';
+import { WhiteLabelController } from './Controllers/white-label.controller';
 
 @Module({
   imports: [
@@ -43,7 +44,7 @@ import { WhiteLabelService } from './Services/white-label.service';
       signOptions: {expiresIn: process.env.HASH_EXPIRES_IN},
     }),
   ],
-  controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController],
+  controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController, WhiteLabelController],
   providers: [
     UserService, AppService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
     BcryptProvider,

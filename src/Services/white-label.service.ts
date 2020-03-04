@@ -1,6 +1,6 @@
 import {AbstractEntityService} from './AbstractEntityService';
 import {WhiteLabel} from '../Entities/white-label.entity';
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {WhiteLabelRepository} from '../Repositories/white-label.repository';
 import {WhiteLabelDto} from "../Dto/white-label.dto";
 import {Application} from "../Entities/application.entity";
@@ -12,6 +12,17 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
         whiteLabelRepository: WhiteLabelRepository,
     ) {
         super(whiteLabelRepository);
+    }
+
+    async findByAlias(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
+        const whiteLabel = await (this.repository as WhiteLabelRepository).findByAlias(companyId, alias);
+
+        if (!whiteLabel) {
+            throw new NotFoundException('WhiteLabel not found!');
+        }
+
+        // todo@rcastro - add includes(application)
+        return await this.getIncludes(companyId, whiteLabel, query);
     }
 
     async create(whiteLabelDto: WhiteLabelDto, application: Application): Promise<WhiteLabel> {
