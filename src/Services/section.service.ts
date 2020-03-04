@@ -60,9 +60,9 @@ export class SectionService extends AbstractEntityService<Section> {
     return sectionEntity;
   }
 
-  async delete(section: Section) {
+  delete(section: Section): Section {
     section.isDeleted = true;
-    this.save(section);
+    return section;
   }
 
   async update(section: Section, sectionDto: SectionDto): Promise<Section> {
@@ -78,7 +78,7 @@ export class SectionService extends AbstractEntityService<Section> {
     }
 
     if (query.includes.includes('application')) {
-      section.application = await this.applicationService.findById(section.applicationId)
+      section.application = await this.applicationService.findById(section.applicationId);
     }
 
     return section;

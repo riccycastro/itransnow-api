@@ -35,32 +35,32 @@ export class ApplicationController {
 
   @Get(':alias')
   async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.findByAlias(req.user.company, alias, req.query);
+    return await this.applicationService.findByAlias(req.user.companyId, alias, req.query);
   }
 
   @Get()
   async getApplicationsAction(@Request() req): Promise<Application[]> {
-    return await this.applicationService.findInList(req.user.company, req.query);
+    return await this.applicationService.findInList(req.user.companyId, req.query);
   }
 
   @Post()
   async createApplicationAction(@Body() createApplicationDto: ApplicationDto, @Request() req) {
     await this.applicationService.save(
-      await this.applicationService.create(createApplicationDto, req.user.company),
+      await this.applicationService.create(createApplicationDto, req.user.companyId),
     );
   }
 
   @Delete(':alias')
   async deleteApplicationAction(@Request() req, @Param('alias') alias) {
     await this.applicationService.delete(
-      await this.applicationService.findByAlias(req.user.company, alias),
+      await this.applicationService.findByAlias(req.user.companyId, alias),
     );
   }
 
   @Patch(':alias')
   async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string) {
     await this.applicationService.update(
-      await this.applicationService.findByAlias(req.user.company, alias),
+      await this.applicationService.findByAlias(req.user.companyId, alias),
       updateApplicationDto,
     );
   }

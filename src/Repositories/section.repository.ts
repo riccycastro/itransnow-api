@@ -12,7 +12,7 @@ export class SectionRepository extends AbstractRepository<Section> {
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('application.id = :applicationId', { applicationId: applicationId })
       .andWhere('sections.isDeleted = \'0\'');
-    return await this.setPagination(queryBuilder, query).getMany();
+    return await this.setPagination(queryBuilder, query, 'application').getMany();
   }
 
   async findInList(companyId: number, query: QueryPaginationInterface): Promise<Section[]> {
@@ -26,7 +26,7 @@ export class SectionRepository extends AbstractRepository<Section> {
     queryBuilder = this.queryAlias(queryBuilder, 'sections', query.search);
     queryBuilder = this.queryActive(queryBuilder, 'sections', query.search);
 
-    return await this.setPagination(queryBuilder, query).getMany();
+    return await this.setPagination(queryBuilder, query, 'application').getMany();
   }
 
   async findByAlias(companyId: number, alias: string): Promise<Section> {

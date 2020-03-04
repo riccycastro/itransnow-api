@@ -12,7 +12,7 @@ export class LanguageRepository extends AbstractRepository<Language> {
         .where('company.id = :companyId', {companyId: companyId})
         .andWhere('applications.id = :applicationId', {applicationId: applicationId})
         .andWhere('languages.isDeleted = \'0\'');
-    return await this.setPagination(queryBuilder, query).getMany();
+    return await this.setPagination(queryBuilder, query, 'languages').getMany();
   }
 
   async findByCodes(companyId: number, codes: string[]): Promise<Language[]> {

@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn, ManyToOne, OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn, RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
@@ -39,6 +39,10 @@ export class WhiteLabel {
   @ManyToOne(type => Application, application => application.whiteLabels)
   @JoinColumn({ name: 'application_id' })
   application: Application;
+
+  @Exclude()
+  @RelationId((whiteLabel: WhiteLabel) => whiteLabel.application)
+  applicationId: number;
 
   @OneToMany(type => WhiteLabelTranslation, whiteLabelTranslation => whiteLabelTranslation.whiteLabel)
   whiteLabelTranslations: WhiteLabelTranslation[];

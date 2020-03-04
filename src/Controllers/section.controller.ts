@@ -36,14 +36,16 @@ export class SectionController {
   }
 
   @Delete(':alias')
-  async deleteSectionAction(@Request() req, @Param('alias') alias: string) {
-    await this.sectionService.delete(
-      await this.sectionService.findByAlias(req.user.companyId, alias)
+  async deleteSectionAction(@Request() req, @Param('alias') alias: string): Promise<void> {
+    await this.sectionService.save(
+      this.sectionService.delete(
+        await this.sectionService.findByAlias(req.user.companyId, alias),
+      ),
     );
   }
 
   @Patch(':alias')
-  async updateSectionAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string) {
+  async updateSectionAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
     return await this.sectionService.update(
       await this.sectionService.findByAlias(req.user.companyId, alias),
       sectionDto,

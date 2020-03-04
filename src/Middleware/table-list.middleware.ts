@@ -7,10 +7,12 @@ export class TableListMiddleware implements NestMiddleware {
     req.query.offset = req.query.offset ?? 0;
     req.query.limit = req.query.limit ?? 10;
     req.query.search = req.query.search ?? {};
-    req.query.orderField = req.query.orderDirection ?? '';
+    req.query.orderField = req.query.orderField ?? '';
     req.query.orderDirection = req.query.orderDirection ?? 'ASC';
     req.query.includes = req.query.includes ? req.query.includes.split(',') : [];
 
     next();
+
+    // todo@rcastro - when returning a list/pagination response, add total count
   }
 }

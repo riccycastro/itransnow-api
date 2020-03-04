@@ -22,10 +22,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
   private readonly whiteLabelService: WhiteLabelService;
 
   constructor(
-      applicationRepository: ApplicationRepository,
-      languageService: LanguageService,
-      @Inject(forwardRef(() => SectionService))
+    applicationRepository: ApplicationRepository,
+    languageService: LanguageService,
+    @Inject(forwardRef(() => SectionService))
           sectionService: SectionService,
+    @Inject(forwardRef(() => WhiteLabelService))
       whiteLabelService: WhiteLabelService,
   ) {
     super(applicationRepository);
@@ -128,6 +129,10 @@ export class ApplicationService extends AbstractEntityService<Application> {
 
     if (query.includes.includes('sections')) {
       application.sections = await this.sectionService.findByApplication(companyId, application.id, {});
+    }
+
+    if (query.includes.includes('white-labels')) {
+      application.whiteLabels = await this.whiteLabelService.findByApplication(companyId, application.id, {});
     }
 
     return application;

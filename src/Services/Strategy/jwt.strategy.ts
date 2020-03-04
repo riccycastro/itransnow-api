@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CompanyService } from '../company.service';
 import { UserService } from '../user.service';
 
@@ -25,10 +25,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
 
     const user = await this.userService.findById(payload.sub);
-    await user.company;
+
+    if (user.isDeleted) {
+      throw new NotFoundException();
+    }
+
+    if (!user.isActive) {
+      throw new ForbiddenException('You don\'t have access... please contact your system admin');
+    }
 
     //todo@rcastro - validate if company is active/not deleted
-    //               validate if user is active/not deleted
 
     return user;
   }

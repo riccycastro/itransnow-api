@@ -59,6 +59,7 @@ export class AppModule implements NestModule{
       .forRoutes(
         { path: 'applications*', method: RequestMethod.GET },
         { path: 'sections*', method: RequestMethod.GET },
+        { path: 'white-labels*', method: RequestMethod.GET },
       );
   }
 }

@@ -15,6 +15,6 @@ export class ApplicationRepository extends AbstractRepository<Application> {
     queryBuilder = this.queryAlias(queryBuilder, 'applications', query.search);
     queryBuilder = this.queryActive(queryBuilder, 'applications', query.search);
 
-    return await this.setPagination(queryBuilder, query).getMany();
+    return await this.setPagination(queryBuilder, query, 'applications').getMany();
   }
 }

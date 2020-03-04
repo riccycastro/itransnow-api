@@ -29,19 +29,19 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
       .offset(query.offset);
   }
 
-  protected setOrderBy(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
+  protected setOrderBy(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface, tableName: string): SelectQueryBuilder<Entity> {
     this.initQuery(query);
     if (!query.orderField) {
       return queryBuilder;
     }
     return queryBuilder
-      .orderBy(query.orderField, query.orderDirection);
+      .orderBy(`${tableName}.${query.orderField}`, query.orderDirection);
   }
 
-  protected setPagination(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface): SelectQueryBuilder<Entity> {
+  protected setPagination(queryBuilder: SelectQueryBuilder<Entity>, query: QueryPaginationInterface, tableName: string): SelectQueryBuilder<Entity> {
     this.initQuery(query);
     queryBuilder = this.setLimit(queryBuilder, query);
-    return this.setOrderBy(queryBuilder, query);
+    return this.setOrderBy(queryBuilder, query, tableName);
   }
 
   protected queryName(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
