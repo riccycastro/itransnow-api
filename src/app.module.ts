@@ -29,9 +29,10 @@ import {TranslationKeyRepository} from "./Repositories/translation-key.repositor
 import {TranslationKeyService} from "./Services/translation-key.service";
 import {TranslationStatusRepository} from "./Repositories/translation-status.repository";
 import {TranslationStatusService} from "./Services/translation-status.service";
-import { WhiteLabelRepository } from './Repositories/white-label.repository';
-import { WhiteLabelService } from './Services/white-label.service';
-import { WhiteLabelController } from './Controllers/white-label.controller';
+import {WhiteLabelRepository} from './Repositories/white-label.repository';
+import {WhiteLabelService} from './Services/white-label.service';
+import {WhiteLabelController} from './Controllers/white-label.controller';
+import {ExtensionValidatorMiddleware} from "./Middleware/extension-validator.middleware";
 
 @Module({
   imports: [
@@ -54,11 +55,13 @@ import { WhiteLabelController } from './Controllers/white-label.controller';
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer): void {
     consumer
-      .apply(TableListMiddleware)
-      .forRoutes(
-        { path: 'applications*', method: RequestMethod.GET },
-        { path: 'sections*', method: RequestMethod.GET },
-        { path: 'white-labels*', method: RequestMethod.GET },
-      );
+        .apply(TableListMiddleware)
+        .forRoutes(
+            {path: 'applications*', method: RequestMethod.GET},
+            {path: 'sections*', method: RequestMethod.GET},
+            {path: 'white-labels*', method: RequestMethod.GET},
+        )
+        .apply(ExtensionValidatorMiddleware)
+        .forRoutes({path: 'translations*', method: RequestMethod.GET});
   }
 }

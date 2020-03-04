@@ -11,18 +11,16 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApplicationService } from '../Services/application.service';
-import { ApplicationDto } from '../Dto/application.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { SectionDto } from '../Dto/section.dto';
-import { Section } from '../Entities/section.entity';
-import { Application } from '../Entities/application.entity';
-import { AddLanguageToApplicationDto } from '../Dto/language.dto';
-import { WhiteLabelDto } from '../Dto/white-label.dto';
-import { WhiteLabel } from '../Entities/white-label.entity';
-import { TranslationDto } from '../Dto/translation.dto';
-import { User } from '../Decorators/user.decorator';
-import { ApplicationByAliasPipe } from '../Pipes/application-by-alias.pipe';
+import {ApplicationService} from '../Services/application.service';
+import {ApplicationDto} from '../Dto/application.dto';
+import {AuthGuard} from '@nestjs/passport';
+import {SectionDto} from '../Dto/section.dto';
+import {Section} from '../Entities/section.entity';
+import {Application} from '../Entities/application.entity';
+import {AddLanguageToApplicationDto} from '../Dto/language.dto';
+import {WhiteLabelDto} from '../Dto/white-label.dto';
+import {WhiteLabel} from '../Entities/white-label.entity';
+import {TranslationDto} from '../Dto/translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -37,9 +35,8 @@ export class ApplicationController {
   }
 
   @Get(':alias')
-  async getApplicationAction(@User(new ApplicationByAliasPipe()) application: Application ) {
-
-    //return await this.applicationService.findByAlias(req.user.companyId, alias, req.query);
+  async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
+    return await this.applicationService.findByAlias(req.user.company, alias, req.query);
   }
 
   @Get()

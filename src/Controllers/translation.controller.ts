@@ -1,7 +1,7 @@
 import {
     ClassSerializerInterceptor,
     Controller,
-    Get,
+    Get, Param,
     Query,
     Request,
     UseGuards,
@@ -13,7 +13,7 @@ import { TranslationDto } from '../Dto/translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
-@Controller('translations')
+@Controller()
 export class TranslationController {
 
     private readonly translationService: TranslationService;
@@ -24,8 +24,8 @@ export class TranslationController {
         this.translationService = translationService;
     }
 
-    @Get('translations')
-    getTranslations(@Request() req, @Query() translationDto: TranslationDto) {
-
+    @Get(['translations', 'translations:extension'])
+    getTranslations(@Request() req, @Query() translationDto: TranslationDto, @Param('extension') extension: string) {
+        console.log(extension)
     }
 }

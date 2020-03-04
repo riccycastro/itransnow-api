@@ -75,4 +75,6 @@ export class TranslationService extends AbstractEntityService<Translation> {
         }
 
     }
+
+    async
 }

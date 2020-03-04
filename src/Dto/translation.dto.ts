@@ -12,7 +12,8 @@ export class TranslationDto {
     /**
      * translation key alias
      */
-    @IsDefined({ groups: ['post', 'patch'] })
+    @IsDefined({groups: ['post']})
+    @IsOptional({groups: ['patch']})
     @IsString()
     @IsNotEmpty()
     translationKey: string;
@@ -20,7 +21,8 @@ export class TranslationDto {
     /**
      * translation text for given language
      */
-    @IsDefined({ groups: ['post', 'patch'] })
+    @IsDefined({ groups: ['post'] })
+    @IsOptional({groups: ['patch']})
     @IsString()
     @IsNotEmpty()
     translation: string;
