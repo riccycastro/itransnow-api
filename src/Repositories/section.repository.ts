@@ -28,4 +28,13 @@ export class SectionRepository extends AbstractRepository<Section> {
 
     return await this.setPagination(queryBuilder, query).getMany();
   }
+
+  async findByAlias(companyId: number, alias: string): Promise<Section> {
+    return await this.createQueryBuilder('section')
+      .innerJoin('section.application', 'application')
+      .innerJoin('application.company', 'company')
+      .where('company.id = :companyId', { companyId: companyId })
+      .andWhere('section.alias LIKE :alias', { alias: alias })
+      .getOne();
+  }
 }

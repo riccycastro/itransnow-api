@@ -23,13 +23,7 @@ export class SectionService extends AbstractEntityService<Section> {
   }
 
   async findByAlias(companyId: number, alias: string, query?: any): Promise<Section> {
-    const section = await this.repository.findOne({
-      where: {
-        alias: alias,
-        company: companyId,
-        isDeleted: false,
-      },
-    });
+    const section = await (this.repository as SectionRepository).findByAlias(companyId, alias);
 
     if (!section) {
       throw new NotFoundException('Section not found!');
