@@ -13,6 +13,7 @@ import {AddLanguageToApplicationDto} from '../Dto/language.dto';
 import {Language} from "../Entities/language.entity";
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelService } from './white-label.service';
+import {WhiteLabel} from "../Entities/white-label.entity";
 
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
@@ -93,8 +94,10 @@ export class ApplicationService extends AbstractEntityService<Application> {
     );
   }
 
-  async createWhiteLabel(application: Application, whiteLabelDto: WhiteLabelDto) {
-
+  async createWhiteLabel(application: Application, whiteLabelDto: WhiteLabelDto): Promise<WhiteLabel> {
+    return await this.whiteLabelService.save(
+        await this.whiteLabelService.create(whiteLabelDto, application)
+    );
   }
 
   async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {

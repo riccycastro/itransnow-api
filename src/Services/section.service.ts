@@ -52,13 +52,16 @@ export class SectionService extends AbstractEntityService<Section> {
   }
 
   async create(sectionDto: SectionDto, application: Application): Promise<Section> {
-    if (await this.repository.findOne({ alias: sectionDto.alias, application: application })) {
+
+    const sectionAlias = removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase();
+
+    if (await this.repository.findOne({ alias: sectionAlias, application: application })) {
       throw new BadRequestException(`Section with alias "${sectionDto.alias}" already exists in ${application.name} application`);
     }
 
     const sectionEntity = new Section();
     sectionEntity.name = sectionDto.name;
-    sectionEntity.alias = removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase();
+    sectionEntity.alias = sectionAlias;
     sectionEntity.application = application;
     return sectionEntity;
   }

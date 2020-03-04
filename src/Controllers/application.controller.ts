@@ -19,6 +19,7 @@ import {Section} from '../Entities/section.entity';
 import {Application} from '../Entities/application.entity';
 import {AddLanguageToApplicationDto} from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
+import {WhiteLabel} from "../Entities/white-label.entity";
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -34,12 +35,12 @@ export class ApplicationController {
 
   @Get(':alias')
   async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.findByAlias((await req.user.company).id, alias, req.query);
+    return await this.applicationService.findByAlias(req.user.company, alias, req.query);
   }
 
   @Get()
   async getApplicationsAction(@Request() req): Promise<Application[]> {
-    return await this.applicationService.findInList((await req.user.company).id, req.query);
+    return await this.applicationService.findInList(req.user.company, req.query);
   }
 
   @Post()
@@ -52,14 +53,14 @@ export class ApplicationController {
   @Delete(':alias')
   async deleteApplicationAction(@Request() req, @Param('alias') alias) {
     await this.applicationService.delete(
-      await this.applicationService.findByAlias((await req.user.company).id, alias),
+      await this.applicationService.findByAlias(req.user.company, alias),
     );
   }
 
   @Patch(':alias')
   async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string) {
     await this.applicationService.update(
-      await this.applicationService.findByAlias((await req.user.company).id, alias),
+      await this.applicationService.findByAlias(req.user.company, alias),
       updateApplicationDto,
     );
   }
@@ -67,7 +68,7 @@ export class ApplicationController {
   @Post(':alias/sections')
   async addSectionToApplicationAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
     const section = await this.applicationService.createSection(
-      await this.applicationService.findByAlias((await req.user.company).id, alias),
+      await this.applicationService.findByAlias(req.user.companyId, alias),
       sectionDto,
     );
 
@@ -87,8 +88,15 @@ export class ApplicationController {
   }
 
   @Post(':alias/white-labels')
-  async addWhiteLabelToApplicationAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string) {
+  async addWhiteLabelToApplicationAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string): Promise<WhiteLabel> {
+    const whiteLabel = await this.applicationService.createWhiteLabel(
+        await this.applicationService.findByAlias(req.user.companyId, alias),
+        whiteLabelDto,
+    );
 
+    whiteLabel.application = undefined;
+
+    return whiteLabel;
   }
 
 }

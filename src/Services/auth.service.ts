@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { BcryptProvider } from './Provider/bcrypt.provider';
-import { User } from '../Entities/user.entity';
-import { UserService } from './user.service';
-import { CompanyService } from './company.service';
+import {Injectable} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+import {BcryptProvider} from './Provider/bcrypt.provider';
+import {User} from '../Entities/user.entity';
+import {UserService} from './user.service';
+import {CompanyService} from './company.service';
 
 @Injectable()
 export class AuthService {
@@ -14,10 +14,10 @@ export class AuthService {
   private readonly companyService: CompanyService;
 
   constructor(
-    usersService: UserService,
-    jwtService: JwtService,
-    bcryptProvider: BcryptProvider,
-    companyService: CompanyService,
+      usersService: UserService,
+      jwtService: JwtService,
+      bcryptProvider: BcryptProvider,
+      companyService: CompanyService,
   ) {
     this.usersService = usersService;
     this.jwtService = jwtService;
@@ -34,14 +34,12 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const company = await user.company;
-
     const payload = {
       sub: user.id,
       username: user.username,
       email: user.email,
       isAdmin: user.isAdmin,
-      companyId: company.id,
+      companyId: user.companyId,
     };
 
     return {
