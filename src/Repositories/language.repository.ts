@@ -24,11 +24,10 @@ export class LanguageRepository extends AbstractRepository<Language> {
         .getMany();
   }
 
-  async findByCode(companyId: number, code: string): Promise<Language> {
+  async findByCodeInApplication(applicationId: number, code: string): Promise<Language> {
     return await this.createQueryBuilder('languages')
         .innerJoin('languages.applications', 'applications')
-        .innerJoin('applications.company', 'company')
-        .where('company.id = :companyId', {companyId: companyId})
+        .where('applications.id = :applicationId', {applicationId: applicationId})
         .andWhere('languages.code = :code', {code: code})
         .getOne();
   }

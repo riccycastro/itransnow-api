@@ -1,19 +1,18 @@
-import {ConflictException, forwardRef, Inject, Injectable, NotFoundException} from '@nestjs/common';
-import {AbstractEntityService} from './AbstractEntityService';
-import {ApplicationRepository} from '../Repositories/application.repository';
-import {ApplicationDto} from '../Dto/application.dto';
-import {Application} from '../Entities/application.entity';
-import {remove as removeDiacritics} from 'diacritics';
-import {Company} from '../Entities/company.entity';
-import {LanguageService} from './language.service';
-import {SectionDto} from '../Dto/section.dto';
-import {Section} from '../Entities/section.entity';
-import {SectionService} from './section.service';
-import {AddLanguageToApplicationDto} from '../Dto/language.dto';
-import {Language} from "../Entities/language.entity";
+import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { AbstractEntityService } from './AbstractEntityService';
+import { ApplicationRepository } from '../Repositories/application.repository';
+import { ApplicationDto } from '../Dto/application.dto';
+import { Application } from '../Entities/application.entity';
+import { remove as removeDiacritics } from 'diacritics';
+import { Company } from '../Entities/company.entity';
+import { LanguageService } from './language.service';
+import { SectionDto } from '../Dto/section.dto';
+import { Section } from '../Entities/section.entity';
+import { SectionService } from './section.service';
+import { AddLanguageToApplicationDto } from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelService } from './white-label.service';
-import {WhiteLabel} from "../Entities/white-label.entity";
+import { WhiteLabel } from '../Entities/white-label.entity';
 import { User } from '../Entities/user.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { TranslationService } from './translation.service';
@@ -111,11 +110,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return await this.translationService.persist(user, application, translationDto);
   }
 
-  async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
-    const languagesList = await this.languageService.findByCodes(addLanguageToApplicationDto.languagesCode) as Language[];
+  async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto): Promise<Application> {
+    const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
 
     if (!application.languages) {
-      application.languages = await this.languageService.findByApplication(application.companyId, application.id, {});
+      application.languages = await this.languageService.getByApplication(application.companyId, application.id, {});
     }
 
     for (const language of languagesList) {
@@ -127,6 +126,17 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return application;
   }
 
+  async removeLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
+    const languagesList = this.languageService.indexBy(
+      'code',
+      await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode),
+    );
+
+    application.languages = await this.languageService.getByApplication(application.companyId, application.id, { limit: 10000 });
+    application.languages = application.languages.filter(language => !Object.keys(languagesList).includes(language.code));
+    return application;
+  }
+
   protected async getIncludes(companyId: number, application: Application, query: any): Promise<Application> {
 
     if (!query || !query.includes) {
@@ -134,7 +144,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
     }
 
     if (query.includes.includes('language')) {
-      application.languages = await this.languageService.findByApplication(companyId, application.id, {});
+      application.languages = await this.languageService.getByApplication(companyId, application.id, {});
     }
 
     if (query.includes.includes('sections')) {

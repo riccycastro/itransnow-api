@@ -80,11 +80,21 @@ export class ApplicationController {
 
   @Post(':alias/languages')
   async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
-    await this.applicationService.save(
+    return await this.applicationService.save(
         await this.applicationService.addLanguages(
             await this.applicationService.findByAlias(req.user.companyId, alias),
             addLanguageToApplicationDto,
         )
+    );
+  }
+
+  @Delete(':alias/languages')
+  async removeLanguageFromApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
+    return await this.applicationService.save(
+      await this.applicationService.removeLanguages(
+        await this.applicationService.findByAlias(req.user.companyId, alias),
+        addLanguageToApplicationDto,
+      ),
     );
   }
 

@@ -50,7 +50,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     async persist(user: User, application: Application, translationDto: TranslationDto): Promise<Translation> {
         const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
-        const language = await this.languageService.getByCode(user.companyId, translationDto.language);
+        const language = await this.languageService.getByCodeInApplication(application.id, translationDto.language);
 
         const translationKey = await this.translationKeyService.get(user.companyId, application.id, translationDto.translationKey);
         translationKey.application = application;

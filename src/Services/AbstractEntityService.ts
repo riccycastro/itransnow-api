@@ -15,7 +15,7 @@ export abstract class AbstractEntityService<Entity> {
     return await this.repository.save(entity);
   }
 
-  protected indexBy<Entity>(entities: Entity[], key: string): { [key: string]: Entity } {
+  indexBy<Entity>(key: string, entities: Entity[]): { [key: string]: Entity } {
     const indexObject: { [key: string]: Entity } = {};
 
     for (const entity of entities) {

@@ -14,7 +14,7 @@ export class LanguageService extends AbstractEntityService<Language> {
     super(languageRepository);
   }
 
-  async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Language[]> {
+  async getByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Language[]> {
     return (this.repository as LanguageRepository).findByApplication(
       companyId,
       applicationId,
@@ -22,17 +22,12 @@ export class LanguageService extends AbstractEntityService<Language> {
     );
   }
 
-  async findByCodes(codes: string[], indexBy?: string): Promise<{ [p: string]: Language } | Language[]> {
-    const languages = await (this.repository as LanguageRepository).find({where: {code: In(codes)}});
-    if (indexBy) {
-      return this.indexBy(languages, 'code');
-    }
-
-    return languages;
+  async getByCodes(codes: string[]): Promise<Language[]> {
+    return await (this.repository as LanguageRepository).find({where: {code: In(codes)}});
   }
 
-  async getByCode(companyId: number, code: string): Promise<Language> {
-    const language = await (this.repository as LanguageRepository).findByCode(companyId, code);
+  async getByCodeInApplication(applicationId: number, code: string): Promise<Language> {
+    const language = await (this.repository as LanguageRepository).findByCodeInApplication(applicationId, code);
 
     if (!language) {
       throw new NotFoundException("Language not found!");

@@ -101,7 +101,7 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
     }
 
     async createWhiteLabelTranslation(user: User, whiteLabel: WhiteLabel, whiteLabelTranslationDto: WhiteLabelTranslationDto) {
-        const language = await this.languageService.getByCode(user.companyId, whiteLabelTranslationDto.language);
+        const language = await this.languageService.getByCodeInApplication(whiteLabel.applicationId, whiteLabelTranslationDto.language);
         const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
         const translationKey = await this.translationKeyService.getByTranslationKey(user.companyId, whiteLabel.applicationId, whiteLabelTranslationDto.translationKey);
 
