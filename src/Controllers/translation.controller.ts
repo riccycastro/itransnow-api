@@ -1,6 +1,15 @@
-import { ClassSerializerInterceptor, Controller, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+    ClassSerializerInterceptor,
+    Controller,
+    Get,
+    Query,
+    Request,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TranslationService } from '../Services/translation.service';
+import { TranslationDto } from '../Dto/translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -15,4 +24,8 @@ export class TranslationController {
         this.translationService = translationService;
     }
 
+    @Get('translations')
+    getTranslations(@Request() req, @Query() translationDto: TranslationDto) {
+
+    }
 }

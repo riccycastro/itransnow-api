@@ -21,6 +21,8 @@ import { AddLanguageToApplicationDto } from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { TranslationDto } from '../Dto/translation.dto';
+import { User } from '../Decorators/user.decorator';
+import { ApplicationByAliasPipe } from '../Pipes/application-by-alias.pipe';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -35,8 +37,9 @@ export class ApplicationController {
   }
 
   @Get(':alias')
-  async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.findByAlias(req.user.companyId, alias, req.query);
+  async getApplicationAction(@User(new ApplicationByAliasPipe()) application: Application ) {
+
+    //return await this.applicationService.findByAlias(req.user.companyId, alias, req.query);
   }
 
   @Get()

@@ -3,7 +3,6 @@ import {PassportModule} from '@nestjs/passport';
 import {JwtModule} from '@nestjs/jwt';
 import {AppController} from './Controllers/app.controller';
 import {AuthController} from './Controllers/auth.controller';
-import {AppService} from './app.service';
 import {AuthService} from './Services/auth.service';
 import {UserService} from './Services/user.service';
 import {BcryptProvider} from './Services/Provider/bcrypt.provider';
@@ -46,7 +45,7 @@ import { WhiteLabelController } from './Controllers/white-label.controller';
   ],
   controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController, WhiteLabelController],
   providers: [
-    UserService, AppService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
+    UserService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
     BcryptProvider,
     LocalStrategy, JwtStrategy,
   ],

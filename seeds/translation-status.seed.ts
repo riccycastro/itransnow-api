@@ -12,4 +12,7 @@ export const TranslationStatusSeed: TranslationStatusSeedInterface[] = [
   {
     status: 'rejected',
   },
+  {
+    status: 'deprecated',
+  }
 ];
