@@ -14,12 +14,16 @@ import {Language} from "../Entities/language.entity";
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelService } from './white-label.service';
 import {WhiteLabel} from "../Entities/white-label.entity";
+import { User } from '../Entities/user.entity';
+import { TranslationDto } from '../Dto/translation.dto';
+import { TranslationService } from './translation.service';
 
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
   private readonly languageService: LanguageService;
   private readonly sectionService: SectionService;
   private readonly whiteLabelService: WhiteLabelService;
+  private readonly translationService: TranslationService;
 
   constructor(
     applicationRepository: ApplicationRepository,
@@ -28,11 +32,13 @@ export class ApplicationService extends AbstractEntityService<Application> {
           sectionService: SectionService,
     @Inject(forwardRef(() => WhiteLabelService))
       whiteLabelService: WhiteLabelService,
+    translationService: TranslationService,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
     this.sectionService = sectionService;
     this.whiteLabelService = whiteLabelService;
+    this.translationService = translationService;
   }
 
   async create(createApplicationDto: ApplicationDto, company: Company): Promise<Application> {
@@ -99,6 +105,10 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return await this.whiteLabelService.save(
         await this.whiteLabelService.create(whiteLabelDto, application)
     );
+  }
+
+  async createTranslation(user: User, application:Application, translationDto: TranslationDto){
+    return await this.translationService.persist(user, application, translationDto);
   }
 
   async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {

@@ -31,8 +31,7 @@ export class LanguageService extends AbstractEntityService<Language> {
     return languages;
   }
 
-  async findByCode(companyId: number, code: string): Promise<Language> {
-    console.log(companyId, code)
+  async getByCode(companyId: number, code: string): Promise<Language> {
     const language = await (this.repository as LanguageRepository).findByCode(companyId, code);
 
     if (!language) {

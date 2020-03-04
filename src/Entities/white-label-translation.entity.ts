@@ -20,6 +20,6 @@ export class WhiteLabelTranslation {
   translationKey: TranslationKey;
 
   @ManyToOne(type => Translation, translation => translation.whiteLabelTranslations)
-  @JoinColumn({ name: 'translation_key_id' })
+  @JoinColumn({ name: 'translation_id' })
   translation: Translation;
 }

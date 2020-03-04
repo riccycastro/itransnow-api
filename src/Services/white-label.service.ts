@@ -1,25 +1,54 @@
-import {AbstractEntityService} from './AbstractEntityService';
-import {WhiteLabel} from '../Entities/white-label.entity';
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import {WhiteLabelRepository} from '../Repositories/white-label.repository';
-import {WhiteLabelDto} from "../Dto/white-label.dto";
-import {Application} from "../Entities/application.entity";
-import {remove as removeDiacritics} from 'diacritics';
+import { AbstractEntityService } from './AbstractEntityService';
+import { WhiteLabel } from '../Entities/white-label.entity';
+import {
+    BadRequestException,
+    forwardRef,
+    Inject,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+} from '@nestjs/common';
+import { WhiteLabelRepository } from '../Repositories/white-label.repository';
+import { WhiteLabelDto } from '../Dto/white-label.dto';
+import { Application } from '../Entities/application.entity';
+import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
-import { Section } from '../Entities/section.entity';
-import { SectionDto } from '../Dto/section.dto';
+import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
+import { LanguageService } from './language.service';
+import { User } from '../Entities/user.entity';
+import { TranslationKeyService } from './translation-key.service';
+import { WhiteLabelTranslation } from '../Entities/white-label-translation.entity';
+import { TranslationService } from './translation.service';
+import { TranslationStatusService } from './translation-status.service';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
     private readonly applicationService: ApplicationService;
+    private readonly languageService: LanguageService;
+    private readonly translationKeyService: TranslationKeyService;
+    private readonly translationService: TranslationService;
+    private readonly translationStatusService: TranslationStatusService;
+    private readonly connection: Connection;
+
     constructor(
       whiteLabelRepository: WhiteLabelRepository,
       @Inject(forwardRef(() => ApplicationService))
         applicationService: ApplicationService,
+      languageService: LanguageService,
+      translationKeyService: TranslationKeyService,
+      translationService: TranslationService,
+      translationStatusService: TranslationStatusService,
+      connection: Connection,
     ) {
         super(whiteLabelRepository);
         this.applicationService = applicationService;
+        this.languageService = languageService;
+        this.translationKeyService = translationKeyService;
+        this.translationService = translationService;
+        this.translationStatusService = translationStatusService;
+        this.connection = connection;
     }
 
     async findByAlias(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
@@ -49,7 +78,7 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
     async create(whiteLabelDto: WhiteLabelDto, application: Application): Promise<WhiteLabel> {
         const sectionAlias = removeDiacritics(whiteLabelDto.alias.trim().replace(/ /g, '_')).toLowerCase();
 
-        if (await this.repository.findOne({alias: sectionAlias, application: application})) {
+        if (await this.repository.findOne({ alias: sectionAlias, application: application })) {
             throw new BadRequestException(`White label with alias "${whiteLabelDto.alias}" already exists in ${application.name} application`);
         }
 
@@ -69,6 +98,37 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
         whiteLabel.name = whiteLabelDto.name;
         whiteLabel.alias = whiteLabelDto.alias ?? whiteLabel.alias;
         return whiteLabel;
+    }
+
+    async createWhiteLabelTranslation(user: User, whiteLabel: WhiteLabel, whiteLabelTranslationDto: WhiteLabelTranslationDto) {
+        const language = await this.languageService.getByCode(user.companyId, whiteLabelTranslationDto.language);
+        const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
+        const translationKey = await this.translationKeyService.getByTranslationKey(user.companyId, whiteLabel.applicationId, whiteLabelTranslationDto.translationKey);
+
+        const translation = this.translationService.create(language, user, translationStatus, whiteLabelTranslationDto.translation, undefined);
+
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.startTransaction();
+
+        try {
+            let whiteLabelTranslation = new WhiteLabelTranslation();
+
+            whiteLabelTranslation.translation = await this.translationService.save(translation, queryRunner.manager);
+            whiteLabelTranslation.translationKey = translationKey;
+            whiteLabelTranslation.whiteLabel = whiteLabel;
+
+            whiteLabelTranslation = await queryRunner.manager.save(whiteLabelTranslation);
+
+            await queryRunner.commitTransaction();
+            await queryRunner.release();
+
+            return whiteLabelTranslation;
+        } catch (e) {
+            console.log(e.message);
+            await queryRunner.rollbackTransaction();
+            await queryRunner.release();
+            throw new InternalServerErrorException();
+        }
     }
 
     async getIncludes(companyId: number, whiteLabel: WhiteLabel, query: any): Promise<WhiteLabel> {

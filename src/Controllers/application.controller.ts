@@ -11,15 +11,16 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {ApplicationService} from '../Services/application.service';
-import {ApplicationDto} from '../Dto/application.dto';
-import {AuthGuard} from '@nestjs/passport';
-import {SectionDto} from '../Dto/section.dto';
-import {Section} from '../Entities/section.entity';
-import {Application} from '../Entities/application.entity';
-import {AddLanguageToApplicationDto} from '../Dto/language.dto';
+import { ApplicationService } from '../Services/application.service';
+import { ApplicationDto } from '../Dto/application.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { SectionDto } from '../Dto/section.dto';
+import { Section } from '../Entities/section.entity';
+import { Application } from '../Entities/application.entity';
+import { AddLanguageToApplicationDto } from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
-import {WhiteLabel} from "../Entities/white-label.entity";
+import { WhiteLabel } from '../Entities/white-label.entity';
+import { TranslationDto } from '../Dto/translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -99,4 +100,12 @@ export class ApplicationController {
     return whiteLabel;
   }
 
+  @Post(':alias/translations')
+  async addTranslationToApplicationAction(@Request() req, @Body() translationDto: TranslationDto, @Param('alias') alias: string) {
+    await this.applicationService.createTranslation(
+      req.user,
+      await this.applicationService.findByAlias(req.user.companyId, alias),
+      translationDto,
+    );
+  }
 }

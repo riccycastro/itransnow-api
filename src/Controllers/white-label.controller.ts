@@ -1,9 +1,12 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
-  Param, Patch,
+  Param,
+  Patch,
+  Post,
   Request,
   UseGuards,
   UseInterceptors,
@@ -12,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { WhiteLabelService } from '../Services/white-label.service';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
+import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -49,6 +53,15 @@ export class WhiteLabelController {
         await this.whiteLabelService.findByAlias(req.user.companyId, alias),
         whiteLabelDto,
       ),
+    );
+  }
+
+  @Post(':alias/translations')
+  async addTranslationToWhiteLabel(@Request() req, @Body() whiteLabelTranslationDto: WhiteLabelTranslationDto, @Param('alias') alias: string) {
+    await this.whiteLabelService.createWhiteLabelTranslation(
+      req.user,
+      await this.whiteLabelService.findByAlias(req.user.companyId, alias),
+      whiteLabelTranslationDto
     );
   }
 }

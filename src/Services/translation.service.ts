@@ -1,21 +1,23 @@
-import {Injectable, InternalServerErrorException} from "@nestjs/common";
-import {AbstractEntityService} from "./AbstractEntityService";
-import {Translation} from "../Entities/translation.entity";
-import {TranslationRepository} from "../Repositories/translation.repository";
-import {TranslationDto} from "../Dto/translation.dto";
-import {User} from "../Entities/user.entity";
-import {LanguageService} from "./language.service";
-import {TranslationKeyService} from "./translation-key.service";
-import {ApplicationService} from "./application.service";
-import {Connection} from "typeorm";
-import {TranslationStatusService} from "./translation-status.service";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { AbstractEntityService } from './AbstractEntityService';
+import { Translation } from '../Entities/translation.entity';
+import { TranslationRepository } from '../Repositories/translation.repository';
+import { TranslationDto } from '../Dto/translation.dto';
+import { User } from '../Entities/user.entity';
+import { LanguageService } from './language.service';
+import { TranslationKeyService } from './translation-key.service';
+import { Connection } from 'typeorm';
+import { TranslationStatusService } from './translation-status.service';
+import { Application } from '../Entities/application.entity';
+import { Language } from '../Entities/language.entity';
+import { TranslationKey } from '../Entities/translation-key.entity';
+import { TranslationStatus } from '../Entities/translation-status.entity';
 
 @Injectable()
 export class TranslationService extends AbstractEntityService<Translation> {
 
     private readonly languageService: LanguageService;
     private readonly translationKeyService: TranslationKeyService;
-    private readonly applicationService: ApplicationService;
     private readonly translationStatusService: TranslationStatusService;
     private readonly connection: Connection;
 
@@ -23,32 +25,37 @@ export class TranslationService extends AbstractEntityService<Translation> {
         translationRepository: TranslationRepository,
         languageService: LanguageService,
         translationKeyService: TranslationKeyService,
-        applicationService: ApplicationService,
         translationStatusService: TranslationStatusService,
         connection: Connection,
     ) {
         super(translationRepository);
         this.languageService = languageService;
         this.translationKeyService = translationKeyService;
-        this.applicationService = applicationService;
         this.translationStatusService = translationStatusService;
         this.connection = connection;
     }
 
-    async create(user: User, translationDto: TranslationDto): Promise<Translation> {
-        const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
-        const application = await this.applicationService.findByAlias(user.companyId, translationDto.application);
-
-        let translation = new Translation();
-        translation.language = await this.languageService.findByCode(user.companyId, translationDto.language);
-
-        translation.translationKey = await this.translationKeyService.get(user.companyId, application.id, translationDto.translationKey);
-        translation.translationKey.application = application;
-        translation.createdBy = user;
-        translation.translationStatus = translationStatus;
-        translation.translation = translationDto.translation;
+    create(language: Language, user: User, translationStatus: TranslationStatus, translation: string, translationKey: TranslationKey|undefined): Translation {
+        const translationEntity = new Translation();
+        translationEntity.language = language;
+        translationEntity.createdBy = user;
+        translationEntity.translation = translation;
+        translationEntity.translationKey = translationKey;
+        translationEntity.translationStatus = translationStatus;
 
         //todo@rcastro - add translation team
+
+        return translationEntity;
+    }
+
+    async persist(user: User, application: Application, translationDto: TranslationDto): Promise<Translation> {
+        const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
+        const language = await this.languageService.getByCode(user.companyId, translationDto.language);
+
+        const translationKey = await this.translationKeyService.get(user.companyId, application.id, translationDto.translationKey);
+        translationKey.application = application;
+
+        let translation = this.create(language, user, translationStatus, translationDto.translation, translationKey);
 
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.startTransaction();
