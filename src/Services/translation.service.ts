@@ -35,7 +35,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
         this.connection = connection;
     }
 
-    create(language: Language, user: User, translationStatus: TranslationStatus, translation: string, translationKey: TranslationKey|undefined): Translation {
+    create(language: Language, user: User, translationStatus: TranslationStatus, translation: string, translationKey?: TranslationKey): Translation {
         const translationEntity = new Translation();
         translationEntity.language = language;
         translationEntity.createdBy = user;

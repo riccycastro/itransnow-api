@@ -43,11 +43,15 @@ export class Section {
     @JoinColumn({ name: "application_id" })
     application: Application;
 
-    @ManyToMany(type => TranslationKey, translationKey => translationKey.sections)
-    @JoinTable({name: 'section_translation_key', inverseJoinColumn: {name: 'translation_key_id'}, joinColumn: {name: 'section_id'}})
-    translationKeys: TranslationKey[];
-
     @Exclude()
     @RelationId((section: Section) => section.application)
     applicationId: number;
+
+    @ManyToMany(type => TranslationKey, translationKey => translationKey.sections)
+    @JoinTable({name: 'section_translation_key', inverseJoinColumn: {name: 'translation_key_id'}, joinColumn: {name: 'section_id'}})
+    translationKeys: TranslationKey[];
+    //
+    // @Exclude()
+    // @RelationId((section: Section) => section.translationKeys)
+    // translationKeysId: number[]
 }

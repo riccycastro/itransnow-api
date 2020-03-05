@@ -1,4 +1,11 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable, InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractEntityService } from './AbstractEntityService';
 import { Section } from '../Entities/section.entity';
 import { SectionRepository } from '../Repositories/section.repository';
@@ -7,19 +14,28 @@ import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
+import { AddTranslationKeyToSectionDto } from '../Dto/translation-key.dto';
+import { TranslationKeyService } from './translation-key.service';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class SectionService extends AbstractEntityService<Section> {
 
   private readonly applicationService: ApplicationService;
+  private readonly translationKeyService: TranslationKeyService;
+  private readonly connection: Connection;
 
   constructor(
     sectionRepository: SectionRepository,
     @Inject(forwardRef(() => ApplicationService))
-    applicationService: ApplicationService
+      applicationService: ApplicationService,
+    translationKeyService: TranslationKeyService,
+    connection: Connection,
   ) {
     super(sectionRepository);
     this.applicationService = applicationService;
+    this.translationKeyService = translationKeyService;
+    this.connection = connection;
   }
 
   async findByAlias(companyId: number, alias: string, query?: any): Promise<Section> {
@@ -74,6 +90,39 @@ export class SectionService extends AbstractEntityService<Section> {
     section.name = sectionDto.name;
     section.alias = sectionDto.alias ?? section.alias;
     return await this.save(section);
+  }
+
+  async addTranslationKey(companyId: number, section: Section, addTranslationKeyToSectionDto: AddTranslationKeyToSectionDto): Promise<Section> {
+    const translationKeys = this.translationKeyService.indexBy(
+      'id',
+      await this.translationKeyService.getByTranslationKeys(companyId, addTranslationKeyToSectionDto.translationKeys),
+    );
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+
+    const addTranslationKeysTask = [];
+
+    try {
+      for (const index of Object.keys(translationKeys)) {
+        addTranslationKeysTask.push((this.repository as SectionRepository).insertTranslationKey(section, translationKeys[index], queryRunner.manager));
+      }
+      await Promise.all(addTranslationKeysTask);
+
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      return section;
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+
+      if (e.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException(`'${translationKeys[e.parameters[1]].alias}' is already assigned to ${section.alias}`);
+      }
+
+      throw new InternalServerErrorException();
+    }
   }
 
   protected async getIncludes(companyId: number, section: Section, query: any): Promise<Section> {

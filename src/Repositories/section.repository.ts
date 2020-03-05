@@ -1,6 +1,7 @@
-import { EntityRepository } from 'typeorm';
+import { EntityManager, EntityRepository } from 'typeorm';
 import { Section } from '../Entities/section.entity';
 import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
+import { TranslationKey } from '../Entities/translation-key.entity';
 
 @EntityRepository(Section)
 export class SectionRepository extends AbstractRepository<Section> {
@@ -36,5 +37,12 @@ export class SectionRepository extends AbstractRepository<Section> {
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('section.alias LIKE :alias', { alias: alias })
       .getOne();
+  }
+
+  async insertTranslationKey(section: Section, translationKey: TranslationKey, entityManager: EntityManager) {
+    await entityManager.createQueryBuilder(entityManager.queryRunner)
+      .relation(Section, 'translationKeys')
+      .of(section)
+      .add(translationKey);
   }
 }

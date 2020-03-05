@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Request,
   UseGuards,
   UseInterceptors,
@@ -14,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { SectionService } from '../Services/section.service';
 import { Section } from '../Entities/section.entity';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
+import { AddTranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -53,12 +55,21 @@ export class SectionController {
   }
 
   @Patch(':alias/active')
-  async activeSectionAction(@Request() req, @Body() activeSectionDto: ActiveSectionDto, @Param(':alias') alias: string): Promise<Section> {
+  async activeSectionAction(@Request() req, @Body() activeSectionDto: ActiveSectionDto, @Param('alias') alias: string): Promise<Section> {
     return await this.sectionService.save(
       await this.sectionService.active(
         await this.sectionService.findByAlias(req.user.companyId, alias),
         activeSectionDto,
       ),
+    );
+  }
+
+  @Post(':alias/translation-keys')
+  async addTranslationKeyToSectionAction(@Request() req, @Body() addTranslationKeyToSectionDto: AddTranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
+    await this.sectionService.addTranslationKey(
+      req.user.companyId,
+      await this.sectionService.findByAlias(req.user.companyId, alias),
+      addTranslationKeyToSectionDto,
     );
   }
 }
