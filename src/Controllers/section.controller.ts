@@ -10,10 +10,10 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {SectionService} from '../Services/section.service';
-import {Section} from '../Entities/section.entity';
-import {SectionDto} from '../Dto/section.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { SectionService } from '../Services/section.service';
+import { Section } from '../Entities/section.entity';
+import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -49,6 +49,16 @@ export class SectionController {
     return await this.sectionService.update(
       await this.sectionService.findByAlias(req.user.companyId, alias),
       sectionDto,
+    );
+  }
+
+  @Patch(':alias/active')
+  async activeSectionAction(@Request() req, @Body() activeSectionDto: ActiveSectionDto, @Param(':alias') alias: string): Promise<Section> {
+    return await this.sectionService.save(
+      await this.sectionService.active(
+        await this.sectionService.findByAlias(req.user.companyId, alias),
+        activeSectionDto,
+      ),
     );
   }
 }

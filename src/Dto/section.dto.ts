@@ -12,3 +12,8 @@ export class SectionDto {
   @IsNotEmpty()
   alias: string;
 }
+
+export class ActiveSectionDto {
+  @IsDefined({groups: ['patch']})
+  isActive: boolean;
+}

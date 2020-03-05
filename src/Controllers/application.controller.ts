@@ -11,16 +11,16 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {ApplicationService} from '../Services/application.service';
-import {ApplicationDto} from '../Dto/application.dto';
-import {AuthGuard} from '@nestjs/passport';
-import {SectionDto} from '../Dto/section.dto';
-import {Section} from '../Entities/section.entity';
-import {Application} from '../Entities/application.entity';
-import {AddLanguageToApplicationDto} from '../Dto/language.dto';
-import {WhiteLabelDto} from '../Dto/white-label.dto';
-import {WhiteLabel} from '../Entities/white-label.entity';
-import {TranslationDto} from '../Dto/translation.dto';
+import { ApplicationService } from '../Services/application.service';
+import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { SectionDto } from '../Dto/section.dto';
+import { Section } from '../Entities/section.entity';
+import { Application } from '../Entities/application.entity';
+import { AddLanguageToApplicationDto } from '../Dto/language.dto';
+import { WhiteLabelDto } from '../Dto/white-label.dto';
+import { WhiteLabel } from '../Entities/white-label.entity';
+import { TranslationDto } from '../Dto/translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -59,10 +59,20 @@ export class ApplicationController {
   }
 
   @Patch(':alias')
-  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string) {
+  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string): Promise<void> {
     await this.applicationService.update(
       await this.applicationService.findByAlias(req.user.companyId, alias),
       updateApplicationDto,
+    );
+  }
+
+  @Patch(':alias/active')
+  async activeApplicationAction(@Request() req, @Body() activeApplicationDto: ActiveApplicationDto, @Param(':alias') alias: string): Promise<Application> {
+    return await this.applicationService.save(
+      await this.applicationService.active(
+        await this.applicationService.findByAlias(req.user.companyId, alias),
+        activeApplicationDto,
+      ),
     );
   }
 

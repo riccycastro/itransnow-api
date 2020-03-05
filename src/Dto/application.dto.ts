@@ -12,3 +12,8 @@ export class ApplicationDto {
   @IsString()
   alias: string;
 }
+
+export class ActiveApplicationDto {
+  @IsDefined({groups: ['patch']})
+  isActive: boolean;
+}

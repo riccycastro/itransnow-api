@@ -9,7 +9,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { WhiteLabelRepository } from '../Repositories/white-label.repository';
-import { WhiteLabelDto } from '../Dto/white-label.dto';
+import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
 import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
@@ -91,6 +91,11 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
 
     delete(whiteLabel: WhiteLabel): WhiteLabel {
         whiteLabel.isDeleted = true;
+        return whiteLabel;
+    }
+
+    active(whiteLabel: WhiteLabel, whiteLabelDto: ActiveWhiteLabelDto): WhiteLabel {
+        whiteLabel.isActive = whiteLabelDto.isActive;
         return whiteLabel;
     }
 

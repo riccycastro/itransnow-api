@@ -2,7 +2,7 @@ import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException 
 import { AbstractEntityService } from './AbstractEntityService';
 import { Section } from '../Entities/section.entity';
 import { SectionRepository } from '../Repositories/section.repository';
-import { SectionDto } from '../Dto/section.dto';
+import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
@@ -62,6 +62,11 @@ export class SectionService extends AbstractEntityService<Section> {
 
   delete(section: Section): Section {
     section.isDeleted = true;
+    return section;
+  }
+
+  active(section: Section, activeSectionDto: ActiveSectionDto): Section {
+    section.isActive = activeSectionDto.isActive;
     return section;
   }
 

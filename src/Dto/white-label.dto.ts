@@ -12,3 +12,8 @@ export class WhiteLabelDto {
   @IsNotEmpty()
   alias: string;
 }
+
+export class ActiveWhiteLabelDto {
+  @IsDefined({groups: ['patch']})
+  isActive: boolean;
+}

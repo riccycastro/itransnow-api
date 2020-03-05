@@ -1,7 +1,7 @@
 import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AbstractEntityService } from './AbstractEntityService';
 import { ApplicationRepository } from '../Repositories/application.repository';
-import { ApplicationDto } from '../Dto/application.dto';
+import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { Company } from '../Entities/company.entity';
@@ -84,9 +84,15 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return applications;
   }
 
-  async delete(application: Application | null) {
+  async delete(application: Application) {
     application.isDeleted = true;
+    application.isActive = false;
     await this.save(application);
+  }
+
+  active(application: Application, activeApplicationDto: ActiveApplicationDto): Application {
+    application.isActive = activeApplicationDto.isActive;
+    return application;
   }
 
   async update(application: Application, updateApplicationDto: ApplicationDto): Promise<Application> {

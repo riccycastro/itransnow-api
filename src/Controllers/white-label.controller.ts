@@ -14,7 +14,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { WhiteLabelService } from '../Services/white-label.service';
 import { WhiteLabel } from '../Entities/white-label.entity';
-import { WhiteLabelDto } from '../Dto/white-label.dto';
+import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -62,6 +62,16 @@ export class WhiteLabelController {
       req.user,
       await this.whiteLabelService.findByAlias(req.user.companyId, alias),
       whiteLabelTranslationDto
+    );
+  }
+
+  @Patch(':alias/active')
+  async activeSectionAction(@Request() req, @Body() activeWhiteLabelDto: ActiveWhiteLabelDto, @Param(':alias') alias: string): Promise<WhiteLabel> {
+    return await this.whiteLabelService.save(
+      await this.whiteLabelService.active(
+        await this.whiteLabelService.findByAlias(req.user.companyId, alias),
+        activeWhiteLabelDto,
+      ),
     );
   }
 }
