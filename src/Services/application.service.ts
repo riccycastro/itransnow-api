@@ -117,6 +117,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
   }
 
   async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto): Promise<Application> {
+    //todo@rcastro - use same algorithm that was used to add translation keys to section in section.service.ts::addTranslationKeys
     const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
 
     if (!application.languages) {
@@ -133,6 +134,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
   }
 
   async removeLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
+    //todo@rcastro - use same algorithm that was used to remove translation keys to section in section.service.ts::removeTranslationKeys
     const languagesList = this.languageService.indexBy(
       'code',
       await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode),
