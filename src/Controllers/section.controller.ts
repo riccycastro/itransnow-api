@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { SectionService } from '../Services/section.service';
 import { Section } from '../Entities/section.entity';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
-import { AddTranslationKeyToSectionDto } from '../Dto/translation-key.dto';
+import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -65,11 +65,20 @@ export class SectionController {
   }
 
   @Post(':alias/translation-keys')
-  async addTranslationKeyToSectionAction(@Request() req, @Body() addTranslationKeyToSectionDto: AddTranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
-    await this.sectionService.addTranslationKey(
+  async addTranslationKeyToSectionAction(@Request() req, @Body() addTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
+    await this.sectionService.addTranslationKeys(
       req.user.companyId,
       await this.sectionService.findByAlias(req.user.companyId, alias),
       addTranslationKeyToSectionDto,
+    );
+  }
+
+  @Delete(':alias/translation-keys')
+  async removeTranslationKeyToSectionAction(@Request() req, @Body() removeTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
+    await this.sectionService.removeTranslationKeys(
+      req.user.companyId,
+      await this.sectionService.findByAlias(req.user.companyId, alias),
+      removeTranslationKeyToSectionDto,
     );
   }
 }

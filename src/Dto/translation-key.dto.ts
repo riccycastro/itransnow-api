@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class AddTranslationKeyToSectionDto {
+export class TranslationKeyToSectionDto {
   @IsNotEmpty()
   translationKeys: string[];
 }

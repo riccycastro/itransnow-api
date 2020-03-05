@@ -3,7 +3,8 @@ import {
   ConflictException,
   forwardRef,
   Inject,
-  Injectable, InternalServerErrorException,
+  Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { AbstractEntityService } from './AbstractEntityService';
@@ -14,7 +15,7 @@ import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
-import { AddTranslationKeyToSectionDto } from '../Dto/translation-key.dto';
+import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
 import { Connection } from 'typeorm';
 
@@ -92,7 +93,7 @@ export class SectionService extends AbstractEntityService<Section> {
     return await this.save(section);
   }
 
-  async addTranslationKey(companyId: number, section: Section, addTranslationKeyToSectionDto: AddTranslationKeyToSectionDto): Promise<Section> {
+  async addTranslationKeys(companyId: number, section: Section, addTranslationKeyToSectionDto: TranslationKeyToSectionDto): Promise<Section> {
     const translationKeys = this.translationKeyService.indexBy(
       'id',
       await this.translationKeyService.getByTranslationKeys(companyId, addTranslationKeyToSectionDto.translationKeys),
@@ -123,6 +124,23 @@ export class SectionService extends AbstractEntityService<Section> {
 
       throw new InternalServerErrorException();
     }
+  }
+
+  async removeTranslationKeys(companyId: number, section: Section, removeTranslationKeyToSectionDto: TranslationKeyToSectionDto): Promise<Section> {
+    const translationKeys = this.translationKeyService.indexBy(
+      'id',
+      await this.translationKeyService.getByTranslationKeys(companyId, removeTranslationKeyToSectionDto.translationKeys),
+    );
+
+    const removeTranslationKeysTask = [];
+
+    for (const index of Object.keys(translationKeys)) {
+      removeTranslationKeysTask.push((this.repository as SectionRepository).removeTranslationKey(section, translationKeys[index]));
+    }
+
+    await Promise.all(removeTranslationKeysTask);
+
+    return section;
   }
 
   protected async getIncludes(companyId: number, section: Section, query: any): Promise<Section> {
