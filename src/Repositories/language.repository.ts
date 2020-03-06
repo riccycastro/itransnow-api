@@ -1,10 +1,11 @@
-import {EntityRepository, In} from 'typeorm';
-import {Language} from '../Entities/language.entity';
-import {AbstractRepository, QueryPaginationInterface} from './abstract.repository';
+import { EntityRepository, In } from 'typeorm';
+import { Language } from '../Entities/language.entity';
+import { AbstractRepository } from './abstract.repository';
+import { StringIndexedByString } from '../Types/type';
 
 @EntityRepository(Language)
 export class LanguageRepository extends AbstractRepository<Language> {
-  async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Language[]> {
+  async findByApplication(companyId: number, applicationId: number, query: StringIndexedByString): Promise<Language[]> {
     const queryBuilder = this
         .createQueryBuilder('languages')
         .innerJoin('languages.applications', 'applications')

@@ -140,7 +140,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
       await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode),
     );
 
-    application.languages = await this.languageService.getByApplication(application.companyId, application.id, { limit: 10000 });
+    application.languages = await this.languageService.getByApplication(application.companyId, application.id, { limit: '10000' });
     application.languages = application.languages.filter(language => !Object.keys(languagesList).includes(language.code));
     return application;
   }

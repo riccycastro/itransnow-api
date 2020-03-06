@@ -1,7 +1,8 @@
 import {
     ClassSerializerInterceptor,
     Controller,
-    Get, Param,
+    Get,
+    Param,
     Query,
     Request,
     UseGuards,
@@ -10,6 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { TranslationService } from '../Services/translation.service';
 import { TranslationDto } from '../Dto/translation.dto';
+import { TranslationStrategyProvider } from '../Services/Provider/translation-strategy.provider';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -19,13 +21,15 @@ export class TranslationController {
     private readonly translationService: TranslationService;
 
     constructor(
-        translationService: TranslationService
+      translationService: TranslationService,
+      private readonly translationStrategyProvider: TranslationStrategyProvider,
     ) {
         this.translationService = translationService;
     }
 
     @Get(['translations', 'translations:extension'])
-    getTranslations(@Request() req, @Query() translationDto: TranslationDto, @Param('extension') extension: string) {
-        console.log(extension)
+    async getTranslations(@Request() req, @Query() translationDto: TranslationDto, @Param('extension') extension: string) {
+        const strategy = await this.translationStrategyProvider.getStrategy(req.user.companyId, translationDto);
+        return await strategy.get();
     }
 }

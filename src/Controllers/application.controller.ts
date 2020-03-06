@@ -36,7 +36,7 @@ export class ApplicationController {
 
   @Get(':alias')
   async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.findByAlias(req.user.company, alias, req.query);
+    return await this.applicationService.findByAlias(req.user.companyId, alias, req.query);
   }
 
   @Get()
