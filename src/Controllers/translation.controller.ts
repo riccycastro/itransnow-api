@@ -8,10 +8,10 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { TranslationService } from '../Services/translation.service';
-import { TranslationDto } from '../Dto/translation.dto';
-import { TranslationStrategyProvider } from '../Services/Provider/translation-strategy.provider';
+import {AuthGuard} from '@nestjs/passport';
+import {TranslationService} from '../Services/translation.service';
+import {TranslationDto} from '../Dto/translation.dto';
+import {TranslationChainResponsibilityProvider} from "../Services/TranslationChainResponsability/translation-chain-responsibility.provider";
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -21,15 +21,21 @@ export class TranslationController {
     private readonly translationService: TranslationService;
 
     constructor(
-      translationService: TranslationService,
-      private readonly translationStrategyProvider: TranslationStrategyProvider,
+        translationService: TranslationService,
+        private readonly translationChainResponsibilityProvider: TranslationChainResponsibilityProvider,
     ) {
         this.translationService = translationService;
     }
 
     @Get(['translations', 'translations:extension'])
     async getTranslations(@Request() req, @Query() translationDto: TranslationDto, @Param('extension') extension: string) {
-        const strategy = await this.translationStrategyProvider.getStrategy(req.user.companyId, translationDto);
-        return await strategy.get();
+
+        translationDto.extension = extension || translationDto.extension;
+
+        return await this.translationChainResponsibilityProvider.applyChain(
+            this.translationChainResponsibilityProvider.createDynamicChain(translationDto),
+            req.user.companyId,
+            translationDto
+        );
     }
 }

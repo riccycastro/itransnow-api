@@ -1,10 +1,12 @@
 import {IsDefined, IsNotEmpty, IsOptional, IsString} from "class-validator";
+import {Application} from "../Entities/application.entity";
+import {Language} from "../Entities/language.entity";
 
 export class TranslationDto {
     /**
      * language code
      */
-    @IsDefined({ groups: ['post', 'patch'] })
+    @IsDefined({groups: ['post', 'patch']})
     @IsString()
     @IsNotEmpty()
     language: string;
@@ -42,4 +44,19 @@ export class TranslationDto {
     @IsString()
     @IsNotEmpty()
     languageTeam: string;
+
+    @IsOptional({ groups: ['post', 'patch'] })
+    @IsString()
+    extension: string;
+
+    @IsOptional({ groups: ['post', 'patch'] })
+    @IsString()
+    indexType: string;
+}
+
+export class TranslationNodeDto {
+    application: Application;
+    language: Language;
+    translationKeys: string[];
+    sections: string[];
 }

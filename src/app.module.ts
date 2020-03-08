@@ -33,7 +33,7 @@ import {WhiteLabelRepository} from './Repositories/white-label.repository';
 import {WhiteLabelService} from './Services/white-label.service';
 import {WhiteLabelController} from './Controllers/white-label.controller';
 import {ExtensionValidatorMiddleware} from "./Middleware/extension-validator.middleware";
-import { TranslationStrategyProvider } from './Services/Provider/translation-strategy.provider';
+import {TranslationChainResponsibilityProvider} from "./Services/TranslationChainResponsability/translation-chain-responsibility.provider";
 
 @Module({
   imports: [
@@ -48,7 +48,7 @@ import { TranslationStrategyProvider } from './Services/Provider/translation-str
   controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController, WhiteLabelController],
   providers: [
     UserService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
-    BcryptProvider, TranslationStrategyProvider,
+    BcryptProvider, TranslationChainResponsibilityProvider,
     LocalStrategy, JwtStrategy,
   ],
 })
