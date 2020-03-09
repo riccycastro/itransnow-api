@@ -12,6 +12,14 @@ export class TranslationDto {
     language: string;
 
     /**
+     * application alias
+     */
+    @IsDefined({ groups: ['post', 'patch'] })
+    @IsString()
+    @IsNotEmpty()
+    application: string;
+
+    /**
      * translation key alias
      */
     @IsDefined({groups: ['post']})
@@ -21,6 +29,15 @@ export class TranslationDto {
     translationKey: string;
 
     /**
+     * translation key alias
+     */
+    @IsDefined({groups: ['post']})
+    @IsOptional({groups: ['patch']})
+    @IsString()
+    @IsNotEmpty()
+    section: string;
+
+    /**
      * translation text for given language
      */
     @IsDefined({ groups: ['post'] })
@@ -28,14 +45,6 @@ export class TranslationDto {
     @IsString()
     @IsNotEmpty()
     translation: string;
-
-    /**
-     * application alias
-     */
-    @IsDefined({ groups: ['post', 'patch'] })
-    @IsString()
-    @IsNotEmpty()
-    application: string;
 
     /**
      * language team alias

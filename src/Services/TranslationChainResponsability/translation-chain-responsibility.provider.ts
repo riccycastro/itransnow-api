@@ -1,11 +1,11 @@
-import {ApplicationService} from "../application.service";
-import {LanguageService} from "../language.service";
-import {TranslationService} from "../translation.service";
-import {TranslationDto, TranslationNodeDto} from "../../Dto/translation.dto";
-import {Injectable} from "@nestjs/common";
-import {GetInApplicationByLanguageNode} from "./Node/get-in-application-by-language.node";
-import {FlatIndexNode} from "./Node/flat-index.node";
-import {NestedIndexNode} from "./Node/nested-index.node";
+import { ApplicationService } from '../application.service';
+import { LanguageService } from '../language.service';
+import { TranslationService } from '../translation.service';
+import { TranslationDto, TranslationNodeDto } from '../../Dto/translation.dto';
+import { Injectable } from '@nestjs/common';
+import { GetInApplicationByLanguageNode } from './Node/get-in-application-by-language.node';
+import { FlatIndexNode } from './Node/flat-index.node';
+import { NestedIndexNode } from './Node/nested-index.node';
 
 @Injectable()
 export class TranslationChainResponsibilityProvider {
@@ -25,11 +25,7 @@ export class TranslationChainResponsibilityProvider {
     createDynamicChain(translationDto: TranslationDto): string[] {
         const sequence: string[] = [];
 
-        if (this.validateFields(['language', 'application', 'translationKey'], translationDto)) {
-            console.log("este")
-        } else {
-            sequence.push(TranslationChainResponsibilityProvider.NODE_GET_IN_APPLICATION_BY_LANGUAGE);
-        }
+        sequence.push(TranslationChainResponsibilityProvider.NODE_GET_IN_APPLICATION_BY_LANGUAGE);
 
         if (translationDto.indexType && this.indexValidOptions.includes(translationDto.indexType)) {
             sequence.push(`${translationDto.indexType}-index.node`)
@@ -45,6 +41,8 @@ export class TranslationChainResponsibilityProvider {
         const translationNodeDto = new TranslationNodeDto();
         translationNodeDto.application = await this.applicationService.findByAlias(companyId, translationDto.application);
         translationNodeDto.language = await this.languageService.getByCodeInApplication(translationNodeDto.application.id, translationDto.language);
+        translationNodeDto.translationKeys = translationDto.translationKey ? translationDto.translationKey.split(',') : undefined;
+        translationNodeDto.sections = translationDto.section ? translationDto.section.split(',') : undefined;
 
         let data: any = {};
 
@@ -64,23 +62,5 @@ export class TranslationChainResponsibilityProvider {
             case TranslationChainResponsibilityProvider.NODE_NESTED_INDEX:
                 return (new NestedIndexNode()).apply(data);
         }
-    }
-
-    private validateFields(fields: string[], translationDto: TranslationDto): boolean {
-        // deep clone without references
-        const obj = {...translationDto};
-        const objKeys = Object.keys(obj);
-
-        if (objKeys.length > fields.length) {
-            return false;
-        }
-
-        for (const field of fields) {
-            if (!objKeys.includes(field)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

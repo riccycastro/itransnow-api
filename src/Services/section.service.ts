@@ -153,6 +153,10 @@ export class SectionService extends AbstractEntityService<Section> {
       section.application = await this.applicationService.findById(section.applicationId);
     }
 
+    if (query.includes.includes('translationKeys')) {
+
+    }
+
     return section;
   }
 }

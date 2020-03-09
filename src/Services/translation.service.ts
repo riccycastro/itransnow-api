@@ -76,7 +76,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     }
 
-    async getTranslationInApplicationByLanguage(applicationId: number, languageId: number): Promise<Translation[]> {
-        return await (this.repository as TranslationRepository).findTranslationInApplicationByLanguage(applicationId, languageId);
+    async getTranslationInApplicationByLanguage(applicationId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
+        return await (this.repository as TranslationRepository).findTranslationInApplicationByLanguage(applicationId, languageId, translationKeys, sections);
     }
 }

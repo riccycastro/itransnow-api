@@ -1,11 +1,17 @@
-import {Translation} from "../../../Entities/translation.entity";
+import { Translation } from '../../../Entities/translation.entity';
 
 export class NestedIndexNode {
     apply(translations: Translation[]) {
         const result = {};
 
         for (const translation of translations) {
-            this.extend(result, translation.translationKey.alias, translation.translation)
+            if (translation.translationKey.sections) {
+                for (const section of translation.translationKey.sections) {
+                    this.extend(result, `${section.alias}. ${translation.translationKey.alias}`, translation.translation);
+                }
+            } else {
+                this.extend(result, translation.translationKey.alias, translation.translation);
+            }
         }
         return result;
     }
