@@ -7,7 +7,7 @@ export class NestedIndexNode {
         for (const translation of translations) {
             if (translation.translationKey.sections) {
                 for (const section of translation.translationKey.sections) {
-                    this.extend(result, `${section.alias}. ${translation.translationKey.alias}`, translation.translation);
+                    this.extend(result, `${section.alias}.${translation.translationKey.alias}`, translation.translation);
                 }
             } else {
                 this.extend(result, translation.translationKey.alias, translation.translation);
