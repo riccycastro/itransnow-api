@@ -5,12 +5,13 @@ export class ExtensionValidatorMiddleware implements NestMiddleware {
     use(req: any, res: any, next: () => void): any {
         const params = req.params[0];
 
-        const validExtensions = ['.yml', '.json'];
+        const validExtensions = ['.yaml', '.json'];
 
         if (params && !validExtensions.includes(params) ) {
             throw new NotFoundException(`Not a valid extension`);
         }
 
+        req.query.extension = params;
         next();
     }
 }

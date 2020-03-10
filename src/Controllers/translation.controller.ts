@@ -2,16 +2,17 @@ import {
     ClassSerializerInterceptor,
     Controller,
     Get,
-    Param,
     Query,
     Request,
+    Res,
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {TranslationService} from '../Services/translation.service';
-import {TranslationDto} from '../Dto/translation.dto';
-import {TranslationChainResponsibilityProvider} from "../Services/TranslationChainResponsability/translation-chain-responsibility.provider";
+import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { TranslationService } from '../Services/translation.service';
+import { TranslationDto } from '../Dto/translation.dto';
+import { TranslationChainResponsibilityProvider } from '../Services/TranslationChainResponsability/translation-chain-responsibility.provider';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -27,15 +28,38 @@ export class TranslationController {
         this.translationService = translationService;
     }
 
-    @Get(['translations', 'translations:extension'])
-    async getTranslations(@Request() req, @Query() translationDto: TranslationDto, @Param('extension') extension: string) {
+    @Get('translations')
+    async getTranslationsAction(@Request() req, @Query() translationDto: TranslationDto) {
+        return await this.getTranslationData(req.user.companyId, translationDto);
+    }
 
-        translationDto.extension = extension || translationDto.extension;
+    @Get('translations.json')
+    async getTranslationsJsonFile(@Request() req, @Query() translationDto: TranslationDto, @Res() res: Response) {
+        const data = await this.getTranslationData(req.user.companyId, translationDto);
 
+        res.setHeader('Content-disposition', 'attachment; filename=translation.json');
+        res.setHeader('Content-type', 'application/json');
+        res.write(JSON.stringify(data), (err) => {
+            res.end();
+        });
+    }
+
+    @Get('translations.yaml')
+    async getTranslationsYamlFile(@Request() req, @Query() translationDto: TranslationDto, @Res() res: Response) {
+        const data = await this.getTranslationData(req.user.companyId, translationDto);
+
+        res.setHeader('Content-disposition', 'attachment; filename=translation.yaml');
+        res.setHeader('Content-type', 'text/yaml');
+        res.write(data, (err) => {
+            res.end();
+        });
+    }
+
+    private async getTranslationData(companyId: number, translationDto: TranslationDto) {
         return await this.translationChainResponsibilityProvider.applyChain(
-            this.translationChainResponsibilityProvider.createDynamicChain(translationDto),
-            req.user.companyId,
-            translationDto
+          this.translationChainResponsibilityProvider.createDynamicChain(translationDto),
+          companyId,
+          translationDto,
         );
     }
 }

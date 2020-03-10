@@ -6,19 +6,22 @@ import { Injectable } from '@nestjs/common';
 import { GetInApplicationByLanguageNode } from './Node/get-in-application-by-language.node';
 import { FlatIndexNode } from './Node/flat-index.node';
 import { NestedIndexNode } from './Node/nested-index.node';
+import { ConvertToYamlNode } from './Node/convert-to-yaml.node';
 
 @Injectable()
 export class TranslationChainResponsibilityProvider {
     static readonly NODE_GET_IN_APPLICATION_BY_LANGUAGE = "get-in-application-by-language.node";
     static readonly NODE_FLAT_INDEX = "flat-index.node";
     static readonly NODE_NESTED_INDEX = "nested-index.node";
+    static readonly NODE_FILE_YAML = 'file.yaml.node';
 
     private indexValidOptions = ['flat', 'nested'];
+    private fileValidExtensions = ['.yaml'];
 
     constructor(
-        private readonly applicationService: ApplicationService,
-        private readonly languageService: LanguageService,
-        private readonly translationService: TranslationService,
+      private readonly applicationService: ApplicationService,
+      private readonly languageService: LanguageService,
+      private readonly translationService: TranslationService,
     ) {
     }
 
@@ -31,6 +34,10 @@ export class TranslationChainResponsibilityProvider {
             sequence.push(`${translationDto.indexType}-index.node`)
         } else {
             sequence.push(TranslationChainResponsibilityProvider.NODE_FLAT_INDEX);
+        }
+
+        if (this.fileValidExtensions.includes(translationDto.extension)) {
+            sequence.push(`file${translationDto.extension}.node`)
         }
 
         return sequence;
@@ -61,6 +68,8 @@ export class TranslationChainResponsibilityProvider {
                 return (new FlatIndexNode()).apply(data);
             case TranslationChainResponsibilityProvider.NODE_NESTED_INDEX:
                 return (new NestedIndexNode()).apply(data);
+            case TranslationChainResponsibilityProvider.NODE_FILE_YAML:
+                return (new ConvertToYamlNode()).apply(data);
         }
     }
 }
