@@ -2,6 +2,7 @@ import {
     ClassSerializerInterceptor,
     Controller,
     Get,
+    InternalServerErrorException,
     Query,
     Request,
     Res,
@@ -40,6 +41,9 @@ export class TranslationController {
         res.setHeader('Content-disposition', 'attachment; filename=translation.json');
         res.setHeader('Content-type', 'application/json');
         res.write(JSON.stringify(data), (err) => {
+            if (err) {
+                this.throwDownloadFileError();
+            }
             res.end();
         });
     }
@@ -51,6 +55,9 @@ export class TranslationController {
         res.setHeader('Content-disposition', 'attachment; filename=translation.yaml');
         res.setHeader('Content-type', 'text/yaml');
         res.write(data, (err) => {
+            if (err) {
+                this.throwDownloadFileError();
+            }
             res.end();
         });
     }
@@ -61,5 +68,9 @@ export class TranslationController {
           companyId,
           translationDto,
         );
+    }
+
+    private throwDownloadFileError() {
+        throw new InternalServerErrorException('Something when wrong while trying to download your translation file');
     }
 }
