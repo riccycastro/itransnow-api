@@ -1,6 +1,7 @@
 import {IsDefined, IsNotEmpty, IsOptional, IsString} from "class-validator";
 import {Application} from "../Entities/application.entity";
 import {Language} from "../Entities/language.entity";
+import { WhiteLabel } from '../Entities/white-label.entity';
 
 export class TranslationDto {
     /**
@@ -61,11 +62,16 @@ export class TranslationDto {
     @IsOptional({ groups: ['post', 'patch'] })
     @IsString()
     indexType: string;
+
+    @IsOptional({ groups: ['post', 'patch'] })
+    @IsString()
+    whiteLabel: string;
 }
 
 export class TranslationNodeDto {
     application: Application;
     language: Language;
+    whiteLabel: WhiteLabel;
     translationKeys: string[];
     sections: string[];
 }

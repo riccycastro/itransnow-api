@@ -13,7 +13,6 @@ import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { TranslationService } from '../Services/translation.service';
 import { TranslationDto } from '../Dto/translation.dto';
-import { TranslationChainResponsibilityProvider } from '../Services/TranslationChainResponsability/translation-chain-responsibility.provider';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('jwt'))
@@ -24,7 +23,6 @@ export class TranslationController {
 
     constructor(
         translationService: TranslationService,
-        private readonly translationChainResponsibilityProvider: TranslationChainResponsibilityProvider,
     ) {
         this.translationService = translationService;
     }
@@ -63,8 +61,7 @@ export class TranslationController {
     }
 
     private async getTranslationData(companyId: number, translationDto: TranslationDto) {
-        return await this.translationChainResponsibilityProvider.applyChain(
-          this.translationChainResponsibilityProvider.createDynamicChain(translationDto),
+        return await this.translationService.getTranslations(
           companyId,
           translationDto,
         );

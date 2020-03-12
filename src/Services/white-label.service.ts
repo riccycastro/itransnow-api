@@ -38,7 +38,8 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
         applicationService: ApplicationService,
       languageService: LanguageService,
       translationKeyService: TranslationKeyService,
-      translationService: TranslationService,
+      @Inject(forwardRef(() => TranslationService))
+        translationService: TranslationService,
       translationStatusService: TranslationStatusService,
       connection: Connection,
     ) {
@@ -129,7 +130,6 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
 
             return whiteLabelTranslation;
         } catch (e) {
-            console.log(e.message);
             await queryRunner.rollbackTransaction();
             await queryRunner.release();
             throw new InternalServerErrorException();

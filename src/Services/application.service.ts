@@ -31,6 +31,7 @@ export class ApplicationService extends AbstractEntityService<Application> {
           sectionService: SectionService,
     @Inject(forwardRef(() => WhiteLabelService))
       whiteLabelService: WhiteLabelService,
+    @Inject(forwardRef(() => TranslationService))
     translationService: TranslationService,
   ) {
     super(applicationRepository);
