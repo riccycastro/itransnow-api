@@ -33,9 +33,9 @@ export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('whiteLabels.isDeleted = \'0\'');
 
-    queryBuilder = this.queryName(queryBuilder, 'whiteLabels', query.search);
-    queryBuilder = this.queryAlias(queryBuilder, 'whiteLabels', query.search);
-    queryBuilder = this.queryActive(queryBuilder, 'whiteLabels', query.search);
+    queryBuilder = this.queryName(queryBuilder, 'whiteLabels', query);
+    queryBuilder = this.queryAlias(queryBuilder, 'whiteLabels', query);
+    queryBuilder = this.queryActive(queryBuilder, 'whiteLabels', query);
 
     return await this.setPagination(queryBuilder, query, 'whiteLabels').getMany();
   }

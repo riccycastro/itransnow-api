@@ -23,9 +23,9 @@ export class SectionRepository extends AbstractRepository<Section> {
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('sections.isDeleted = \'0\'');
 
-    queryBuilder = this.queryName(queryBuilder, 'sections', query.search);
-    queryBuilder = this.queryAlias(queryBuilder, 'sections', query.search);
-    queryBuilder = this.queryActive(queryBuilder, 'sections', query.search);
+    queryBuilder = this.queryName(queryBuilder, 'sections', query);
+    queryBuilder = this.queryAlias(queryBuilder, 'sections', query);
+    queryBuilder = this.queryActive(queryBuilder, 'sections', query);
 
     return await this.setPagination(queryBuilder, query, 'application').getMany();
   }

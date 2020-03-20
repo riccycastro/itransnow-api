@@ -17,6 +17,12 @@ import { User } from '../Entities/user.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { TranslationService } from './translation.service';
 
+export enum ApplicationIncludesEnum {
+  language = 'language',
+  sections = 'sections',
+  whiteLabels = 'white-labels',
+}
+
 @Injectable()
 export class ApplicationService extends AbstractEntityService<Application> {
   private readonly languageService: LanguageService;
@@ -28,11 +34,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
     applicationRepository: ApplicationRepository,
     languageService: LanguageService,
     @Inject(forwardRef(() => SectionService))
-          sectionService: SectionService,
+      sectionService: SectionService,
     @Inject(forwardRef(() => WhiteLabelService))
       whiteLabelService: WhiteLabelService,
     @Inject(forwardRef(() => TranslationService))
-    translationService: TranslationService,
+      translationService: TranslationService,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -41,34 +47,34 @@ export class ApplicationService extends AbstractEntityService<Application> {
     this.translationService = translationService;
   }
 
-  async create(createApplicationDto: ApplicationDto, company: Company): Promise<Application> {
+  async create(createApplicationDto: ApplicationDto, companyId: number): Promise<Application> {
     createApplicationDto.alias = removeDiacritics(createApplicationDto.alias.trim().toLowerCase().replace(/ /g, '_'));
 
-    if (await this.findByAlias(company.id, createApplicationDto.alias)) {
+    if (await this.findByAlias(companyId, createApplicationDto.alias)) {
       throw new ConflictException();
     }
 
     const applicationEntity = new Application();
     applicationEntity.name = createApplicationDto.name;
     applicationEntity.alias = createApplicationDto.alias;
-    applicationEntity.company = company;
+    applicationEntity.company = companyId as unknown as Company;
     return applicationEntity;
   }
 
-  async findByAlias(companyId: number, alias: string, query?: any): Promise<Application> {
-    const application = await this.repository.findOne({
+  async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Application> {
+    const application = await this.findByAlias(companyId, alias);
+
+    return await this.getIncludes(companyId, application, query);
+  }
+
+  private async findByAlias(companyId: number, alias: string): Promise<Application> {
+    return await this.repository.findOne({
       where: {
         alias: alias,
         company: companyId,
         isDeleted: false,
       },
     });
-
-    if (!application) {
-      throw new NotFoundException('Application not found!');
-    }
-
-    return await this.getIncludes(companyId, application, query);
   }
 
   async findById(id: number): Promise<Application> {
@@ -109,11 +115,11 @@ export class ApplicationService extends AbstractEntityService<Application> {
 
   async createWhiteLabel(application: Application, whiteLabelDto: WhiteLabelDto): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
-        await this.whiteLabelService.create(whiteLabelDto, application)
+      await this.whiteLabelService.create(whiteLabelDto, application),
     );
   }
 
-  async createTranslation(user: User, application:Application, translationDto: TranslationDto){
+  async createTranslation(user: User, application: Application, translationDto: TranslationDto) {
     return await this.translationService.persist(user, application, translationDto);
   }
 

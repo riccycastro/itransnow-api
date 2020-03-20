@@ -12,10 +12,9 @@ export class ApplicationRepository extends AbstractRepository<Application> {
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('applications.isDeleted = \'0\'');
 
-    if(query.name)
-    queryBuilder = this.queryName(queryBuilder, 'applications', query.search);
-    queryBuilder = this.queryAlias(queryBuilder, 'applications', query.search);
-    queryBuilder = this.queryActive(queryBuilder, 'applications', query.search);
+    queryBuilder = this.queryName(queryBuilder, 'applications', query);
+    queryBuilder = this.queryAlias(queryBuilder, 'applications', query);
+    queryBuilder = this.queryActive(queryBuilder, 'applications', query);
 
     return await this.setPagination(queryBuilder, query, 'applications').getMany();
   }

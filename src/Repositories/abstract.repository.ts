@@ -7,8 +7,11 @@ export interface QueryPaginationInterface {
 
 export type OrderDirection = 'ASC' | 'DESC';
 
+export enum OrderDirectionEnum {ASC = 'ASC', DESC = 'DESC'}
+
 export class AbstractRepository<Entity> extends Repository<Entity> {
   private isQueryInitialized = false;
+
   private initQuery(query: StringIndexedByString) {
     if (!this.isQueryInitialized) {
       query.offset = query.offset ?? '0';
@@ -46,16 +49,16 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
 
   protected queryName(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
     if (search.name) {
-      queryBuilder
-        .andWhere(`${tableName}.name LIKE :name`, { name: '%' + search.name + '%' });
+      const names = search.name.split(',');
+      queryBuilder = this.substringStatement(queryBuilder, tableName, 'name', names);
     }
     return queryBuilder;
   }
 
   protected queryAlias(queryBuilder, tableName: string, search: any): SelectQueryBuilder<Entity> {
     if (search.alias) {
-      queryBuilder
-        .andWhere(`${tableName}.alias LIKE :alias`, { alias: '%' + search.alias + '%' });
+      const alias = search.alias.split(',');
+      queryBuilder = this.substringStatement(queryBuilder, tableName, 'alias', alias);
     }
     return queryBuilder;
   }
@@ -66,5 +69,17 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
         .andWhere(`${tableName}.isActive = :active`, { active: search.active });
     }
     return queryBuilder;
+  }
+
+  private substringStatement(queryBuilder, tableName: string, columnName: string, values: string[]): SelectQueryBuilder<Entity> {
+
+    const parameters = {};
+    const clauses = [];
+    values.forEach((value, index) => {
+
+      parameters [columnName + '_' + index] = '%' + value + '%';
+      clauses.push(`${tableName}.${columnName} LIKE :${columnName}_${index}`);
+    });
+    return queryBuilder.andWhere('(' + clauses.join(' OR ') + ')', parameters);
   }
 }

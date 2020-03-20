@@ -143,7 +143,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     private async getTranslationNodeDto(companyId: number, translationDto: TranslationDto): Promise<TranslationNodeDto> {
         const translationNodeDto = new TranslationNodeDto();
-        translationNodeDto.application = await this.applicationService.findByAlias(companyId, translationDto.application);
+        translationNodeDto.application = await this.applicationService.findByAliasOrFail(companyId, translationDto.application);
         translationNodeDto.language = await this.languageService.getByCodeInApplication(translationNodeDto.application.id, translationDto.language);
         translationNodeDto.translationKeys = translationDto.translationKey ? translationDto.translationKey.split(',') : undefined;
         translationNodeDto.sections = translationDto.section ? translationDto.section.split(',') : undefined;
