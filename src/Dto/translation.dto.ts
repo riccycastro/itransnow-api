@@ -2,12 +2,14 @@ import {IsDefined, IsNotEmpty, IsOptional, IsString} from "class-validator";
 import {Application} from "../Entities/application.entity";
 import {Language} from "../Entities/language.entity";
 import { WhiteLabel } from '../Entities/white-label.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TranslationDto {
     /**
      * language code
      */
-    @IsDefined({groups: ['post', 'patch']})
+    @ApiProperty()
+    @IsDefined({ groups: ['post', 'patch'] })
     @IsString()
     @IsNotEmpty()
     language: string;
@@ -15,6 +17,7 @@ export class TranslationDto {
     /**
      * application alias
      */
+    @ApiProperty()
     @IsDefined({ groups: ['post', 'patch'] })
     @IsString()
     @IsNotEmpty()
@@ -23,7 +26,8 @@ export class TranslationDto {
     /**
      * translation key alias
      */
-    @IsDefined({groups: ['post']})
+    @ApiProperty()
+    @IsDefined({ groups: ['post'] })
     @IsOptional({groups: ['patch']})
     @IsString()
     @IsNotEmpty()
@@ -32,7 +36,8 @@ export class TranslationDto {
     /**
      * translation key alias
      */
-    @IsDefined({groups: ['post']})
+    @ApiProperty()
+    @IsDefined({ groups: ['post'] })
     @IsOptional({groups: ['patch']})
     @IsString()
     @IsNotEmpty()
@@ -41,8 +46,9 @@ export class TranslationDto {
     /**
      * translation text for given language
      */
+    @ApiProperty()
     @IsDefined({ groups: ['post'] })
-    @IsOptional({groups: ['patch']})
+    @IsOptional({groups: ['patch', 'get']})
     @IsString()
     @IsNotEmpty()
     translation: string;
@@ -50,6 +56,7 @@ export class TranslationDto {
     /**
      * language team alias
      */
+    @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })
     @IsString()
     @IsNotEmpty()
@@ -59,10 +66,12 @@ export class TranslationDto {
     @IsString()
     extension: string;
 
+    @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })
     @IsString()
     indexType: string;
 
+    @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })
     @IsString()
     whiteLabel: string;

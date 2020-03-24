@@ -12,12 +12,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { SectionService } from '../Services/section.service';
+import { SectionIncludesEnum, SectionService } from '../Services/section.service';
 import { Section } from '../Entities/section.entity';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('sections')
 export class SectionController {
@@ -32,6 +35,13 @@ export class SectionController {
     return await this.sectionService.findByAlias(req.user.companyId, alias, req.query);
   }
 
+  @ApiQuery({ name: 'offset', required: false, type: 'number' })
+  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @ApiQuery({ name: 'orderField', required: false, type: 'string' })
+  @ApiQuery({ name: 'name', required: false, type: 'string' })
+  @ApiQuery({ name: 'alias', required: false, type: 'string' })
+  @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
+  @ApiQuery({ name: 'includes', required: false, isArray: true, enum: SectionIncludesEnum })
   @Get()
   async getSectionsAction(@Request() req): Promise<Section[]> {
     return await this.sectionService.findInList(req.user.companyId, req.query);

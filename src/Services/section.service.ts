@@ -19,6 +19,11 @@ import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
 import { Connection } from 'typeorm';
 
+export enum SectionIncludesEnum {
+  application = 'application',
+  translationKeys = 'translationKeys',
+}
+
 @Injectable()
 export class SectionService extends AbstractEntityService<Section> {
 

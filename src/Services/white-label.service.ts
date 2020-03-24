@@ -23,6 +23,10 @@ import { TranslationService } from './translation.service';
 import { TranslationStatusService } from './translation-status.service';
 import { Connection } from 'typeorm';
 
+export enum WhiteLabelIncludesEnum {
+    application = 'application',
+}
+
 @Injectable()
 export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
     private readonly applicationService: ApplicationService;

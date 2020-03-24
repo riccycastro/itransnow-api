@@ -13,8 +13,10 @@ import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { TranslationService } from '../Services/translation.service';
 import { TranslationDto } from '../Dto/translation.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller()
 export class TranslationController {

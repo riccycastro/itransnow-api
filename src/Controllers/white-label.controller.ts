@@ -12,12 +12,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { WhiteLabelService } from '../Services/white-label.service';
+import { WhiteLabelIncludesEnum, WhiteLabelService } from '../Services/white-label.service';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('white-labels')
 export class WhiteLabelController {
@@ -32,6 +35,13 @@ export class WhiteLabelController {
     return await this.whiteLabelService.findByAlias(req.user.companyId, alias, req.query);
   }
 
+  @ApiQuery({ name: 'offset', required: false, type: 'number' })
+  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @ApiQuery({ name: 'orderField', required: false, type: 'string' })
+  @ApiQuery({ name: 'name', required: false, type: 'string' })
+  @ApiQuery({ name: 'alias', required: false, type: 'string' })
+  @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
+  @ApiQuery({ name: 'includes', required: false, isArray: true, enum: WhiteLabelIncludesEnum })
   @Get()
   async getWhiteLabelsAction(@Request() req): Promise<WhiteLabel[]> {
     return await this.whiteLabelService.findInList(req.user.companyId, req.query);
