@@ -23,6 +23,7 @@ import { WhiteLabel } from '../Entities/white-label.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
+import { ListResult } from '../Types/type';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -66,7 +67,7 @@ export class ApplicationController {
       },
     },
   })
-  async getApplicationsAction(@Request() req): Promise<Application[]> {
+  async getApplicationsAction(@Request() req): Promise<ListResult<Application>> {
     return await this.applicationService.findInList(req.user.companyId, req.query);
   }
 

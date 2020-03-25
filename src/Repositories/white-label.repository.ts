@@ -26,7 +26,7 @@ export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
     return await this.setPagination(queryBuilder, query, 'whiteLabels').getMany();
   }
 
-  async findInList(companyId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
+  async findInList(companyId: number, query: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
     let queryBuilder = this.createQueryBuilder('whiteLabels')
       .innerJoin('whiteLabels.application', 'application')
       .innerJoin('application.company', 'company')
@@ -37,6 +37,6 @@ export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
     queryBuilder = this.queryAlias(queryBuilder, 'whiteLabels', query);
     queryBuilder = this.queryActive(queryBuilder, 'whiteLabels', query);
 
-    return await this.setPagination(queryBuilder, query, 'whiteLabels').getMany();
+    return await this.setPagination(queryBuilder, query, 'whiteLabels').getManyAndCount();
   }
 }

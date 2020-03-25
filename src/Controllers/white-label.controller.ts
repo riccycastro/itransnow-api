@@ -18,6 +18,7 @@ import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
+import { ListResult } from '../Types/type';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -43,7 +44,7 @@ export class WhiteLabelController {
   @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
   @ApiQuery({ name: 'includes', required: false, isArray: true, enum: WhiteLabelIncludesEnum })
   @Get()
-  async getWhiteLabelsAction(@Request() req): Promise<WhiteLabel[]> {
+  async getWhiteLabelsAction(@Request() req): Promise<ListResult<WhiteLabel>> {
     return await this.whiteLabelService.findInList(req.user.companyId, req.query);
   }
 

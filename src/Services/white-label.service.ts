@@ -1,4 +1,3 @@
-import { AbstractEntityService } from './AbstractEntityService';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import {
     BadRequestException,
@@ -22,13 +21,14 @@ import { WhiteLabelTranslation } from '../Entities/white-label-translation.entit
 import { TranslationService } from './translation.service';
 import { TranslationStatusService } from './translation-status.service';
 import { Connection } from 'typeorm';
+import { AbstractEntityListingService } from './AbstractEntityListingService';
 
 export enum WhiteLabelIncludesEnum {
     application = 'application',
 }
 
 @Injectable()
-export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
+export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> {
     private readonly applicationService: ApplicationService;
     private readonly languageService: LanguageService;
     private readonly translationKeyService: TranslationKeyService;
@@ -70,14 +70,14 @@ export class WhiteLabelService extends AbstractEntityService<WhiteLabel> {
         return await (this.repository as WhiteLabelRepository).findByApplication(companyId, applicationId, query);
     }
 
-    async findInList(companyId: number, query?: QueryPaginationInterface): Promise<WhiteLabel[]> {
-        const whiteLabels = await (this.repository as WhiteLabelRepository).findInList(companyId, query);
+    protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
+        const listResult = await (this.repository as WhiteLabelRepository).findInList(companyId, query);
 
-        for (const whiteLabelsKey in whiteLabels) {
-            whiteLabels[whiteLabelsKey] = await this.getIncludes(companyId, whiteLabels[whiteLabelsKey], query);
+        for (let whiteLabel of listResult[0]) {
+            whiteLabel = await this.getIncludes(companyId, whiteLabel, query);
         }
 
-        return whiteLabels;
+        return listResult;
     }
 
     async create(whiteLabelDto: WhiteLabelDto, application: Application): Promise<WhiteLabel> {

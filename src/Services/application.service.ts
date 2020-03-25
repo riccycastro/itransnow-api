@@ -1,5 +1,4 @@
-import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AbstractEntityService } from './AbstractEntityService';
+import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
@@ -16,6 +15,8 @@ import { WhiteLabel } from '../Entities/white-label.entity';
 import { User } from '../Entities/user.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { TranslationService } from './translation.service';
+import { QueryPaginationInterface } from '../Repositories/abstract.repository';
+import { AbstractEntityListingService } from './AbstractEntityListingService';
 
 export enum ApplicationIncludesEnum {
   language = 'language',
@@ -24,7 +25,7 @@ export enum ApplicationIncludesEnum {
 }
 
 @Injectable()
-export class ApplicationService extends AbstractEntityService<Application> {
+export class ApplicationService extends AbstractEntityListingService<Application> {
   private readonly languageService: LanguageService;
   private readonly sectionService: SectionService;
   private readonly whiteLabelService: WhiteLabelService;
@@ -81,14 +82,14 @@ export class ApplicationService extends AbstractEntityService<Application> {
     return this.repository.findOne(id);
   }
 
-  async findInList(companyId: number, query?: any): Promise<Application[]> {
-    const applications = await (this.repository as ApplicationRepository).findInList(companyId, query);
+  protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[Application[], number]> {
+    const listResult = await (this.repository as ApplicationRepository).findInList(companyId, query);
 
+    const applications = listResult[0];
     for (const key in applications) {
       applications[key] = await this.getIncludes(companyId, applications[key], query);
     }
-
-    return applications;
+    return listResult;
   }
 
   async delete(application: Application) {

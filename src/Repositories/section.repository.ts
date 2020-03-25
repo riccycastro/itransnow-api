@@ -16,7 +16,7 @@ export class SectionRepository extends AbstractRepository<Section> {
     return await this.setPagination(queryBuilder, query, 'application').getMany();
   }
 
-  async findInList(companyId: number, query: QueryPaginationInterface): Promise<Section[]> {
+  async findInList(companyId: number, query: QueryPaginationInterface): Promise<[Section[], number]> {
     let queryBuilder = this.createQueryBuilder('sections')
       .innerJoin('sections.application', 'application')
       .innerJoin('application.company', 'company')
@@ -27,7 +27,7 @@ export class SectionRepository extends AbstractRepository<Section> {
     queryBuilder = this.queryAlias(queryBuilder, 'sections', query);
     queryBuilder = this.queryActive(queryBuilder, 'sections', query);
 
-    return await this.setPagination(queryBuilder, query, 'application').getMany();
+    return await this.setPagination(queryBuilder, query, 'application').getManyAndCount();
   }
 
   async findByAlias(companyId: number, alias: string): Promise<Section> {

@@ -18,6 +18,7 @@ import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
+import { ListResult } from '../Types/type';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -43,7 +44,7 @@ export class SectionController {
   @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
   @ApiQuery({ name: 'includes', required: false, isArray: true, enum: SectionIncludesEnum })
   @Get()
-  async getSectionsAction(@Request() req): Promise<Section[]> {
+  async getSectionsAction(@Request() req): Promise<ListResult<Section>> {
     return await this.sectionService.findInList(req.user.companyId, req.query);
   }
 

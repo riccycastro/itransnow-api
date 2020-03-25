@@ -21,8 +21,4 @@ export class CompanyService extends AbstractEntityService<Company> {
   async findById(id: number): Promise<Company> {
     return await this.repository.findOne(id) as Company;
   }
-
-  protected getIncludes(companyId: number, entity: any, query: any): Promise<any> {
-    return undefined;
-  }
 }

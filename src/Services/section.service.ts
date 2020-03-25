@@ -7,7 +7,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { AbstractEntityService } from './AbstractEntityService';
 import { Section } from '../Entities/section.entity';
 import { SectionRepository } from '../Repositories/section.repository';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
@@ -18,6 +17,7 @@ import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
 import { Connection } from 'typeorm';
+import { AbstractEntityListingService } from './AbstractEntityListingService';
 
 export enum SectionIncludesEnum {
   application = 'application',
@@ -25,7 +25,7 @@ export enum SectionIncludesEnum {
 }
 
 @Injectable()
-export class SectionService extends AbstractEntityService<Section> {
+export class SectionService extends AbstractEntityListingService<Section> {
 
   private readonly applicationService: ApplicationService;
   private readonly translationKeyService: TranslationKeyService;
@@ -58,13 +58,14 @@ export class SectionService extends AbstractEntityService<Section> {
     return await (this.repository as SectionRepository).findByApplication(companyId, applicationId, query);
   }
 
-  async findInList(companyId: number, query?: QueryPaginationInterface): Promise<Section[]> {
-    const sections = await (this.repository as SectionRepository).findInList(companyId, query);
+  protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[Section[], number]>{
+    const listResult = await (this.repository as SectionRepository).findInList(companyId, query);
 
-    for (const sectionsKey in sections) {
-      sections[sectionsKey] = await this.getIncludes(companyId, sections[sectionsKey], query);
+    for (let section of listResult[0]) {
+      section = await this.getIncludes(companyId, section, query);
     }
-    return sections;
+
+    return listResult;
   }
 
   async create(sectionDto: SectionDto, application: Application): Promise<Section> {
