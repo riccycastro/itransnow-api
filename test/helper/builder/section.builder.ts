@@ -16,3 +16,5 @@ export const buildSectionWithApplication = (sectionIndex: number, applicationInd
   section.application = buildApplication(applicationIndex);
   return section;
 };
+
+export const buildSectionWithId1 = () => buildSection(1);

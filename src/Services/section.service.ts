@@ -44,8 +44,8 @@ export class SectionService extends AbstractEntityListingService<Section> {
     this.connection = connection;
   }
 
-  async findByAlias(companyId: number, alias: string, query?: any): Promise<Section> {
-    const section = await (this.repository as SectionRepository).findByAlias(companyId, alias);
+  async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Section> {
+    const section = await this.findByAlias(companyId, alias);
 
     if (!section) {
       throw new NotFoundException('Section not found!');
@@ -54,11 +54,15 @@ export class SectionService extends AbstractEntityListingService<Section> {
     return await this.getIncludes(companyId, section, query);
   }
 
+  private async findByAlias(companyId: number, alias: string): Promise<Section> {
+    return await (this.repository as SectionRepository).findByAlias(companyId, alias);
+  }
+
   async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Section[]> {
     return await (this.repository as SectionRepository).findByApplication(companyId, applicationId, query);
   }
 
-  protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[Section[], number]>{
+  protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[Section[], number]> {
     const listResult = await (this.repository as SectionRepository).findInList(companyId, query);
 
     for (let section of listResult[0]) {

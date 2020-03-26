@@ -71,7 +71,7 @@ describe('ApplicationController', () => {
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should return a new application.entity', async () => {
+    it('should return a new application', async () => {
       jest.clearAllMocks();
       const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
         return buildApplicationWithId1();
@@ -83,7 +83,7 @@ describe('ApplicationController', () => {
   });
 
   describe('getApplicationsAction', () => {
-    it('should return a list of application.entity with count', async () => {
+    it('should return a list of application with count', async () => {
       const expectedResponse = {
         data: [1, 2, 3, 4, 5].map(index => {
           return buildApplication(index);
@@ -99,7 +99,7 @@ describe('ApplicationController', () => {
       expect(findInListSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should return an empty list of application.entity with count equal 0', async () => {
+    it('should return an empty list of application with count equal 0', async () => {
       const expectedResponse = { data: [], count: 0 };
 
       const findInListSpy = jest.spyOn(applicationService, 'findInList').mockImplementation(async () => {
@@ -145,7 +145,7 @@ describe('ApplicationController', () => {
   });
 
   describe('deleteApplicationAction', () => {
-    it('should throw not found exception', async () => {
+    it('should call all necessary methods to delete application', async () => {
       const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });

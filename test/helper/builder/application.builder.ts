@@ -10,6 +10,4 @@ export const buildApplication = (index: number): Application => {
   return application;
 };
 
-export const buildApplicationWithId1 = (): Application => {
-  return buildApplication(1);
-};
+export const buildApplicationWithId1 = (): Application => buildApplication(1);

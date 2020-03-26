@@ -25,15 +25,13 @@ import { ListResult } from '../Types/type';
 @UseGuards(AuthGuard('jwt'))
 @Controller('sections')
 export class SectionController {
-  private readonly sectionService: SectionService;
 
-  constructor(sectionService: SectionService) {
-    this.sectionService = sectionService;
+  constructor(private readonly sectionService: SectionService) {
   }
 
   @Get(':alias')
   async getSectionAction(@Request() req, @Param('alias') alias: string): Promise<Section> {
-    return await this.sectionService.findByAlias(req.user.companyId, alias, req.query);
+    return await this.sectionService.findByAliasOrFail(req.user.companyId, alias, req.query);
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -52,7 +50,7 @@ export class SectionController {
   async deleteSectionAction(@Request() req, @Param('alias') alias: string): Promise<void> {
     await this.sectionService.save(
       this.sectionService.delete(
-        await this.sectionService.findByAlias(req.user.companyId, alias),
+        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
       ),
     );
   }
@@ -60,7 +58,7 @@ export class SectionController {
   @Patch(':alias')
   async updateSectionAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
     return await this.sectionService.update(
-      await this.sectionService.findByAlias(req.user.companyId, alias),
+      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
       sectionDto,
     );
   }
@@ -69,7 +67,7 @@ export class SectionController {
   async activeSectionAction(@Request() req, @Body() activeSectionDto: ActiveSectionDto, @Param('alias') alias: string): Promise<Section> {
     return await this.sectionService.save(
       await this.sectionService.active(
-        await this.sectionService.findByAlias(req.user.companyId, alias),
+        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
         activeSectionDto,
       ),
     );
@@ -79,7 +77,7 @@ export class SectionController {
   async addTranslationKeyToSectionAction(@Request() req, @Body() addTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
     await this.sectionService.addTranslationKeys(
       req.user.companyId,
-      await this.sectionService.findByAlias(req.user.companyId, alias),
+      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
       addTranslationKeyToSectionDto,
     );
   }
@@ -88,7 +86,7 @@ export class SectionController {
   async removeTranslationKeyToSectionAction(@Request() req, @Body() removeTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
     await this.sectionService.removeTranslationKeys(
       req.user.companyId,
-      await this.sectionService.findByAlias(req.user.companyId, alias),
+      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
       removeTranslationKeyToSectionDto,
     );
   }
