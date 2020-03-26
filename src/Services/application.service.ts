@@ -1,4 +1,4 @@
-import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
@@ -8,7 +8,7 @@ import { LanguageService } from './language.service';
 import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
 import { SectionService } from './section.service';
-import { AddLanguageToApplicationDto } from '../Dto/language.dto';
+import { LanguageToApplicationDto } from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabelService } from './white-label.service';
 import { WhiteLabel } from '../Entities/white-label.entity';
@@ -17,6 +17,7 @@ import { TranslationDto } from '../Dto/translation.dto';
 import { TranslationService } from './translation.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { Translation } from '../Entities/translation.entity';
 
 export enum ApplicationIncludesEnum {
   language = 'language',
@@ -64,6 +65,10 @@ export class ApplicationService extends AbstractEntityListingService<Application
 
   async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Application> {
     const application = await this.findByAlias(companyId, alias);
+
+    if (!application) {
+      throw new NotFoundException('Application not found!');
+    }
 
     return await this.getIncludes(companyId, application, query);
   }
@@ -120,11 +125,11 @@ export class ApplicationService extends AbstractEntityListingService<Application
     );
   }
 
-  async createTranslation(user: User, application: Application, translationDto: TranslationDto) {
+  async createTranslation(user: User, application: Application, translationDto: TranslationDto): Promise<Translation> {
     return await this.translationService.persist(user, application, translationDto);
   }
 
-  async addLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto): Promise<Application> {
+  async addLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto): Promise<Application> {
     //todo@rcastro - use same algorithm that was used to add translation keys to section in section.service.ts::addTranslationKeys
     const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
 
@@ -141,7 +146,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return application;
   }
 
-  async removeLanguages(application: Application, addLanguageToApplicationDto: AddLanguageToApplicationDto) {
+  async removeLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto) {
     //todo@rcastro - use same algorithm that was used to remove translation keys to section in section.service.ts::removeTranslationKeys
     const languagesList = this.languageService.indexBy(
       'code',

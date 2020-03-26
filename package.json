@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config test/e2e/jest-e2e.json",
+    "test:unit": "jest test/unit",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm",
     "migration:create": "npm run typeorm -- migration:create -n Version",
     "migration:run": "npm run typeorm -- migration:run",
@@ -77,7 +78,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "test",
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

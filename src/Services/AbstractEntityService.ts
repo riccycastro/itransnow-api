@@ -1,4 +1,4 @@
-import {EntityManager, Repository} from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 export abstract class AbstractEntityService<Entity> {
   protected readonly repository: Repository<Entity>;
@@ -7,7 +7,7 @@ export abstract class AbstractEntityService<Entity> {
     this.repository = repository;
   }
 
-  async save<Entity>(entity: Entity, entityManager: EntityManager = null): Promise<Entity> {
+  async save(entity: Entity, entityManager: EntityManager = null): Promise<Entity> {
     if (entityManager) {
       return await entityManager.save(entity);
     }

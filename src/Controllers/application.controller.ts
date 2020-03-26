@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
 import { Application } from '../Entities/application.entity';
-import { AddLanguageToApplicationDto } from '../Dto/language.dto';
+import { LanguageToApplicationDto } from '../Dto/language.dto';
 import { WhiteLabelDto } from '../Dto/white-label.dto';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { TranslationDto } from '../Dto/translation.dto';
@@ -88,8 +88,8 @@ export class ApplicationController {
 
   @ApiParam({ required: true, name: 'alias', type: 'string' })
   @Patch(':alias')
-  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string): Promise<void> {
-    await this.applicationService.update(
+  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string): Promise<Application> {
+    return await this.applicationService.update(
       await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
       updateApplicationDto,
     );
@@ -98,7 +98,7 @@ export class ApplicationController {
   @Patch(':alias/active')
   async activeApplicationAction(@Request() req, @Body() activeApplicationDto: ActiveApplicationDto, @Param(':alias') alias: string): Promise<Application> {
     return await this.applicationService.save(
-      await this.applicationService.active(
+      this.applicationService.active(
         await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
         activeApplicationDto,
       ),
@@ -119,7 +119,7 @@ export class ApplicationController {
   }
 
   @Post(':alias/languages')
-  async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
+  async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string): Promise<Application> {
     return await this.applicationService.save(
       await this.applicationService.addLanguages(
         await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
@@ -129,11 +129,11 @@ export class ApplicationController {
   }
 
   @Delete(':alias/languages')
-  async removeLanguageFromApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: AddLanguageToApplicationDto, @Param('alias') alias: string) {
+  async removeLanguageFromApplicationAction(@Request() req, @Body() removeLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string) {
     return await this.applicationService.save(
       await this.applicationService.removeLanguages(
         await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
-        addLanguageToApplicationDto,
+        removeLanguageToApplicationDto,
       ),
     );
   }
