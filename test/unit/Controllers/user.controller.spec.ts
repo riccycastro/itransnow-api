@@ -21,9 +21,11 @@ describe('UserController', () => {
   });
 
   describe('profileAction', () => {
-    const expectedResult = buildUserWithId1();
-    req.user = expectedResult;
+    it('should return a user', () => {
+      const expectedResult = buildUserWithId1();
+      req.user = expectedResult;
 
-    expect(userController.profileAction(req)).toEqual(expectedResult);
+      expect(userController.profileAction(req)).toEqual(expectedResult);
+    });
   });
 });
