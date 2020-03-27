@@ -11,6 +11,7 @@ import { WhiteLabelDto } from '../../../src/Dto/white-label.dto';
 import { buildWhiteLabelWithApplication } from '../../helper/builder/white-label.builder';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
 import { buildTranslation } from '../../helper/builder/translation.builder';
+import { createRequest } from 'node-mocks-http';
 
 describe('ApplicationController', () => {
   let app: TestingModule;
@@ -49,12 +50,12 @@ describe('ApplicationController', () => {
     applicationController = app.get<ApplicationController>(ApplicationController);
     applicationService = app.get<ApplicationService>(ApplicationService);
 
-    req = {
+    req = createRequest({
       user: {
         companyId: '',
       },
       query: {},
-    };
+    });
   });
 
   afterEach(() => {

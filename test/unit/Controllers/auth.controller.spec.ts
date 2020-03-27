@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../../src/Controllers/auth.controller';
 import { buildUserWithId1 } from '../../helper/builder/user.build';
 import { AuthService } from '../../../src/Services/auth.service';
+import { createRequest } from 'node-mocks-http';
 
 describe('AuthController', () => {
   let app: TestingModule;
@@ -35,10 +36,10 @@ describe('AuthController', () => {
 
     authController = app.get<AuthController>(AuthController);
     authService = app.get<AuthService>(AuthService);
-    req = {
+    req = createRequest({
       user: {},
       query: {},
-    };
+    });
   });
 
   afterEach(() => {

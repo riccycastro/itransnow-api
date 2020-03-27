@@ -6,6 +6,7 @@ import { buildWhitelabel, buildWhiteLabelWithId1 } from '../../helper/builder/wh
 import { ActiveWhiteLabelDto, WhiteLabelDto } from '../../../src/Dto/white-label.dto';
 import { WhiteLabelTranslationDto } from '../../../src/Dto/white-label-translation.dto';
 import { WhiteLabelTranslation } from '../../../src/Entities/white-label-translation.entity';
+import { createRequest } from 'node-mocks-http';
 
 describe('WhiteLabelController', () => {
   let app: TestingModule;
@@ -52,12 +53,12 @@ describe('WhiteLabelController', () => {
     whiteLabelController = app.get<WhiteLabelController>(WhiteLabelController);
     whiteLabelService = app.get<WhiteLabelService>(WhiteLabelService);
 
-    req = {
+    req = createRequest({
       user: {
         companyId: '',
       },
       query: {},
-    };
+    });
   });
 
   afterEach(() => {

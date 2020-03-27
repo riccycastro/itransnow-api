@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { buildSection, buildSectionWithId1 } from '../../helper/builder/section.builder';
 import { ActiveSectionDto, SectionDto } from '../../../src/Dto/section.dto';
 import { TranslationKeyToSectionDto } from '../../../src/Dto/translation-key.dto';
+import { createRequest } from 'node-mocks-http';
 
 describe('SectionController', () => {
   let app: TestingModule;
@@ -39,12 +40,12 @@ describe('SectionController', () => {
     sectionController = app.get<SectionController>(SectionController);
     sectionService = app.get<SectionService>(SectionService);
 
-    req = {
+    req = createRequest({
       user: {
         companyId: '',
       },
       query: {},
-    };
+    });
   });
 
   afterEach(() => {

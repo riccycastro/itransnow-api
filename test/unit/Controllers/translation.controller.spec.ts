@@ -3,6 +3,7 @@ import { TranslationService } from '../../../src/Services/translation.service';
 import { TranslationController } from '../../../src/Controllers/translation.controller';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
 import { InternalServerErrorException } from '@nestjs/common';
+import { createRequest } from 'node-mocks-http';
 
 describe('TranslationController', () => {
   let app: TestingModule;
@@ -50,12 +51,12 @@ describe('TranslationController', () => {
     translationController = app.get<TranslationController>(TranslationController);
     translationService = app.get<TranslationService>(TranslationService);
 
-    req = {
+    req = createRequest({
       user: {
         companyId: '',
       },
       query: {},
-    };
+    });
   });
 
   beforeEach(() => {

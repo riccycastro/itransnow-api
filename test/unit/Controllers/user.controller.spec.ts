@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../../../src/Controllers/user.controller';
 import { buildUserWithId1 } from '../../helper/builder/user.build';
+import { createRequest } from 'node-mocks-http';
 
 describe('UserController', () => {
   let app: TestingModule;
@@ -14,10 +15,10 @@ describe('UserController', () => {
 
     userController = app.get<UserController>(UserController);
 
-    req = {
+    req = createRequest({
       user: {},
       query: {},
-    };
+    });
   });
 
   describe('profileAction', () => {
