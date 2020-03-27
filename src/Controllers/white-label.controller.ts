@@ -33,7 +33,7 @@ export class WhiteLabelController {
 
   @Get(':alias')
   async getWhiteLabelAction(@Request() req, @Param('alias') alias: string): Promise<WhiteLabel> {
-    return await this.whiteLabelService.findByAlias(req.user.companyId, alias, req.query);
+    return await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias, req.query);
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -52,7 +52,7 @@ export class WhiteLabelController {
   async deleteWhiteLabelAction(@Request() req, @Param('alias') alias: string): Promise<void> {
     await this.whiteLabelService.save(
       this.whiteLabelService.delete(
-        await this.whiteLabelService.findByAlias(req.user.companyId, alias),
+        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
       ),
     );
   }
@@ -61,18 +61,18 @@ export class WhiteLabelController {
   async updateWhiteLabelAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       this.whiteLabelService.update(
-        await this.whiteLabelService.findByAlias(req.user.companyId, alias),
+        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
         whiteLabelDto,
       ),
     );
   }
 
   @Post(':alias/translations')
-  async addTranslationToWhiteLabel(@Request() req, @Body() whiteLabelTranslationDto: WhiteLabelTranslationDto, @Param('alias') alias: string) {
+  async addTranslationToWhiteLabel(@Request() req, @Body() whiteLabelTranslationDto: WhiteLabelTranslationDto, @Param('alias') alias: string): Promise<void> {
     await this.whiteLabelService.createWhiteLabelTranslation(
       req.user,
-      await this.whiteLabelService.findByAlias(req.user.companyId, alias),
-      whiteLabelTranslationDto
+      await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
+      whiteLabelTranslationDto,
     );
   }
 
@@ -80,7 +80,7 @@ export class WhiteLabelController {
   async activeSectionAction(@Request() req, @Body() activeWhiteLabelDto: ActiveWhiteLabelDto, @Param(':alias') alias: string): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       await this.whiteLabelService.active(
-        await this.whiteLabelService.findByAlias(req.user.companyId, alias),
+        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
         activeWhiteLabelDto,
       ),
     );

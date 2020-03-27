@@ -147,7 +147,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
         translationNodeDto.language = await this.languageService.getByCodeInApplication(translationNodeDto.application.id, translationDto.language);
         translationNodeDto.translationKeys = translationDto.translationKey ? translationDto.translationKey.split(',') : undefined;
         translationNodeDto.sections = translationDto.section ? translationDto.section.split(',') : undefined;
-        translationNodeDto.whiteLabel = translationDto.whiteLabel ? await this.whiteLabelService.findByAlias(companyId, translationDto.whiteLabel) : undefined;
+        translationNodeDto.whiteLabel = translationDto.whiteLabel ? await this.whiteLabelService.findByAliasOrFail(companyId, translationDto.whiteLabel) : undefined;
         return translationNodeDto;
     }
 

@@ -16,3 +16,5 @@ export const buildWhiteLabelWithApplication = (whiteLabelIndex: number, applicat
   whiteLabel.application = buildApplication(applicationIndex);
   return whiteLabel;
 };
+
+export const buildWhiteLabelWithId1 = () => buildWhitelabel(1);

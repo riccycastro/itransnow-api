@@ -56,14 +56,18 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         this.connection = connection;
     }
 
-    async findByAlias(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
-        const whiteLabel = await (this.repository as WhiteLabelRepository).findByAlias(companyId, alias);
+    async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
+        const whiteLabel = await this.findByAlias(companyId, alias);
 
         if (!whiteLabel) {
             throw new NotFoundException('WhiteLabel not found!');
         }
 
         return await this.getIncludes(companyId, whiteLabel, query);
+    }
+
+    private async findByAlias(companyId: number, alias: string): Promise<WhiteLabel> {
+        return await (this.repository as WhiteLabelRepository).findByAlias(companyId, alias);
     }
 
     async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
@@ -110,7 +114,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         return whiteLabel;
     }
 
-    async createWhiteLabelTranslation(user: User, whiteLabel: WhiteLabel, whiteLabelTranslationDto: WhiteLabelTranslationDto) {
+    async createWhiteLabelTranslation(user: User, whiteLabel: WhiteLabel, whiteLabelTranslationDto: WhiteLabelTranslationDto): Promise<WhiteLabelTranslation> {
         const language = await this.languageService.getByCodeInApplication(whiteLabel.applicationId, whiteLabelTranslationDto.language);
         const translationStatus = await this.translationStatusService.getByStatus(TranslationStatusService.APPROVAL_PENDING);
         const translationKey = await this.translationKeyService.getByTranslationKeyInApplication(user.companyId, whiteLabel.applicationId, whiteLabelTranslationDto.translationKey);
