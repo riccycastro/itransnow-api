@@ -11,7 +11,5 @@ export class TableListMiddleware implements NestMiddleware {
     req.query.includes = req.query.includes ? req.query.includes.split(',') : [];
 
     next();
-
-    // todo@rcastro - when returning a list/pagination response, add total count
   }
 }
