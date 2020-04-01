@@ -41,7 +41,7 @@ export class ApplicationController {
   @ApiParam({ required: true, name: 'alias', type: 'string' })
   @Get(':alias')
   async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.findByAliasOrFail(req.user.companyId, alias, req.query);
+    return await this.applicationService.getByAliasOrFail(req.user.companyId, alias, req.query);
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -82,7 +82,7 @@ export class ApplicationController {
   @Delete(':alias')
   async deleteApplicationAction(@Request() req, @Param('alias') alias) {
     await this.applicationService.delete(
-      await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
     );
   }
 
@@ -90,7 +90,7 @@ export class ApplicationController {
   @Patch(':alias')
   async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string): Promise<Application> {
     return await this.applicationService.update(
-      await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       updateApplicationDto,
     );
   }
@@ -99,7 +99,7 @@ export class ApplicationController {
   async activeApplicationAction(@Request() req, @Body() activeApplicationDto: ActiveApplicationDto, @Param(':alias') alias: string): Promise<Application> {
     return await this.applicationService.save(
       this.applicationService.active(
-        await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
         activeApplicationDto,
       ),
     );
@@ -109,7 +109,7 @@ export class ApplicationController {
   @Post(':alias/sections')
   async addSectionToApplicationAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
     const section = await this.applicationService.createSection(
-      await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       sectionDto,
     );
 
@@ -122,7 +122,7 @@ export class ApplicationController {
   async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string): Promise<Application> {
     return await this.applicationService.save(
       await this.applicationService.addLanguages(
-        await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
         addLanguageToApplicationDto,
       ),
     );
@@ -132,7 +132,7 @@ export class ApplicationController {
   async removeLanguageFromApplicationAction(@Request() req, @Body() removeLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string) {
     return await this.applicationService.save(
       await this.applicationService.removeLanguages(
-        await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
         removeLanguageToApplicationDto,
       ),
     );
@@ -141,7 +141,7 @@ export class ApplicationController {
   @Post(':alias/white-labels')
   async addWhiteLabelToApplicationAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string): Promise<WhiteLabel> {
     const whiteLabel = await this.applicationService.createWhiteLabel(
-      await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       whiteLabelDto,
     );
 
@@ -154,7 +154,7 @@ export class ApplicationController {
   async addTranslationToApplicationAction(@Request() req, @Body() translationDto: TranslationDto, @Param('alias') alias: string) {
     await this.applicationService.createTranslation(
       req.user,
-      await this.applicationService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       translationDto,
     );
   }

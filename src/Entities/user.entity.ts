@@ -34,8 +34,8 @@ export class User {
     @Column({ name: 'is_active' })
     isActive: boolean;
 
-    @Column({ name: 'is_deleted' })
-    isDeleted: boolean;
+    @Column({name: 'deleted_at_unix'})
+    deletedAt: number;
 
     @Column({ name: 'is_visible' })
     isVisible: boolean;

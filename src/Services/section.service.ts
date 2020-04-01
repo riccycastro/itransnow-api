@@ -18,6 +18,7 @@ import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
 import { Connection } from 'typeorm';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { MomentProvider } from './Provider/moment.provider';
 
 export enum SectionIncludesEnum {
   application = 'application',
@@ -37,6 +38,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
       applicationService: ApplicationService,
     translationKeyService: TranslationKeyService,
     connection: Connection,
+    private readonly momentProvider: MomentProvider,
   ) {
     super(sectionRepository);
     this.applicationService = applicationService;
@@ -58,7 +60,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
     return await (this.repository as SectionRepository).findByAlias(companyId, alias);
   }
 
-  async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Section[]> {
+  async getByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<Section[]> {
     return await (this.repository as SectionRepository).findByApplication(companyId, applicationId, query);
   }
 
@@ -76,7 +78,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
     const sectionAlias = removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase();
 
-    if (await this.repository.findOne({ alias: sectionAlias, application: application })) {
+    if (await this.repository.findOne({ alias: sectionAlias, application: application, deletedAt: 0 })) {
       throw new BadRequestException(`Section with alias "${sectionDto.alias}" already exists in ${application.name} application`);
     }
 
@@ -88,7 +90,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
   }
 
   delete(section: Section): Section {
-    section.isDeleted = true;
+    section.deletedAt = this.momentProvider.utc().unix();
     return section;
   }
 
@@ -160,7 +162,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
     }
 
     if (query.includes.includes('application')) {
-      section.application = await this.applicationService.findById(section.applicationId);
+      section.application = await this.applicationService.getById(section.applicationId);
     }
 
     if (query.includes.includes('translationKeys')) {

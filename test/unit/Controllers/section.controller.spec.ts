@@ -34,6 +34,10 @@ describe('SectionController', () => {
           provide: 'Connection',
           useValue: {},
         },
+        {
+          provide: 'MomentProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

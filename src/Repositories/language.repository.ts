@@ -12,7 +12,7 @@ export class LanguageRepository extends AbstractRepository<Language> {
         .innerJoin('applications.company', 'company')
         .where('company.id = :companyId', {companyId: companyId})
         .andWhere('applications.id = :applicationId', {applicationId: applicationId})
-        .andWhere('languages.isDeleted = \'0\'');
+        .andWhere('languages.deletedAt = \'0\'');
     return await this.setPagination(queryBuilder, query, 'languages').getMany();
   }
 

@@ -34,8 +34,8 @@ export class Application {
     isActive: boolean;
 
     @Exclude()
-    @Column({name: 'is_deleted'})
-    isDeleted: boolean;
+    @Column({name: 'deleted_at_unix'})
+    deletedAt: number;
 
     @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP'})
     createdAt: string;
@@ -48,7 +48,7 @@ export class Application {
 
     @ManyToOne(type => Company, company => company.applications)
     @JoinColumn({ name : "company_id" })
-    company: Company;
+    company: Company | number;
 
     @Exclude()
     @RelationId((application: Application) => application.company)

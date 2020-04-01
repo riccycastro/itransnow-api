@@ -22,6 +22,7 @@ import { TranslationService } from './translation.service';
 import { TranslationStatusService } from './translation-status.service';
 import { Connection } from 'typeorm';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { MomentProvider } from './Provider/moment.provider';
 
 export enum WhiteLabelIncludesEnum {
     application = 'application',
@@ -46,6 +47,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         translationService: TranslationService,
       translationStatusService: TranslationStatusService,
       connection: Connection,
+      private readonly momentProvider: MomentProvider,
     ) {
         super(whiteLabelRepository);
         this.applicationService = applicationService;
@@ -70,7 +72,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         return await (this.repository as WhiteLabelRepository).findByAlias(companyId, alias);
     }
 
-    async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
+    async getByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
         return await (this.repository as WhiteLabelRepository).findByApplication(companyId, applicationId, query);
     }
 
@@ -87,7 +89,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
     async create(whiteLabelDto: WhiteLabelDto, application: Application): Promise<WhiteLabel> {
         const sectionAlias = removeDiacritics(whiteLabelDto.alias.trim().replace(/ /g, '_')).toLowerCase();
 
-        if (await this.repository.findOne({ alias: sectionAlias, application: application })) {
+        if (await this.repository.findOne({ alias: sectionAlias, application: application, deletedAt: 0 })) {
             throw new BadRequestException(`White label with alias "${whiteLabelDto.alias}" already exists in ${application.name} application`);
         }
 
@@ -99,7 +101,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
     }
 
     delete(whiteLabel: WhiteLabel): WhiteLabel {
-        whiteLabel.isDeleted = true;
+        whiteLabel.deletedAt = this.momentProvider.utc().unix();
         return whiteLabel;
     }
 
@@ -150,7 +152,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         }
 
         if (query.includes.includes('application')) {
-            whiteLabel.application = await this.applicationService.findById(whiteLabel.applicationId);
+            whiteLabel.application = await this.applicationService.getById(whiteLabel.applicationId);
         }
 
         return whiteLabel;

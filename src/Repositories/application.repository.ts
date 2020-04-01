@@ -18,7 +18,7 @@ export class ApplicationRepository extends AbstractRepository<Application> {
     let queryBuilder = this.createQueryBuilder('applications')
       .innerJoin('applications.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })
-      .andWhere('applications.isDeleted = \'0\'');
+      .andWhere('applications.deletedAt = \'0\'');
 
     queryBuilder = this.queryName(queryBuilder, 'applications', query);
     queryBuilder = this.queryAlias(queryBuilder, 'applications', query);

@@ -1,5 +1,6 @@
 import { WhiteLabel } from '../../../src/Entities/white-label.entity';
 import { buildApplication } from './application.builder';
+import { utc } from 'moment';
 
 export const buildWhitelabel = (index: number) => {
   const whiteLabel = new WhiteLabel();
@@ -7,7 +8,7 @@ export const buildWhitelabel = (index: number) => {
   whiteLabel.name = 'white_label_name_' + index;
   whiteLabel.alias = 'white_label_alias_' + index;
   whiteLabel.isActive = true;
-  whiteLabel.isDeleted = false;
+  whiteLabel.deletedAt = utc().unix();
   return whiteLabel;
 };
 

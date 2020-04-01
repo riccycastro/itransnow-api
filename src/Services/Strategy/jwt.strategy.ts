@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const user = await this.userService.findById(payload.sub);
 
-    if (user.isDeleted) {
+    if (user.deletedAt) {
       throw new NotFoundException();
     }
 

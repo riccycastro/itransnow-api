@@ -1,12 +1,14 @@
 import { Application } from '../../../src/Entities/application.entity';
+import { utc } from 'moment';
 
 export const buildApplication = (index: number): Application => {
   const application = new Application();
   application.id = 1;
-  application.alias = 'application_test_' + index;
-  application.name = 'Application Test_' + index;
+  application.alias = 'application_alias_' + index;
+  application.name = 'application name_' + index;
   application.isActive = true;
-  application.isDeleted = false;
+  application.deletedAt = utc().unix();
+  application.languages = [];
   return application;
 };
 

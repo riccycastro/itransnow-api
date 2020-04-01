@@ -12,7 +12,7 @@ export class SectionRepository extends AbstractRepository<Section> {
       .innerJoin('application.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })
       .andWhere('application.id = :applicationId', { applicationId: applicationId })
-      .andWhere('sections.isDeleted = \'0\'');
+      .andWhere('sections.deletedAt = \'0\'');
     return await this.setPagination(queryBuilder, query, 'application').getMany();
   }
 
@@ -21,7 +21,7 @@ export class SectionRepository extends AbstractRepository<Section> {
       .innerJoin('sections.application', 'application')
       .innerJoin('application.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })
-      .andWhere('sections.isDeleted = \'0\'');
+      .andWhere('sections.deletedAt = \'0\'');
 
     queryBuilder = this.queryName(queryBuilder, 'sections', query);
     queryBuilder = this.queryAlias(queryBuilder, 'sections', query);

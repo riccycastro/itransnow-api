@@ -3,7 +3,6 @@ import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
 import { remove as removeDiacritics } from 'diacritics';
-import { Company } from '../Entities/company.entity';
 import { LanguageService } from './language.service';
 import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
@@ -18,9 +17,10 @@ import { TranslationService } from './translation.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { Translation } from '../Entities/translation.entity';
+import { MomentProvider } from './Provider/moment.provider';
 
 export enum ApplicationIncludesEnum {
-  language = 'language',
+  language = 'languages',
   sections = 'sections',
   whiteLabels = 'white-labels',
 }
@@ -41,6 +41,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
       whiteLabelService: WhiteLabelService,
     @Inject(forwardRef(() => TranslationService))
       translationService: TranslationService,
+    private readonly momentProvider: MomentProvider
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -59,11 +60,11 @@ export class ApplicationService extends AbstractEntityListingService<Application
     const applicationEntity = new Application();
     applicationEntity.name = createApplicationDto.name;
     applicationEntity.alias = createApplicationDto.alias;
-    applicationEntity.company = companyId as unknown as Company;
+    applicationEntity.company = companyId;
     return applicationEntity;
   }
 
-  async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Application> {
+  async getByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Application> {
     const application = await this.findByAlias(companyId, alias);
 
     if (!application) {
@@ -78,12 +79,12 @@ export class ApplicationService extends AbstractEntityListingService<Application
       where: {
         alias: alias,
         company: companyId,
-        isDeleted: false,
+        deletedAt: 0,
       },
     });
   }
 
-  async findById(id: number): Promise<Application> {
+  async getById(id: number): Promise<Application> {
     return this.repository.findOne(id);
   }
 
@@ -97,10 +98,10 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return listResult;
   }
 
-  async delete(application: Application) {
-    application.isDeleted = true;
+  async delete(application: Application): Promise<Application> {
+    application.deletedAt = this.momentProvider.utc().unix();
     application.isActive = false;
-    await this.save(application);
+    return await this.save(application);
   }
 
   active(application: Application, activeApplicationDto: ActiveApplicationDto): Application {
@@ -164,16 +165,16 @@ export class ApplicationService extends AbstractEntityListingService<Application
       return application;
     }
 
-    if (query.includes.includes('language')) {
+    if (query.includes.includes('languages')) {
       application.languages = await this.languageService.getByApplication(companyId, application.id, {});
     }
 
     if (query.includes.includes('sections')) {
-      application.sections = await this.sectionService.findByApplication(companyId, application.id, {});
+      application.sections = await this.sectionService.getByApplication(companyId, application.id, {});
     }
 
     if (query.includes.includes('white-labels')) {
-      application.whiteLabels = await this.whiteLabelService.findByApplication(companyId, application.id, {});
+      application.whiteLabels = await this.whiteLabelService.getByApplication(companyId, application.id, {});
     }
 
     return application;

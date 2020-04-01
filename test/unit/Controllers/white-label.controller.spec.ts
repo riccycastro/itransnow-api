@@ -47,6 +47,10 @@ describe('WhiteLabelController', () => {
           provide: 'Connection',
           useValue: {},
         },
+        {
+          provide: 'MomentProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

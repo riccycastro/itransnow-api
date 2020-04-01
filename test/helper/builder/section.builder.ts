@@ -1,5 +1,6 @@
 import { Section } from '../../../src/Entities/section.entity';
 import { buildApplication } from './application.builder';
+import { utc } from 'moment';
 
 export const buildSection = (index: number) => {
   const section = new Section();
@@ -7,7 +8,7 @@ export const buildSection = (index: number) => {
   section.name = 'section_name_' + index;
   section.alias = 'section_alias_' + index;
   section.isActive = true;
-  section.isDeleted = false;
+  section.deletedAt = utc().unix();
   return section;
 };
 

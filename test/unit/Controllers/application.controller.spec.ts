@@ -12,6 +12,7 @@ import { buildWhiteLabelWithApplication } from '../../helper/builder/white-label
 import { TranslationDto } from '../../../src/Dto/translation.dto';
 import { buildTranslation } from '../../helper/builder/translation.builder';
 import { createRequest } from 'node-mocks-http';
+import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
 describe('ApplicationController', () => {
   let app: TestingModule;
@@ -24,6 +25,7 @@ describe('ApplicationController', () => {
       controllers: [ApplicationController],
       providers: [
         ApplicationService,
+        MomentProvider,
         {
           provide: 'ApplicationRepository',
           useValue: {},
@@ -64,7 +66,7 @@ describe('ApplicationController', () => {
 
   describe('getApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -74,7 +76,7 @@ describe('ApplicationController', () => {
 
     it('should return a new application', async () => {
       jest.clearAllMocks();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return buildApplicationWithId1();
       });
 
@@ -147,7 +149,7 @@ describe('ApplicationController', () => {
 
   describe('deleteApplicationAction', () => {
     it('should call all necessary methods to delete application', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -157,7 +159,7 @@ describe('ApplicationController', () => {
 
     it('should save delete operation', async () => {
       const expectedResult = buildApplicationWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return expectedResult;
       });
 
@@ -171,7 +173,7 @@ describe('ApplicationController', () => {
 
   describe('updateApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -181,7 +183,7 @@ describe('ApplicationController', () => {
 
     it('should return application if success', async () => {
       const expectedResult = buildApplicationWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return expectedResult;
       });
 
@@ -197,7 +199,7 @@ describe('ApplicationController', () => {
 
   describe('activeApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -207,7 +209,7 @@ describe('ApplicationController', () => {
 
     it('should return activated application', async () => {
       const expectedResult = buildApplicationWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return expectedResult;
       });
 
@@ -228,7 +230,7 @@ describe('ApplicationController', () => {
 
   describe('addSectionToApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -239,7 +241,7 @@ describe('ApplicationController', () => {
     it('should return created section', async () => {
       const section = buildSectionWithApplication(1, 1);
 
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return section.application;
       });
 
@@ -257,7 +259,7 @@ describe('ApplicationController', () => {
 
   describe('addLanguageToApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -267,7 +269,7 @@ describe('ApplicationController', () => {
 
     it('should return application', async () => {
       const expectedResult = buildApplicationWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return expectedResult;
       });
 
@@ -288,7 +290,7 @@ describe('ApplicationController', () => {
 
   describe('removeLanguageFromApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -298,7 +300,7 @@ describe('ApplicationController', () => {
 
     it('should return application', async () => {
       const expectedResult = buildApplicationWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return expectedResult;
       });
 
@@ -319,7 +321,7 @@ describe('ApplicationController', () => {
 
   describe('addWhiteLabelToApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -330,7 +332,7 @@ describe('ApplicationController', () => {
     it('should return a white label', async () => {
       const whiteLabel = buildWhiteLabelWithApplication(1, 1);
 
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return whiteLabel.application;
       });
 
@@ -348,7 +350,7 @@ describe('ApplicationController', () => {
 
   describe('addTranslationToApplicationAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         throw new NotFoundException();
       });
 
@@ -357,7 +359,7 @@ describe('ApplicationController', () => {
     });
 
     it('should call createTranslation method', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'findByAliasOrFail').mockImplementation(async () => {
+      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
         return buildApplicationWithId1();
       });
 

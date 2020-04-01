@@ -25,8 +25,8 @@ export class TranslationKey {
     @Column({name: 'is_active'})
     isActive: boolean;
 
-    @Column({name: 'is_deleted'})
-    isDeleted: boolean;
+    @Column({name: 'deleted_at_unix'})
+    deletedAt: number;
 
     @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP' })
     createdAt: string;

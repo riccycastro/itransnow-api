@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../../src/Controllers/auth.controller';
-import { buildUserWithId1 } from '../../helper/builder/user.build';
+import { buildUserWithId1 } from '../../helper/builder/user.builder';
 import { AuthService } from '../../../src/Services/auth.service';
 import { createRequest } from 'node-mocks-http';
 
