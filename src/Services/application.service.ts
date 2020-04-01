@@ -1,4 +1,11 @@
-import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
@@ -18,6 +25,7 @@ import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { Translation } from '../Entities/translation.entity';
 import { MomentProvider } from './Provider/moment.provider';
+import { Connection } from 'typeorm';
 
 export enum ApplicationIncludesEnum {
   language = 'languages',
@@ -41,7 +49,8 @@ export class ApplicationService extends AbstractEntityListingService<Application
       whiteLabelService: WhiteLabelService,
     @Inject(forwardRef(() => TranslationService))
       translationService: TranslationService,
-    private readonly momentProvider: MomentProvider
+    private readonly momentProvider: MomentProvider,
+    private readonly connection: Connection,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -111,7 +120,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
 
   async update(application: Application, updateApplicationDto: ApplicationDto): Promise<Application> {
     application.name = updateApplicationDto.name;
-    return await this.repository.save(application);
+    return await this.save(application);
   }
 
   async createSection(application: Application, sectionDto: SectionDto): Promise<Section> {
@@ -131,17 +140,31 @@ export class ApplicationService extends AbstractEntityListingService<Application
   }
 
   async addLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto): Promise<Application> {
-    //todo@rcastro - use same algorithm that was used to add translation keys to section in section.service.ts::addTranslationKeys
-    const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
+    const languagesList = this.languageService.indexBy('id', await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode));
 
-    if (!application.languages) {
-      application.languages = await this.languageService.getByApplication(application.companyId, application.id, {});
-    }
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
 
-    for (const language of languagesList) {
-      if (!application.languagesId.includes(language.id)) {
-        application.languages.push(language);
+    const addLanguagesTask = [];
+
+    try {
+      for (const index of Object.keys(languagesList)) {
+        addLanguagesTask.push((this.repository as ApplicationRepository).assignLanguage(application, languagesList[index], queryRunner.manager));
       }
+
+      await Promise.all(addLanguagesTask);
+
+      await queryRunner.commitTransaction();
+      application.languages = Object.keys(languagesList).map(index => languagesList[index]);
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      if (e.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException(`'${languagesList[e.parameters[1]].code}' is already assigned to ${application.alias}`);
+      }
+
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
     }
 
     return application;
