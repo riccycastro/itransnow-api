@@ -8,3 +8,5 @@ export const buildTranslation = (index: number) => {
   translation.deletedAt = utc().unix();
   return translation;
 };
+
+export const buildTranslationWithId1 = () => buildTranslation(1);

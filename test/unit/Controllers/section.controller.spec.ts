@@ -31,7 +31,7 @@ describe('SectionController', () => {
           useValue: {},
         },
         {
-          provide: 'Connection',
+          provide: 'QueryRunnerProvider',
           useValue: {},
         },
         {

@@ -18,6 +18,7 @@ import { FlatIndexNode } from './TranslationChainResponsability/Node/flat-index.
 import { ApplicationService } from './application.service';
 import { WhiteLabelService } from './white-label.service';
 import * as deepmerge from 'deepmerge';
+import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 @Injectable()
 export class TranslationService extends AbstractEntityService<Translation> {
@@ -28,7 +29,6 @@ export class TranslationService extends AbstractEntityService<Translation> {
     private readonly languageService: LanguageService;
     private readonly translationKeyService: TranslationKeyService;
     private readonly translationStatusService: TranslationStatusService;
-    private readonly connection: Connection;
 
     constructor(
       @Inject(forwardRef(() => ApplicationService))
@@ -39,13 +39,12 @@ export class TranslationService extends AbstractEntityService<Translation> {
       languageService: LanguageService,
       translationKeyService: TranslationKeyService,
       translationStatusService: TranslationStatusService,
-      connection: Connection,
+      private readonly queryRunnerProvider: QueryRunnerProvider,
     ) {
         super(translationRepository);
         this.languageService = languageService;
         this.translationKeyService = translationKeyService;
         this.translationStatusService = translationStatusService;
-        this.connection = connection;
     }
 
     create(language: Language, user: User, translationStatus: TranslationStatus, translation: string, translationKey?: TranslationKey): Translation {
@@ -70,7 +69,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
         let translation = this.create(language, user, translationStatus, translationDto.translation, translationKey);
 
-        const queryRunner = this.connection.createQueryRunner();
+        const queryRunner = this.queryRunnerProvider.createQueryRunner();
         await queryRunner.startTransaction();
 
         try {

@@ -6,24 +6,23 @@ import { BcryptProvider } from './Provider/bcrypt.provider';
 import { CompanyService } from './company.service';
 import { Connection } from 'typeorm';
 import { AbstractEntityService } from './AbstractEntityService';
+import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 @Injectable()
 export class UserService extends AbstractEntityService<User> {
 
   private readonly bcryptProvider: BcryptProvider;
   private readonly companyService: CompanyService;
-  private readonly connection: Connection;
 
   constructor(
     userRepository: UserRepository,
     bcryptProvider: BcryptProvider,
     companyService: CompanyService,
-    connection: Connection,
+    private readonly queryRunnerProvider: QueryRunnerProvider,
   ) {
     super(userRepository);
     this.bcryptProvider = bcryptProvider;
     this.companyService = companyService;
-    this.connection = connection;
   }
 
   async findByCredentials(username: string): Promise<User | undefined> {
@@ -45,7 +44,7 @@ export class UserService extends AbstractEntityService<User> {
       return;
     }
 
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.queryRunnerProvider.createQueryRunner();
     await queryRunner.startTransaction();
 
     try {

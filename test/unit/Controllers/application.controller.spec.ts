@@ -46,6 +46,10 @@ describe('ApplicationController', () => {
           provide: 'TranslationService',
           useValue: {},
         },
+        {
+          provide: 'QueryRunnerProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

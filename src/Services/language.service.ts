@@ -23,7 +23,7 @@ export class LanguageService extends AbstractEntityService<Language> {
   }
 
   async getByCodes(codes: string[]): Promise<Language[]> {
-    return await (this.repository as LanguageRepository).find({where: {code: In(codes), isActive: true, isDeleted: false}});
+    return await (this.repository as LanguageRepository).find({where: {code: In(codes), isActive: true, deletedAt: 0}});
   }
 
   async getByCodeInApplication(applicationId: number, code: string): Promise<Language> {

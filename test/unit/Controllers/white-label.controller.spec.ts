@@ -44,7 +44,7 @@ describe('WhiteLabelController', () => {
           useValue: {},
         },
         {
-          provide: 'Connection',
+          provide: 'QueryRunnerProvider',
           useValue: {},
         },
         {

@@ -23,6 +23,7 @@ import { TranslationStatusService } from './translation-status.service';
 import { Connection } from 'typeorm';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { MomentProvider } from './Provider/moment.provider';
+import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 export enum WhiteLabelIncludesEnum {
     application = 'application',
@@ -35,7 +36,6 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
     private readonly translationKeyService: TranslationKeyService;
     private readonly translationService: TranslationService;
     private readonly translationStatusService: TranslationStatusService;
-    private readonly connection: Connection;
 
     constructor(
       whiteLabelRepository: WhiteLabelRepository,
@@ -46,7 +46,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
       @Inject(forwardRef(() => TranslationService))
         translationService: TranslationService,
       translationStatusService: TranslationStatusService,
-      connection: Connection,
+      private readonly queryRunnerProvider: QueryRunnerProvider,
       private readonly momentProvider: MomentProvider,
     ) {
         super(whiteLabelRepository);
@@ -55,7 +55,6 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         this.translationKeyService = translationKeyService;
         this.translationService = translationService;
         this.translationStatusService = translationStatusService;
-        this.connection = connection;
     }
 
     async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
@@ -123,7 +122,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
 
         const translation = this.translationService.create(language, user, translationStatus, whiteLabelTranslationDto.translation);
 
-        const queryRunner = this.connection.createQueryRunner();
+        const queryRunner = this.queryRunnerProvider.createQueryRunner();
         await queryRunner.startTransaction();
 
         try {

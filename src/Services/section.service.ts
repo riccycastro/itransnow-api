@@ -16,9 +16,9 @@ import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
-import { Connection } from 'typeorm';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { MomentProvider } from './Provider/moment.provider';
+import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 export enum SectionIncludesEnum {
   application = 'application',
@@ -30,20 +30,18 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
   private readonly applicationService: ApplicationService;
   private readonly translationKeyService: TranslationKeyService;
-  private readonly connection: Connection;
 
   constructor(
     sectionRepository: SectionRepository,
     @Inject(forwardRef(() => ApplicationService))
       applicationService: ApplicationService,
     translationKeyService: TranslationKeyService,
-    connection: Connection,
+    private readonly queryRunnerProvider: QueryRunnerProvider,
     private readonly momentProvider: MomentProvider,
   ) {
     super(sectionRepository);
     this.applicationService = applicationService;
     this.translationKeyService = translationKeyService;
-    this.connection = connection;
   }
 
   async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Section> {
@@ -111,14 +109,14 @@ export class SectionService extends AbstractEntityListingService<Section> {
       await this.translationKeyService.getByTranslationKeys(companyId, addTranslationKeyToSectionDto.translationKeys),
     );
 
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.queryRunnerProvider.createQueryRunner();
     await queryRunner.startTransaction();
 
     const addTranslationKeysTask = [];
 
     try {
       for (const index of Object.keys(translationKeys)) {
-        addTranslationKeysTask.push((this.repository as SectionRepository).insertTranslationKey(section, translationKeys[index], queryRunner.manager));
+        addTranslationKeysTask.push((this.repository as SectionRepository).assignTranslationKey(section, translationKeys[index], queryRunner.manager));
       }
       await Promise.all(addTranslationKeysTask);
 

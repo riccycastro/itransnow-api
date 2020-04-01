@@ -1,7 +1,8 @@
-import { EntityRepository } from 'typeorm';
+import { EntityManager, EntityRepository } from 'typeorm';
 import { Application } from '../Entities/application.entity';
 import { AbstractRepository } from './abstract.repository';
 import { StringIndexedByString } from '../Types/type';
+import { Language } from '../Entities/language.entity';
 
 @EntityRepository(Application)
 export class ApplicationRepository extends AbstractRepository<Application> {
@@ -24,5 +25,12 @@ export class ApplicationRepository extends AbstractRepository<Application> {
     queryBuilder = this.queryAlias(queryBuilder, 'applications', query);
     queryBuilder = this.queryActive(queryBuilder, 'applications', query);
     return queryBuilder;
+  }
+
+  async assignLanguage(application: Application, language: Language, entityManager: EntityManager): Promise<void> {
+    await entityManager.createQueryBuilder(entityManager.queryRunner)
+      .relation(Application, 'languages')
+      .of(application)
+      .add(language);
   }
 }

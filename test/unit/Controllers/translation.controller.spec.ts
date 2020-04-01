@@ -42,7 +42,7 @@ describe('TranslationController', () => {
           useValue: {},
         },
         {
-          provide: 'Connection',
+          provide: 'QueryRunnerProvider',
           useValue: {},
         },
         {

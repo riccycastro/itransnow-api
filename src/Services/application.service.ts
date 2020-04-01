@@ -25,7 +25,7 @@ import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { Translation } from '../Entities/translation.entity';
 import { MomentProvider } from './Provider/moment.provider';
-import { Connection } from 'typeorm';
+import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 export enum ApplicationIncludesEnum {
   language = 'languages',
@@ -50,7 +50,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
     @Inject(forwardRef(() => TranslationService))
       translationService: TranslationService,
     private readonly momentProvider: MomentProvider,
-    private readonly connection: Connection,
+    private readonly queryRunnerProvider: QueryRunnerProvider,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -142,7 +142,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
   async addLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto): Promise<Application> {
     const languagesList = this.languageService.indexBy('id', await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode));
 
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.queryRunnerProvider.createQueryRunner();
     await queryRunner.startTransaction();
 
     const addLanguagesTask = [];

@@ -39,7 +39,7 @@ export class SectionRepository extends AbstractRepository<Section> {
       .getOne();
   }
 
-  async insertTranslationKey(section: Section, translationKey: TranslationKey, entityManager: EntityManager): Promise<void> {
+  async assignTranslationKey(section: Section, translationKey: TranslationKey, entityManager: EntityManager): Promise<void> {
     await entityManager.createQueryBuilder(entityManager.queryRunner)
       .relation(Section, 'translationKeys')
       .of(section)
