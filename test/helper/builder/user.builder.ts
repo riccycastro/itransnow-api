@@ -8,6 +8,7 @@ export const buildUser = (index: number): User => {
   user.email = 'user_email_' + index;
   user.username = 'user_username_' + index;
   user.isActive = true;
+  user.isAdmin = false;
   user.deletedAt = utc().unix();
   user.isVisible = true;
   return user;

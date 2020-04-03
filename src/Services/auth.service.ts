@@ -1,28 +1,17 @@
-import {Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import {BcryptProvider} from './Provider/bcrypt.provider';
-import {User} from '../Entities/user.entity';
-import {UserService} from './user.service';
-import {CompanyService} from './company.service';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { BcryptProvider } from './Provider/bcrypt.provider';
+import { User } from '../Entities/user.entity';
+import { UserService } from './user.service';
 
 @Injectable()
 export class AuthService {
 
-  private readonly usersService: UserService;
-  private readonly jwtService: JwtService;
-  private readonly bcryptProvider: BcryptProvider;
-  private readonly companyService: CompanyService;
-
   constructor(
-      usersService: UserService,
-      jwtService: JwtService,
-      bcryptProvider: BcryptProvider,
-      companyService: CompanyService,
+    private readonly usersService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly bcryptProvider: BcryptProvider,
   ) {
-    this.usersService = usersService;
-    this.jwtService = jwtService;
-    this.bcryptProvider = bcryptProvider;
-    this.companyService = companyService;
   }
 
   async validateUser(username: string, pass: string): Promise<any> {
