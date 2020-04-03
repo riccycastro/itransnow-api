@@ -26,6 +26,7 @@ import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { Translation } from '../Entities/translation.entity';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
+import { lang } from 'moment';
 
 export enum ApplicationIncludesEnum {
   language = 'languages',
@@ -171,14 +172,16 @@ export class ApplicationService extends AbstractEntityListingService<Application
   }
 
   async removeLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto) {
-    //todo@rcastro - use same algorithm that was used to remove translation keys to section in section.service.ts::removeTranslationKeys
-    const languagesList = this.languageService.indexBy(
-      'code',
-      await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode),
-    );
+    const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
 
-    application.languages = await this.languageService.getByApplication(application.companyId, application.id, { limit: '10000' });
-    application.languages = application.languages.filter(language => !Object.keys(languagesList).includes(language.code));
+    const removeLanguageTask = [];
+
+    for (const language of languagesList) {
+      removeLanguageTask.push((this.repository as ApplicationRepository).removeLanguage(application, language));
+    }
+
+    await Promise.all(removeLanguageTask);
+
     return application;
   }
 

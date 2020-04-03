@@ -33,4 +33,11 @@ export class ApplicationRepository extends AbstractRepository<Application> {
       .of(application)
       .add(language);
   }
+
+  async removeLanguage(application: Application, language: Language): Promise<void> {
+    await this.createQueryBuilder()
+      .relation('languages')
+      .of(application)
+      .remove(language);
+  }
 }
