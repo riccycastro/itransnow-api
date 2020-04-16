@@ -12,7 +12,7 @@ import {
 import { LanguageService } from '../../../src/Services/language.service';
 import { SectionService } from '../../../src/Services/section.service';
 import { WhiteLabelService } from '../../../src/Services/white-label.service';
-import { buildApplicationWithId1 } from '../../helper/builder/application.builder';
+import { buildApplicationArray, buildApplicationWithId1 } from '../../helper/builder/application.builder';
 import { buildLanguageWithId1 } from '../../helper/builder/language.builder';
 import { buildSectionWithId1 } from '../../helper/builder/section.builder';
 import { buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
@@ -27,6 +27,7 @@ import { buildTranslationWithId1 } from '../../helper/builder/translation.builde
 import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner.provider';
 import { QueryRunner } from '../../../src/Types/type';
 import { LanguageToApplicationDto } from '../../../src/Dto/language.dto';
+import { classToClass } from 'class-transformer';
 
 describe('ApplicationService', () => {
   let app: TestingModule;
@@ -503,24 +504,18 @@ describe('ApplicationService', () => {
       expect(removeLanguageSpy).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('findInList', () => {
+    it('should return find in list expected structure', async () => {
+      const findByAliasSpy = jest.spyOn(applicationRepository, 'findInList').mockImplementation(async () => {
+        return [buildApplicationArray(), 5];
+      });
+
+      expect(await applicationService.findInList(1, {})).toEqual({
+        data: classToClass(buildApplicationArray()),
+        count: 5,
+      });
+      expect(findByAliasSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

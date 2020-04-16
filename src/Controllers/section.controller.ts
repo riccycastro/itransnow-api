@@ -57,9 +57,11 @@ export class SectionController {
 
   @Patch(':alias')
   async updateSectionAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
-    return await this.sectionService.update(
-      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
-      sectionDto,
+    return await this.sectionService.save(
+      await this.sectionService.update(
+        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
+        sectionDto,
+      ),
     );
   }
 

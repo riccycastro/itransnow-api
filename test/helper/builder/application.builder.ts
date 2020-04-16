@@ -13,3 +13,4 @@ export const buildApplication = (index: number): Application => {
 };
 
 export const buildApplicationWithId1 = (): Application => buildApplication(1);
+export const buildApplicationArray = () => [1, 2, 3, 4, 5].map(index => buildApplication(index));

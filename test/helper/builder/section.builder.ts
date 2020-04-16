@@ -9,6 +9,7 @@ export const buildSection = (index: number) => {
   section.alias = 'section_alias_' + index;
   section.isActive = true;
   section.deletedAt = utc().unix();
+  section.translationKeys = [];
   return section;
 };
 
@@ -19,3 +20,4 @@ export const buildSectionWithApplication = (sectionIndex: number, applicationInd
 };
 
 export const buildSectionWithId1 = () => buildSection(1);
+export const buildSectionArray = () => [1, 2, 3, 4, 5].map(index => buildSection(index));

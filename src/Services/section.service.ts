@@ -97,10 +97,12 @@ export class SectionService extends AbstractEntityListingService<Section> {
     return section;
   }
 
-  async update(section: Section, sectionDto: SectionDto): Promise<Section> {
+  update(section: Section, sectionDto: SectionDto): Section {
     section.name = sectionDto.name;
-    section.alias = sectionDto.alias ?? section.alias;
-    return await this.save(section);
+    section.alias = sectionDto.alias ?
+      removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase() :
+      section.alias;
+    return section;
   }
 
   async addTranslationKeys(companyId: number, section: Section, addTranslationKeyToSectionDto: TranslationKeyToSectionDto): Promise<Section> {
