@@ -10,11 +10,11 @@ export class TranslationKeyService extends AbstractEntityService<TranslationKey>
         super(translationKeyRepository);
     }
 
-    async getByTranslationKeyInApplication(companyId: number, applicationId: number, translationKey: string): Promise<TranslationKey>{
+    async getByTranslationKeyInApplication(companyId: number, applicationId: number, translationKey: string): Promise<TranslationKey> {
         const translationKeyEntity = await (this.repository as TranslationKeyRepository).findByTranslationKeyInApplication(companyId, applicationId, translationKey);
 
-        if(!translationKeyEntity){
-            throw new NotFoundException("Translation key not found!");
+        if (!translationKeyEntity) {
+            throw new NotFoundException('Translation key not found!');
         }
 
         return translationKeyEntity;
@@ -27,12 +27,11 @@ export class TranslationKeyService extends AbstractEntityService<TranslationKey>
     async get(companyId: number, applicationId: number, translationKey: string): Promise<TranslationKey> {
         let translationKeyEntity = await (this.repository as TranslationKeyRepository).findByTranslationKeyInApplication(companyId, applicationId, translationKey);
 
-        if(!translationKeyEntity){
+        if (!translationKeyEntity) {
             translationKeyEntity = new TranslationKey();
             translationKeyEntity.alias = translationKey;
         }
 
         return translationKeyEntity;
     }
-
 }

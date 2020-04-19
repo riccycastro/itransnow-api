@@ -94,15 +94,15 @@ describe('TranslationController', () => {
   });
 
   describe('getTranslationsAction', () => {
-    it('should return a translation object', async () => {
+    it('should return a translation string', async () => {
       const expectedResult = {
         'translationKey': 'translation value',
       };
       const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return expectedResult;
+        return JSON.stringify(expectedResult);
       });
 
-      expect(await translationController.getTranslationsAction(req, new TranslationDto())).toEqual(expectedResult);
+      expect(await translationController.getTranslationsAction(req, new TranslationDto())).toEqual(JSON.stringify(expectedResult));
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -114,7 +114,7 @@ describe('TranslationController', () => {
       };
 
       const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return expectedResult;
+        return JSON.stringify(expectedResult);
       });
 
       res.write = (data: any, func: Function) => {
@@ -130,7 +130,7 @@ describe('TranslationController', () => {
         'translationKey': 'translation value',
       };
       const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return expectedResult;
+        return JSON.stringify(expectedResult);
       });
 
       expect(await translationController.getTranslationsJsonFile(req, new TranslationDto(), res)).toBe(undefined);
@@ -148,7 +148,7 @@ describe('TranslationController', () => {
       };
 
       const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return expectedResult;
+        return JSON.stringify(expectedResult);
       });
 
       res.write = (data: any, func: Function) => {
@@ -164,14 +164,14 @@ describe('TranslationController', () => {
         'translationKey': 'translation value',
       };
       const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return expectedResult;
+        return JSON.stringify(expectedResult);
       });
 
       expect(await translationController.getTranslationsYamlFile(req, new TranslationDto(), res)).toBe(undefined);
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
       expect(res.getHeader('Content-disposition')).toBe('attachment; filename=translation.yaml');
       expect(res.getHeader('Content-type')).toBe('text/yaml');
-      expect(res.getData()).toBe(expectedResult);
+      expect(res.getData()).toBe(JSON.stringify(expectedResult));
     });
   });
 });
