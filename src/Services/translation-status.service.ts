@@ -1,7 +1,7 @@
-import {Injectable} from "@nestjs/common";
-import {AbstractEntityService} from "./AbstractEntityService";
-import {TranslationStatus} from "../Entities/translation-status.entity";
-import {TranslationStatusRepository} from "../Repositories/translation-status.repository";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { AbstractEntityService } from './AbstractEntityService';
+import { TranslationStatus } from '../Entities/translation-status.entity';
+import { TranslationStatusRepository } from '../Repositories/translation-status.repository';
 
 @Injectable()
 export class TranslationStatusService extends AbstractEntityService<TranslationStatus> {
@@ -15,6 +15,12 @@ export class TranslationStatusService extends AbstractEntityService<TranslationS
     }
 
     async getByStatus(status: string): Promise<TranslationStatus> {
-        return await this.repository.findOne({where: {status: status}});
+        const translationStatus = await this.repository.findOne({ where: { status: status } });
+
+        if (!translationStatus) {
+            throw new NotFoundException('translation status not found');
+        }
+
+        return translationStatus;
     }
 }

@@ -1,6 +1,6 @@
-import {IsDefined, IsNotEmpty, IsOptional, IsString} from "class-validator";
-import {Application} from "../Entities/application.entity";
-import {Language} from "../Entities/language.entity";
+import { IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Application } from '../Entities/application.entity';
+import { Language } from '../Entities/language.entity';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -69,7 +69,7 @@ export class TranslationDto {
     @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })
     @IsString()
-    indexType: string;
+    indexType: 'nested' | 'flat';
 
     @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })

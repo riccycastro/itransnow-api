@@ -20,7 +20,7 @@ export class TranslationRepository extends AbstractRepository<Translation> {
     return await this.commonJoins(qb, translationKeys, sections).getMany();
   }
 
-  async findWhiteLabelTranslation(whiteLabelId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
+  async findTranslationInWhiteLabelTranslationByLanguage(whiteLabelId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
     //todo@rcastro - consider using raw query(ex: await this.query(`SELECT * FROM USERS`);)
     //               so that it's easier to handle the data and avoid using the TranslationService.moveWhiteLabelSectionsToTranslation function
     //               and increase performance consequentially

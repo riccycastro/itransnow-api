@@ -40,7 +40,7 @@ export class TranslationController {
 
         res.setHeader('Content-disposition', 'attachment; filename=translation.json');
         res.setHeader('Content-type', 'application/json');
-        res.write(JSON.stringify(data), (err) => {
+        res.write(data, (err) => {
             if (err) {
                 this.throwDownloadFileError();
             }

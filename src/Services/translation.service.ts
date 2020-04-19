@@ -6,7 +6,6 @@ import { TranslationDto, TranslationNodeDto } from '../Dto/translation.dto';
 import { User } from '../Entities/user.entity';
 import { LanguageService } from './language.service';
 import { TranslationKeyService } from './translation-key.service';
-import { Connection } from 'typeorm';
 import { TranslationStatusService } from './translation-status.service';
 import { Application } from '../Entities/application.entity';
 import { Language } from '../Entities/language.entity';
@@ -92,8 +91,8 @@ export class TranslationService extends AbstractEntityService<Translation> {
         return await (this.repository as TranslationRepository).findTranslationInApplicationByLanguage(applicationId, languageId, translationKeys, sections);
     }
 
-    async getTranslationInWhiteLabelByLanguage(applicationId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
-        return await (this.repository as TranslationRepository).findWhiteLabelTranslation(applicationId, languageId, translationKeys, sections);
+    async getTranslationInWhiteLabelByLanguage(whiteLabelId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
+        return await (this.repository as TranslationRepository).findTranslationInWhiteLabelTranslationByLanguage(whiteLabelId, languageId, translationKeys, sections);
     }
 
     async getTranslations(companyId: number, translationDto: TranslationDto) {
@@ -116,7 +115,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     private async getWhiteLabelTranslations(translationDto: TranslationDto, translationNodeDto: TranslationNodeDto) {
         const translations = TranslationService.moveWhiteLabelSectionsToTranslation(await this.getTranslationInWhiteLabelByLanguage(
-          translationNodeDto.application.id,
+          translationNodeDto.whiteLabel.id,
           translationNodeDto.language.id,
           translationNodeDto.translationKeys,
           translationNodeDto.sections,
@@ -125,11 +124,11 @@ export class TranslationService extends AbstractEntityService<Translation> {
         return this.indexTranslationBy(translationDto.indexType, translations);
     }
 
-    private addToFile(extension: string, translations: string[]) {
+    private addToFile(extension: string, translations: string[]): string {
         if (this.fileValidExtensions.includes(extension)) {
             return (new ConvertToYamlNode()).apply(translations);
         }
-        return translations;
+        return JSON.stringify(translations);
     }
 
     private indexTranslationBy(indexType: string, translations: Translation[]) {
