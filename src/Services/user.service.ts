@@ -4,7 +4,6 @@ import { UserRepository } from '../Repositories/user.repository';
 import { RegisterUserDto } from '../Dto/register-user.dto';
 import { BcryptProvider } from './Provider/bcrypt.provider';
 import { CompanyService } from './company.service';
-import { Connection } from 'typeorm';
 import { AbstractEntityService } from './AbstractEntityService';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
@@ -48,6 +47,7 @@ export class UserService extends AbstractEntityService<User> {
     await queryRunner.startTransaction();
 
     try {
+
       const company = await this.companyService.save(this.companyService.create(registerUserDto.companyName), queryRunner.manager);
 
       let user = new User();
@@ -69,9 +69,5 @@ export class UserService extends AbstractEntityService<User> {
       await queryRunner.release();
       throw new InternalServerErrorException();
     }
-  }
-
-  protected getIncludes(companyId: number, entity: any, query: any): Promise<any> {
-    return undefined;
   }
 }
