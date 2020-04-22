@@ -5,3 +5,5 @@ export const buildWhiteLabelTranslation = (index): WhiteLabelTranslation => {
   whiteLabelTranslation.id = index;
   return whiteLabelTranslation;
 };
+
+export const buildWhiteLabelTranslationWithId1 = () => buildWhiteLabelTranslation(1);
