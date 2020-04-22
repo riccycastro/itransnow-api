@@ -12,28 +12,65 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { WhiteLabelIncludesEnum, WhiteLabelService } from '../Services/white-label.service';
-import { WhiteLabel } from '../Entities/white-label.entity';
-import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
-import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
+import { WhiteLabelIncludesEnum } from '../Services/white-label.service';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
+import { WhiteLabel } from '../Entities/white-label.entity';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
+import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
+import { ApplicationService } from '../Services/application.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('white-labels')
+@Controller('applicaotion/:alias/white-labels')
 export class WhiteLabelController {
-  private readonly whiteLabelService: WhiteLabelService;
 
-  constructor(whiteLabelService: WhiteLabelService) {
-    this.whiteLabelService = whiteLabelService;
+  constructor(private readonly applicationService: ApplicationService) {
   }
 
-  @Get(':alias')
-  async getWhiteLabelAction(@Request() req, @Param('alias') alias: string): Promise<WhiteLabel> {
-    return await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias, req.query);
+  @Post()
+  async addWhiteLabelToApplicationAction(
+    @Request() req,
+    @Body() whiteLabelDto: WhiteLabelDto,
+    @Param('alias') alias: string,
+  ): Promise<WhiteLabel> {
+    const whiteLabel = await this.applicationService.createWhiteLabel(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelDto,
+    );
+
+    whiteLabel.application = undefined;
+
+    return whiteLabel;
+  }
+
+  @Patch(':whiteLabelAlias')
+  async updateWhiteLabelAction(
+    @Request() req,
+    @Body() whiteLabelDto: WhiteLabelDto,
+    @Param('alias') alias: string,
+    @Param('whiteLabelAlias') whiteLabelAlias: string,
+  ) {
+    return await this.applicationService.updateWhiteLabel(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelDto,
+      whiteLabelAlias,
+    );
+  }
+
+  @Get(':whiteLabelAlias')
+  async getWhiteLabelAction(
+    @Request() req,
+    @Param('alias') alias: string,
+    @Param('whiteLabelAlias') whiteLabelAlias: string,
+  ): Promise<WhiteLabel> {
+    return await this.applicationService.getWhiteLabel(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelAlias,
+      req.query,
+    );
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -44,45 +81,51 @@ export class WhiteLabelController {
   @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
   @ApiQuery({ name: 'includes', required: false, isArray: true, enum: WhiteLabelIncludesEnum })
   @Get()
-  async getWhiteLabelsAction(@Request() req): Promise<ListResult<WhiteLabel>> {
-    return await this.whiteLabelService.findInList(req.user.companyId, req.query);
-  }
-
-  @Delete(':alias')
-  async deleteWhiteLabelAction(@Request() req, @Param('alias') alias: string): Promise<void> {
-    await this.whiteLabelService.save(
-      this.whiteLabelService.delete(
-        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
-      ),
+  async getWhiteLabelsAction(@Request() req, @Param('alias') alias: string): Promise<ListResult<WhiteLabel>> {
+    return await this.applicationService.getWhiteLabels(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      req.query,
     );
   }
 
-  @Patch(':alias')
-  async updateWhiteLabelAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string): Promise<WhiteLabel> {
-    return await this.whiteLabelService.save(
-      this.whiteLabelService.update(
-        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
-        whiteLabelDto,
-      ),
+  @Delete(':whiteLabelAlias')
+  async deleteWhiteLabelAction(
+    @Request() req,
+    @Param('alias') alias: string,
+    @Param('whiteLabelAlias') whiteLabelAlias: string,
+  ): Promise<void> {
+    await this.applicationService.deleteWhiteLabel(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelAlias,
     );
   }
 
-  @Post(':alias/translations')
-  async addTranslationToWhiteLabel(@Request() req, @Body() whiteLabelTranslationDto: WhiteLabelTranslationDto, @Param('alias') alias: string): Promise<void> {
-    await this.whiteLabelService.createWhiteLabelTranslation(
+  @Post(':whiteLabelAlias/translations')
+  async addTranslationToWhiteLabel(
+    @Request() req,
+    @Body() whiteLabelTranslationDto: WhiteLabelTranslationDto,
+    @Param('alias') alias: string,
+    @Param('whiteLabelAlias') whiteLabelAlias: string,
+  ): Promise<void> {
+    await this.applicationService.addTranslationToWhiteLabel(
       req.user,
-      await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelAlias,
       whiteLabelTranslationDto,
     );
   }
 
-  @Patch(':alias/active')
-  async activeSectionAction(@Request() req, @Body() activeWhiteLabelDto: ActiveWhiteLabelDto, @Param(':alias') alias: string): Promise<WhiteLabel> {
-    return await this.whiteLabelService.save(
-      await this.whiteLabelService.active(
-        await this.whiteLabelService.findByAliasOrFail(req.user.companyId, alias),
-        activeWhiteLabelDto,
-      ),
+  @Patch(':whiteLabelAlias/active')
+  async activeWhiteLabelAction(
+    @Request() req,
+    @Body() activeWhiteLabelDto: ActiveWhiteLabelDto,
+    @Param(':alias') alias: string,
+    @Param('whiteLabelAlias') whiteLabelAlias: string,
+  ): Promise<WhiteLabel> {
+    return await this.applicationService.activeWhiteLabel(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      whiteLabelAlias,
+      activeWhiteLabelDto,
     );
   }
 }

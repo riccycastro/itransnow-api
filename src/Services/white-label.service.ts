@@ -20,7 +20,6 @@ import { TranslationKeyService } from './translation-key.service';
 import { WhiteLabelTranslation } from '../Entities/white-label-translation.entity';
 import { TranslationService } from './translation.service';
 import { TranslationStatusService } from './translation-status.service';
-import { Connection } from 'typeorm';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
@@ -57,44 +56,40 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         this.translationStatusService = translationStatusService;
     }
 
-    async findByAliasOrFail(companyId: number, alias: string, query?: any): Promise<WhiteLabel> {
-        const whiteLabel = await this.findByAlias(companyId, alias);
+    async findByAliasOrFail(applicationId: number, alias: string, query?: any): Promise<WhiteLabel> {
+        const whiteLabel = await this.findByAlias(applicationId, alias);
 
         if (!whiteLabel) {
             throw new NotFoundException('WhiteLabel not found!');
         }
 
-        return await this.getIncludes(companyId, whiteLabel, query);
+        return await this.getIncludes(applicationId, whiteLabel, query);
     }
 
-    private async findByAlias(companyId: number, alias: string): Promise<WhiteLabel> {
-        return await (this.repository as WhiteLabelRepository).findByAlias(companyId, alias);
+    private async findByAlias(applicationId: number, alias: string): Promise<WhiteLabel> {
+        return await (this.repository as WhiteLabelRepository).findByAlias(applicationId, alias);
     }
 
     async getByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
         return await (this.repository as WhiteLabelRepository).findByApplication(companyId, applicationId, query);
     }
 
-    protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
-        const listResult = await (this.repository as WhiteLabelRepository).findInList(companyId, query);
-
+    protected async getEntityListAndCount(applicationId: number, query?: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
+        const listResult = await (this.repository as WhiteLabelRepository).findInList(applicationId, query);
+        console.log('--------------------------------------------->>', listResult[1])
         for (let whiteLabel of listResult[0]) {
-            whiteLabel = await this.getIncludes(companyId, whiteLabel, query);
+            whiteLabel = await this.getIncludes(applicationId, whiteLabel, query);
         }
 
         return listResult;
     }
 
     async create(whiteLabelDto: WhiteLabelDto, application: Application): Promise<WhiteLabel> {
-        const sectionAlias = removeDiacritics(whiteLabelDto.alias.trim().replace(/ /g, '_')).toLowerCase();
-
-        if (await this.repository.findOne({ alias: sectionAlias, application: application, deletedAt: 0 })) {
-            throw new BadRequestException(`White label with alias "${whiteLabelDto.alias}" already exists in ${application.name} application`);
-        }
+        const whiteLabelAlias = await this.validateAlias(whiteLabelDto, application);
 
         const whiteLabel = new WhiteLabel();
         whiteLabel.name = whiteLabelDto.name;
-        whiteLabel.alias = whiteLabelDto.alias;
+        whiteLabel.alias = whiteLabelAlias;
         whiteLabel.application = application;
         return whiteLabel;
     }
@@ -109,9 +104,13 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         return whiteLabel;
     }
 
-    update(whiteLabel: WhiteLabel, whiteLabelDto: WhiteLabelDto): WhiteLabel {
+    async update(whiteLabel: WhiteLabel, application: Application, whiteLabelDto: WhiteLabelDto): Promise<WhiteLabel> {
         whiteLabel.name = whiteLabelDto.name;
-        whiteLabel.alias = whiteLabelDto.alias ?? whiteLabel.alias;
+
+        if (whiteLabelDto.alias) {
+            whiteLabel.alias = await this.validateAlias(whiteLabelDto, application);
+        }
+
         return whiteLabel;
     }
 
@@ -155,5 +154,15 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
         }
 
         return whiteLabel;
+    }
+
+    async validateAlias(whiteLabelDto: WhiteLabelDto, application: Application): Promise<string> {
+        const whiteLabelAlias = removeDiacritics(whiteLabelDto.alias.trim().replace(/ /g, '_')).toLowerCase();
+
+        if (await this.repository.findOne({ alias: whiteLabelAlias, application: application, deletedAt: 0 })) {
+            throw new BadRequestException(`White label with alias "${whiteLabelAlias}" already exists in ${application.name} application`);
+        }
+
+        return whiteLabelAlias;
     }
 }

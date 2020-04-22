@@ -19,3 +19,4 @@ export const buildWhiteLabelWithApplication = (whiteLabelIndex: number, applicat
 };
 
 export const buildWhiteLabelWithId1 = () => buildWhitelabel(1);
+export const buildWhiteLabelArray = () => [1, 2, 3, 4, 5].map(index => buildWhitelabel(index));

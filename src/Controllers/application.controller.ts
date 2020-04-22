@@ -18,8 +18,6 @@ import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
 import { Application } from '../Entities/application.entity';
 import { LanguageToApplicationDto } from '../Dto/language.dto';
-import { WhiteLabelDto } from '../Dto/white-label.dto';
-import { WhiteLabel } from '../Entities/white-label.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
@@ -88,7 +86,11 @@ export class ApplicationController {
 
   @ApiParam({ required: true, name: 'alias', type: 'string' })
   @Patch(':alias')
-  async updateApplicationAction(@Request() req, @Body() updateApplicationDto: ApplicationDto, @Param('alias') alias: string): Promise<Application> {
+  async updateApplicationAction(
+    @Request() req,
+    @Body() updateApplicationDto: ApplicationDto,
+    @Param('alias') alias: string,
+  ): Promise<Application> {
     return await this.applicationService.update(
       await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       updateApplicationDto,
@@ -96,7 +98,11 @@ export class ApplicationController {
   }
 
   @Patch(':alias/active')
-  async activeApplicationAction(@Request() req, @Body() activeApplicationDto: ActiveApplicationDto, @Param(':alias') alias: string): Promise<Application> {
+  async activeApplicationAction(
+    @Request() req,
+    @Body() activeApplicationDto: ActiveApplicationDto,
+    @Param(':alias') alias: string,
+  ): Promise<Application> {
     return await this.applicationService.save(
       this.applicationService.active(
         await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
@@ -107,7 +113,11 @@ export class ApplicationController {
 
   @ApiParam({ required: true, name: 'alias', type: 'string' })
   @Post(':alias/sections')
-  async addSectionToApplicationAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
+  async addSectionToApplicationAction(
+    @Request() req,
+    @Body() sectionDto: SectionDto,
+    @Param('alias') alias: string,
+  ): Promise<Section> {
     const section = await this.applicationService.createSection(
       await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       sectionDto,
@@ -119,7 +129,11 @@ export class ApplicationController {
   }
 
   @Post(':alias/languages')
-  async addLanguageToApplicationAction(@Request() req, @Body() addLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string): Promise<Application> {
+  async addLanguageToApplicationAction(
+    @Request() req,
+    @Body() addLanguageToApplicationDto: LanguageToApplicationDto,
+    @Param('alias') alias: string,
+  ): Promise<Application> {
     return await this.applicationService.save(
       await this.applicationService.addLanguages(
         await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
@@ -129,7 +143,11 @@ export class ApplicationController {
   }
 
   @Delete(':alias/languages')
-  async removeLanguageFromApplicationAction(@Request() req, @Body() removeLanguageToApplicationDto: LanguageToApplicationDto, @Param('alias') alias: string) {
+  async removeLanguageFromApplicationAction(
+    @Request() req,
+    @Body() removeLanguageToApplicationDto: LanguageToApplicationDto,
+    @Param('alias') alias: string,
+  ) {
     return await this.applicationService.save(
       await this.applicationService.removeLanguages(
         await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
@@ -138,25 +156,18 @@ export class ApplicationController {
     );
   }
 
-  @Post(':alias/white-labels')
-  async addWhiteLabelToApplicationAction(@Request() req, @Body() whiteLabelDto: WhiteLabelDto, @Param('alias') alias: string): Promise<WhiteLabel> {
-    const whiteLabel = await this.applicationService.createWhiteLabel(
-      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
-      whiteLabelDto,
-    );
-
-    whiteLabel.application = undefined;
-
-    return whiteLabel;
-  }
-
   @Post(':alias/translations')
-  async addTranslationToApplicationAction(@Request() req, @Body() translationDto: TranslationDto, @Param('alias') alias: string) {
+  async addTranslationToApplicationAction(
+    @Request() req,
+    @Body() translationDto: TranslationDto,
+    @Param('alias') alias: string,
+  ) {
     await this.applicationService.createTranslation(
       req.user,
       await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       translationDto,
     );
   }
+
 }
 

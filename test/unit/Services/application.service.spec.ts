@@ -368,6 +368,8 @@ describe('ApplicationService', () => {
     });
   });
 
+  describe('updateWhiteLabel', ()=>{})
+
   describe('createTranslation', () => {
     it('should throw an internal server error exception', async () => {
       const persistSpy = jest.spyOn(translationService, 'persist').mockImplementation(async () => {

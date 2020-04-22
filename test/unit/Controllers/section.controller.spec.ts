@@ -153,7 +153,7 @@ describe('SectionController', () => {
         return expectedResult;
       });
 
-      const updateSpy = jest.spyOn(sectionService, 'update').mockImplementation(async () => {
+      const updateSpy = jest.spyOn(sectionService, 'update').mockImplementation(() => {
         return expectedResult;
       });
 

@@ -1,17 +1,16 @@
 import { EntityRepository } from 'typeorm';
 import { WhiteLabel } from '../Entities/white-label.entity';
 import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
-import { Section } from '../Entities/section.entity';
 
 @EntityRepository(WhiteLabel)
 export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
-  findByAlias(companyId: number, alias: string): Promise<WhiteLabel> {
+  findByAlias(applicationId: number, alias: string): Promise<WhiteLabel> {
     return this.createQueryBuilder('whiteLabel')
       .innerJoin('whiteLabel.application', 'application')
-      .innerJoin('application.company', 'company')
-      .where('company.id = :companyId', {companyId: companyId})
+      .where('application.id = :applicationId', { applicationId })
       .andWhere('whiteLabel.alias LIKE :alias', { alias: alias })
       .andWhere('whiteLabel.deletedAt = 0')
+      .andWhere('application.deletedAt = 0')
       .getOne();
   }
 
@@ -26,12 +25,12 @@ export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
     return await this.setPagination(queryBuilder, query, 'whiteLabels').getMany();
   }
 
-  async findInList(companyId: number, query: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
+  async findInList(applicationId: number, query: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
     let queryBuilder = this.createQueryBuilder('whiteLabels')
       .innerJoin('whiteLabels.application', 'application')
-      .innerJoin('application.company', 'company')
-      .where('company.id = :companyId', { companyId: companyId })
-      .andWhere('whiteLabels.deletedAt = \'0\'');
+      .where('application.id = :applicationId', { applicationId })
+      .andWhere('whiteLabels.deletedAt = \'0\'')
+      .andWhere('application.deletedAt = 0');
 
     queryBuilder = this.queryName(queryBuilder, 'whiteLabels', query);
     queryBuilder = this.queryAlias(queryBuilder, 'whiteLabels', query);

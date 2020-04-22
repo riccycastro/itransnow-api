@@ -323,35 +323,6 @@ describe('ApplicationController', () => {
     });
   });
 
-  describe('addWhiteLabelToApplicationAction', () => {
-    it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
-
-      await expect(applicationController.addWhiteLabelToApplicationAction(req, new WhiteLabelDto(), 'alias')).rejects.toThrow();
-      expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return a white label', async () => {
-      const whiteLabel = buildWhiteLabelWithApplication(1, 1);
-
-      const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return whiteLabel.application;
-      });
-
-      const createWhiteLabelSpy = jest.spyOn(applicationService, 'createWhiteLabel').mockImplementation(async () => {
-        return whiteLabel;
-      });
-
-      whiteLabel.application = undefined;
-
-      expect(await applicationController.addWhiteLabelToApplicationAction(req, new WhiteLabelDto(), 'alias')).toEqual(whiteLabel);
-      expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
-      expect(createWhiteLabelSpy).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('addTranslationToApplicationAction', () => {
     it('should throw not found exception', async () => {
       const findByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
