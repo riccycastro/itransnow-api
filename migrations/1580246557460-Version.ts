@@ -37,7 +37,15 @@ export class Version1580246557460 implements MigrationInterface {
 
     await queryRunner.query('CREATE TABLE IF NOT EXISTS `white_label_translations` (`id` BIGINT NOT NULL AUTO_INCREMENT, `white_label_id` BIGINT NOT NULL, `translation_key_id` BIGINT NOT NULL, `translation_id` BIGINT NOT NULL, PRIMARY KEY (`id`,`white_label_id`, `translation_key_id`, `translation_id`), INDEX `fk_white_label_translations_translation_keys1_idx` (`translation_key_id` ASC), INDEX `fk_white_label_translations_translations1_idx` (`translation_id` ASC), CONSTRAINT `fk_white_label_translations_white_labels1` FOREIGN KEY (`white_label_id`) REFERENCES `white_labels` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT `fk_white_label_translations_translation_keys1` FOREIGN KEY (`translation_key_id`) REFERENCES `translation_keys` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT `fk_white_label_translations_translations1` FOREIGN KEY (`translation_id`) REFERENCES `translations` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)');
 
-    await queryRunner.query('ALTER TABLE `companies` ADD CONSTRAINT UNIQUE (alias, deleted_at_unix);')
+    await queryRunner.query('ALTER TABLE `companies` ADD CONSTRAINT UNIQUE (alias, deleted_at_unix);');
+    await queryRunner.query('ALTER TABLE `users` ADD CONSTRAINT UNIQUE (`email`, `deleted_at_unix`);');
+    await queryRunner.query('ALTER TABLE `users` ADD CONSTRAINT UNIQUE (`username`, `deleted_at_unix`);');
+    await queryRunner.query('ALTER TABLE `applications` ADD CONSTRAINT UNIQUE (`alias`, `deleted_at_unix`, `company_id`);');
+    await queryRunner.query('ALTER TABLE `languages` ADD CONSTRAINT UNIQUE (`code`, `deleted_at_unix`);');
+    await queryRunner.query('ALTER TABLE `language_teams` ADD CONSTRAINT UNIQUE (`alias`, `deleted_at_unix`, `company_id`);');
+    await queryRunner.query('ALTER TABLE `sections` ADD CONSTRAINT UNIQUE (`alias`, `deleted_at_unix`, `application_id`);');
+    await queryRunner.query('ALTER TABLE `translation_keys` ADD CONSTRAINT UNIQUE (`alias`, `deleted_at_unix`, `application_id`);');
+    await queryRunner.query('ALTER TABLE `white_labels` ADD CONSTRAINT UNIQUE (`alias`, `deleted_at_unix`, `application_id`);');
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
