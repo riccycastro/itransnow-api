@@ -24,7 +24,7 @@ import { ApplicationService } from '../Services/application.service';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('applicaotion/:alias/white-labels')
+@Controller('applications/:alias/white-labels')
 export class WhiteLabelController {
 
   constructor(private readonly applicationService: ApplicationService) {
