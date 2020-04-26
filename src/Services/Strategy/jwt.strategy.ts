@@ -24,7 +24,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
 
-    const user = await this.userService.findById(payload.sub);
+    const [user, company] = await Promise.all(
+      [
+        this.userService.getById(payload.sub),
+        this.companyService.getById(payload.companyId),
+      ],
+    );
+
+    if (company.deletedAt) {
+      throw new NotFoundException();
+    }
+
+    if (!company.isActive) {
+      throw new ForbiddenException('you are trying to access an inactive account');
+    }
 
     if (user.deletedAt) {
       throw new NotFoundException();
@@ -33,8 +46,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user.isActive) {
       throw new ForbiddenException('You don\'t have access... please contact your system admin');
     }
-
-    //todo@rcastro - validate if company is active/not deleted
 
     return user;
   }

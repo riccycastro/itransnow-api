@@ -28,7 +28,7 @@ export class UserService extends AbstractEntityService<User> {
     return await (this.repository as UserRepository).findUserByCredentials(username);
   }
 
-  async findById(id: number): Promise<User> {
+  async getById(id: number): Promise<User> {
     const user = await this.repository.findOne(id);
 
     if (!user) {

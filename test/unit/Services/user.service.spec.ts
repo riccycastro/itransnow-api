@@ -69,13 +69,13 @@ describe('UserService', () => {
     });
   });
 
-  describe('findById', () => {
+  describe('getById', () => {
     it('should throw a not found exception', async () => {
       const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
         return undefined;
       });
 
-      await expect(userService.findById(1)).rejects.toThrow(NotFoundException);
+      await expect(userService.getById(1)).rejects.toThrow(NotFoundException);
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -84,7 +84,7 @@ describe('UserService', () => {
         return buildUserWithId1();
       });
 
-      expect(await userService.findById(1)).toEqual(buildUserWithId1());
+      expect(await userService.getById(1)).toEqual(buildUserWithId1());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });

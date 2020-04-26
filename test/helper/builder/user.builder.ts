@@ -1,5 +1,4 @@
 import { User } from '../../../src/Entities/user.entity';
-import { utc } from 'moment';
 
 export const buildUser = (index: number): User => {
   const user = new User();
@@ -9,7 +8,7 @@ export const buildUser = (index: number): User => {
   user.username = 'user_username_' + index;
   user.isActive = true;
   user.isAdmin = false;
-  user.deletedAt = utc().unix();
+  user.deletedAt = 0;
   user.isVisible = true;
   return user;
 };
