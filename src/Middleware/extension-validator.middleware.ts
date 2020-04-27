@@ -12,6 +12,7 @@ export class ExtensionValidatorMiddleware implements NestMiddleware {
         }
 
         req.query.extension = params;
+        req.query.includes = req.query.includes ? req.query.includes.split(',') : [];
         next();
     }
 }

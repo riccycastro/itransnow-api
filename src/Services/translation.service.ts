@@ -46,7 +46,13 @@ export class TranslationService extends AbstractEntityService<Translation> {
         this.translationStatusService = translationStatusService;
     }
 
-    create(language: Language, user: User, translationStatus: TranslationStatus, translation: string, translationKey?: TranslationKey): Translation {
+    create(
+      language: Language,
+      user: User,
+      translationStatus: TranslationStatus,
+      translation: string,
+      translationKey?: TranslationKey
+    ): Translation {
         const translationEntity = new Translation();
         translationEntity.language = language;
         translationEntity.createdBy = user;
@@ -87,7 +93,12 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     }
 
-    async getTranslationInApplicationByLanguage(applicationId: number, languageId: number, translationKeys: string[], sections: string[]): Promise<Translation[]> {
+    async getTranslationInApplicationByLanguage(
+      applicationId: number,
+      languageId: number,
+      translationKeys: string[],
+      sections: string[]
+    ): Promise<Translation[]> {
         return await (this.repository as TranslationRepository).findTranslationInApplicationByLanguage(applicationId, languageId, translationKeys, sections);
     }
 
@@ -107,10 +118,36 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
         if (translationNodeDto.whiteLabel) {
             const whiteLabelTranslationsIndexed = await this.getWhiteLabelTranslations(translationDto, translationNodeDto);
-            translationsIndexed = deepmerge(translationsIndexed, whiteLabelTranslationsIndexed);
+            translationsIndexed = deepmerge(
+              translationsIndexed,
+              whiteLabelTranslationsIndexed[translationNodeDto.whiteLabel.alias],
+            );
+        }
+
+        if (translationDto.includes.length) {
+            const getWhiteLabelTask = [];
+            for (const include of translationDto.includes) {
+                getWhiteLabelTask.push(this.getWhiteLabelsIncludes(include, translationDto, translationNodeDto));
+            }
+
+            const whiteLabelsIncludes = await Promise.all(getWhiteLabelTask);
+
+            translationsIndexed = Object.assign(translationsIndexed, ...whiteLabelsIncludes)
         }
 
         return this.addToFile(translationDto.extension, translationsIndexed);
+    }
+
+    private async getWhiteLabelsIncludes(alias: string, translationDto: TranslationDto, translationNodeDto: TranslationNodeDto) {
+        const whiteLabel = await this.whiteLabelService.findByAliasOrFail(translationNodeDto.application.id, alias);
+
+        const translationNodeDtoClone = new TranslationNodeDto();
+        translationNodeDtoClone.whiteLabel = whiteLabel;
+        translationNodeDtoClone.language = translationNodeDto.language;
+        translationNodeDtoClone.translationKeys = translationNodeDto.translationKeys;
+        translationNodeDtoClone.sections = translationNodeDto.sections;
+
+        return await this.getWhiteLabelTranslations(translationDto, translationNodeDtoClone);
     }
 
     private async getWhiteLabelTranslations(translationDto: TranslationDto, translationNodeDto: TranslationNodeDto) {
@@ -121,7 +158,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
           translationNodeDto.sections,
         ));
 
-        return this.indexTranslationBy(translationDto.indexType, translations);
+        return { [translationNodeDto.whiteLabel.alias]: this.indexTranslationBy(translationDto.indexType, translations) };
     }
 
     private addToFile(extension: string, translations: string[]): string {
