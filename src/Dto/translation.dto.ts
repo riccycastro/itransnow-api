@@ -79,7 +79,7 @@ export class TranslationDto {
     @ApiProperty()
     @IsOptional({ groups: ['post', 'patch'] })
     @IsArray()
-    includes: string[];
+    includes: string[] = [];
 }
 
 export class TranslationNodeDto {
