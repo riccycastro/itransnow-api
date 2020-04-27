@@ -21,6 +21,9 @@ export class Translation {
     @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
 
+    @Column()
+    alias: string;
+
     @Column('longtext')
     translation: string;
 
