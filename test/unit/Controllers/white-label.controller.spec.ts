@@ -59,6 +59,10 @@ describe('WhiteLabelController', () => {
           provide: 'WhiteLabelService',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

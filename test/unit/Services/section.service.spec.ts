@@ -20,6 +20,7 @@ import { buildTranslationKey, buildTranslationKeyArray } from '../../helper/buil
 import { QueryRunner } from '../../../src/Types/type';
 import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner.provider';
 import { TranslationKeyToSectionDto } from '../../../src/Dto/translation-key.dto';
+import { StringProvider } from '../../../src/Services/Provider/string.provider';
 
 describe('SectionService', () => {
   let app: TestingModule;
@@ -36,6 +37,7 @@ describe('SectionService', () => {
         MomentProvider,
         TranslationKeyService,
         QueryRunnerProvider,
+        StringProvider,
         {
           provide: 'ApplicationService',
           useValue: {},

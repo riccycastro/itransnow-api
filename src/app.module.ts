@@ -35,6 +35,7 @@ import { WhiteLabelController } from './Controllers/white-label.controller';
 import { ExtensionValidatorMiddleware } from './Middleware/extension-validator.middleware';
 import { MomentProvider } from './Services/Provider/moment.provider';
 import { QueryRunnerProvider } from './Services/Provider/query-runner.provider';
+import { StringProvider } from './Services/Provider/string.provider';
 
 @Module({
   imports: [
@@ -49,7 +50,7 @@ import { QueryRunnerProvider } from './Services/Provider/query-runner.provider';
   controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController, WhiteLabelController],
   providers: [
     UserService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
-    BcryptProvider, MomentProvider, QueryRunnerProvider,
+    BcryptProvider, MomentProvider, QueryRunnerProvider, StringProvider,
     LocalStrategy, JwtStrategy,
   ],
 })

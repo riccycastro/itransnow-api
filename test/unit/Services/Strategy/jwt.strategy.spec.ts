@@ -34,6 +34,10 @@ describe('JwtStrategy', () => {
           provide: 'CompanyRepository',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

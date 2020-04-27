@@ -82,6 +82,10 @@ describe('TranslationService', () => {
           provide: 'WhiteLabelRepository',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

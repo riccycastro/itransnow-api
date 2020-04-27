@@ -9,7 +9,6 @@ import {
 import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
-import { remove as removeDiacritics } from 'diacritics';
 import { LanguageService } from './language.service';
 import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
@@ -29,6 +28,7 @@ import { QueryRunnerProvider } from './Provider/query-runner.provider';
 import { ListResult } from '../Types/type';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 import { WhiteLabelTranslation } from '../Entities/white-label-translation.entity';
+import { StringProvider } from './Provider/string.provider';
 
 export enum ApplicationIncludesEnum {
   language = 'languages',
@@ -54,6 +54,7 @@ export class ApplicationService extends AbstractEntityListingService<Application
       translationService: TranslationService,
     private readonly momentProvider: MomentProvider,
     private readonly queryRunnerProvider: QueryRunnerProvider,
+    private readonly stringProvider: StringProvider,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
@@ -63,8 +64,8 @@ export class ApplicationService extends AbstractEntityListingService<Application
   }
 
   async create(createApplicationDto: ApplicationDto, companyId: number): Promise<Application> {
-    createApplicationDto.alias = removeDiacritics(
-      createApplicationDto.alias.trim().toLowerCase().replace(/ /g, '_'),
+    createApplicationDto.alias = this.stringProvider.removeDiacritics(
+      createApplicationDto.alias,
     );
 
     if (await this.findByAlias(companyId, createApplicationDto.alias)) {

@@ -50,6 +50,10 @@ describe('ApplicationController', () => {
           provide: 'QueryRunnerProvider',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

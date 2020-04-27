@@ -28,6 +28,7 @@ import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner
 import { QueryRunner } from '../../../src/Types/type';
 import { LanguageToApplicationDto } from '../../../src/Dto/language.dto';
 import { classToClass } from 'class-transformer';
+import { StringProvider } from '../../../src/Services/Provider/string.provider';
 
 describe('ApplicationService', () => {
   let app: TestingModule;
@@ -50,6 +51,7 @@ describe('ApplicationService', () => {
         MomentProvider,
         TranslationService,
         QueryRunnerProvider,
+        StringProvider,
         {
           provide: 'LanguageRepository',
           useValue: {},

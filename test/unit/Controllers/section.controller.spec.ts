@@ -38,6 +38,10 @@ describe('SectionController', () => {
           provide: 'MomentProvider',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

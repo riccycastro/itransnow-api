@@ -25,6 +25,7 @@ import {
   buildWhiteLabelTranslation,
   buildWhiteLabelTranslationWithId1,
 } from '../../helper/builder/white-label-translation.build';
+import { StringProvider } from '../../../src/Services/Provider/string.provider';
 
 describe('WhiteLabelService', () => {
   let app: TestingModule;
@@ -47,6 +48,7 @@ describe('WhiteLabelService', () => {
         TranslationKeyService,
         TranslationService,
         QueryRunnerProvider,
+        StringProvider,
         {
           provide: 'ApplicationService',
           useValue: {},

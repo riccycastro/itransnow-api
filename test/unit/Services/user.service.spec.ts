@@ -35,6 +35,10 @@ describe('UserService', () => {
           provide: 'Connection',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

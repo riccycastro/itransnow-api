@@ -11,7 +11,6 @@ import { Section } from '../Entities/section.entity';
 import { SectionRepository } from '../Repositories/section.repository';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 import { Application } from '../Entities/application.entity';
-import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
@@ -19,6 +18,7 @@ import { TranslationKeyService } from './translation-key.service';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
+import { StringProvider } from './Provider/string.provider';
 
 export enum SectionIncludesEnum {
   application = 'application',
@@ -38,6 +38,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
     translationKeyService: TranslationKeyService,
     private readonly queryRunnerProvider: QueryRunnerProvider,
     private readonly momentProvider: MomentProvider,
+    private readonly stringProvider: StringProvider,
   ) {
     super(sectionRepository);
     this.applicationService = applicationService;
@@ -74,7 +75,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
   async create(sectionDto: SectionDto, application: Application): Promise<Section> {
 
-    const sectionAlias = removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase();
+    const sectionAlias = this.stringProvider.removeDiacritics(sectionDto.alias);
 
     if (await this.repository.findOne({ alias: sectionAlias, application: application, deletedAt: 0 })) {
       throw new BadRequestException(`Section with alias "${sectionDto.alias}" already exists in ${application.name} application`);
@@ -100,7 +101,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
   update(section: Section, sectionDto: SectionDto): Section {
     section.name = sectionDto.name;
     section.alias = sectionDto.alias ?
-      removeDiacritics(sectionDto.alias.trim().replace(/ /g, '_')).toLowerCase() :
+      this.stringProvider.removeDiacritics(sectionDto.alias) :
       section.alias;
     return section;
   }

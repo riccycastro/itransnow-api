@@ -10,7 +10,6 @@ import {
 import { WhiteLabelRepository } from '../Repositories/white-label.repository';
 import { ActiveWhiteLabelDto, WhiteLabelDto } from '../Dto/white-label.dto';
 import { Application } from '../Entities/application.entity';
-import { remove as removeDiacritics } from 'diacritics';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
@@ -23,6 +22,7 @@ import { TranslationStatusService } from './translation-status.service';
 import { AbstractEntityListingService } from './AbstractEntityListingService';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
+import { StringProvider } from './Provider/string.provider';
 
 export enum WhiteLabelIncludesEnum {
     application = 'application',
@@ -47,6 +47,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
       translationStatusService: TranslationStatusService,
       private readonly queryRunnerProvider: QueryRunnerProvider,
       private readonly momentProvider: MomentProvider,
+      private readonly stringProvider: StringProvider,
     ) {
         super(whiteLabelRepository);
         this.applicationService = applicationService;
@@ -157,7 +158,7 @@ export class WhiteLabelService extends AbstractEntityListingService<WhiteLabel> 
     }
 
     async validateAlias(whiteLabelDto: WhiteLabelDto, application: Application): Promise<string> {
-        const whiteLabelAlias = removeDiacritics(whiteLabelDto.alias.trim().replace(/ /g, '_')).toLowerCase();
+        const whiteLabelAlias = this.stringProvider.removeDiacritics(whiteLabelDto.alias);
 
         if (await this.repository.findOne({ alias: whiteLabelAlias, application: application, deletedAt: 0 })) {
             throw new BadRequestException(`White label with alias "${whiteLabelAlias}" already exists in ${application.name} application`);
