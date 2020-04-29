@@ -10,7 +10,7 @@ export class WhiteLabelDto {
 
   @ApiProperty()
   @IsDefined({ groups: ['post'] })
-  @IsOptional({groups: ['patch']})
+  @IsOptional({ groups: ['patch'] })
   @IsString()
   @IsNotEmpty()
   alias: string;
@@ -18,6 +18,6 @@ export class WhiteLabelDto {
 
 export class ActiveWhiteLabelDto {
   @ApiProperty()
-  @IsDefined({groups: ['patch']})
+  @IsDefined({ groups: ['patch'] })
   isActive: boolean;
 }

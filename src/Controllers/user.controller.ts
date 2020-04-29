@@ -5,7 +5,6 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UserController {
-
   @ApiBearerAuth()
   @Get('profile')
   profileAction(@Request() req) {

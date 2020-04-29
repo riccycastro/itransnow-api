@@ -9,10 +9,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly companyService: CompanyService;
   private readonly userService: UserService;
 
-  constructor(
-    companyService: CompanyService,
-    userService: UserService,
-  ) {
+  constructor(companyService: CompanyService, userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -23,20 +20,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-
-    const [user, company] = await Promise.all(
-      [
-        this.userService.getById(payload.sub),
-        this.companyService.getById(payload.companyId),
-      ],
-    );
+    const [user, company] = await Promise.all([
+      this.userService.getById(payload.sub),
+      this.companyService.getById(payload.companyId),
+    ]);
 
     if (company.deletedAt) {
       throw new NotFoundException();
     }
 
     if (!company.isActive) {
-      throw new ForbiddenException('you are trying to access an inactive account');
+      throw new ForbiddenException(
+        'you are trying to access an inactive account',
+      );
     }
 
     if (user.deletedAt) {
@@ -44,7 +40,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (!user.isActive) {
-      throw new ForbiddenException('You don\'t have access... please contact your system admin');
+      throw new ForbiddenException(
+        "You don't have access... please contact your system admin",
+      );
     }
 
     return user;

@@ -6,7 +6,6 @@ import { StringProvider } from './Provider/string.provider';
 
 @Injectable()
 export class CompanyService extends AbstractEntityService<Company> {
-
   constructor(
     companyRepository: CompanyRepository,
     private readonly stringProvider: StringProvider,

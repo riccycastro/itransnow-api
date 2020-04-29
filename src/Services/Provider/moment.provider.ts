@@ -3,7 +3,12 @@ import { Moment, MomentFormatSpecification, MomentInput, utc as MomentUtc } from
 
 @Injectable()
 export class MomentProvider {
-  utc(inp?: MomentInput, format?: MomentFormatSpecification, language?: string, strict?: boolean): Moment {
+  utc(
+    inp?: MomentInput,
+    format?: MomentFormatSpecification,
+    language?: string,
+    strict?: boolean,
+  ): Moment {
     return MomentUtc(inp, format, language, strict);
   }
 }

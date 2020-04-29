@@ -13,11 +13,15 @@ export const buildSection = (index: number) => {
   return section;
 };
 
-export const buildSectionWithApplication = (sectionIndex: number, applicationIndex: number) => {
+export const buildSectionWithApplication = (
+  sectionIndex: number,
+  applicationIndex: number,
+) => {
   const section = buildSection(sectionIndex);
   section.application = buildApplication(applicationIndex);
   return section;
 };
 
 export const buildSectionWithId1 = () => buildSection(1);
-export const buildSectionArray = () => [1, 2, 3, 4, 5].map(index => buildSection(index));
+export const buildSectionArray = () =>
+  [1, 2, 3, 4, 5].map(index => buildSection(index));

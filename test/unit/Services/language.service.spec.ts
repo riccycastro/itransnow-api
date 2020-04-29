@@ -11,10 +11,7 @@ describe('LanguageService', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      providers: [
-        LanguageService,
-        LanguageRepository,
-      ],
+      providers: [LanguageService, LanguageRepository],
     }).compile();
 
     languageService = app.get<LanguageService>(LanguageService);
@@ -29,18 +26,24 @@ describe('LanguageService', () => {
     it('should return an array of languages', async () => {
       const expectedResult = buildLanguageArray();
 
-      const findByApplicationSpy = jest.spyOn(languageRepository, 'findByApplication').mockImplementation(async () => {
-        return buildLanguageArray();
-      });
+      const findByApplicationSpy = jest
+        .spyOn(languageRepository, 'findByApplication')
+        .mockImplementation(async () => {
+          return buildLanguageArray();
+        });
 
-      expect(await languageService.getByApplication(1, 1, {})).toEqual(expectedResult);
+      expect(await languageService.getByApplication(1, 1, {})).toEqual(
+        expectedResult,
+      );
       expect(findByApplicationSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return an empty array', async () => {
-      const findByApplicationSpy = jest.spyOn(languageRepository, 'findByApplication').mockImplementation(async () => {
-        return [];
-      });
+      const findByApplicationSpy = jest
+        .spyOn(languageRepository, 'findByApplication')
+        .mockImplementation(async () => {
+          return [];
+        });
 
       expect(await languageService.getByApplication(1, 1, {})).toEqual([]);
       expect(findByApplicationSpy).toHaveBeenCalledTimes(1);
@@ -49,18 +52,24 @@ describe('LanguageService', () => {
 
   describe('getByCodes', () => {
     it('should return an array of languages', async () => {
-      const findSpy = jest.spyOn(languageRepository, 'find').mockImplementation(async () => {
-        return buildLanguageArray();
-      });
+      const findSpy = jest
+        .spyOn(languageRepository, 'find')
+        .mockImplementation(async () => {
+          return buildLanguageArray();
+        });
 
-      expect(await languageService.getByCodes([])).toEqual(buildLanguageArray());
+      expect(await languageService.getByCodes([])).toEqual(
+        buildLanguageArray(),
+      );
       expect(findSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return an empty array', async () => {
-      const findSpy = jest.spyOn(languageRepository, 'find').mockImplementation(async () => {
-        return [];
-      });
+      const findSpy = jest
+        .spyOn(languageRepository, 'find')
+        .mockImplementation(async () => {
+          return [];
+        });
       expect(await languageService.getByCodes([])).toEqual([]);
       expect(findSpy).toHaveBeenCalledTimes(1);
     });
@@ -68,22 +77,30 @@ describe('LanguageService', () => {
 
   describe('getByCodeInApplication', () => {
     it('should throw a not found exception', async () => {
-      const findByCodeInApplicationSpy = jest.spyOn(languageRepository, 'findByCodeInApplication').mockImplementation(async () => {
-        return undefined;
-      });
+      const findByCodeInApplicationSpy = jest
+        .spyOn(languageRepository, 'findByCodeInApplication')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
-      await expect(languageService.getByCodeInApplication(1, '')).rejects.toThrow(NotFoundException);
+      await expect(
+        languageService.getByCodeInApplication(1, ''),
+      ).rejects.toThrow(NotFoundException);
       expect(findByCodeInApplicationSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a language', async () => {
       const expectedResult = buildLanguageWithId1();
 
-      const findByCodeInApplicationSpy = jest.spyOn(languageRepository, 'findByCodeInApplication').mockImplementation(async () => {
-        return buildLanguageWithId1();
-      });
+      const findByCodeInApplicationSpy = jest
+        .spyOn(languageRepository, 'findByCodeInApplication')
+        .mockImplementation(async () => {
+          return buildLanguageWithId1();
+        });
 
-      expect(await languageService.getByCodeInApplication(1, 'en')).toEqual(expectedResult);
+      expect(await languageService.getByCodeInApplication(1, 'en')).toEqual(
+        expectedResult,
+      );
       expect(findByCodeInApplicationSpy).toHaveBeenCalledTimes(1);
     });
   });

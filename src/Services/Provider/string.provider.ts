@@ -2,7 +2,9 @@ import { remove as removeDiacritics } from 'diacritics';
 
 export class StringProvider {
   generateRandomString(length: number): string {
-    return [...Array(length)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
+    return [...Array(length)]
+      .map(i => (~~(Math.random() * 36)).toString(36))
+      .join('');
   }
 
   generateRandomStringWithLength10(): string {

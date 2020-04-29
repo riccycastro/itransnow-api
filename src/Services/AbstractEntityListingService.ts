@@ -3,8 +3,13 @@ import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { classToClass } from 'class-transformer';
 
-export abstract class AbstractEntityListingService<Entity> extends AbstractEntityService<Entity> {
-  async findInList(companyId: number, query?: QueryPaginationInterface): Promise<ListResult<Entity>>{
+export abstract class AbstractEntityListingService<
+  Entity
+> extends AbstractEntityService<Entity> {
+  async findInList(
+    companyId: number,
+    query?: QueryPaginationInterface,
+  ): Promise<ListResult<Entity>> {
     const listResult = await this.getEntityListAndCount(companyId, query);
 
     return {
@@ -13,5 +18,8 @@ export abstract class AbstractEntityListingService<Entity> extends AbstractEntit
     };
   }
 
-  protected abstract async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[Entity[], number]>
+  protected abstract async getEntityListAndCount(
+    entityId: number,
+    query?: QueryPaginationInterface,
+  ): Promise<[Entity[], number]>;
 }

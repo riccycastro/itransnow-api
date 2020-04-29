@@ -4,17 +4,17 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 
 @Entity('comments')
 export class Comment {
-  @PrimaryGeneratedColumn({type: 'bigint'})
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column()
   comment: string;
 
-  @Column({name: 'submitted_at'})
+  @Column({ name: 'submitted_at' })
   submittedAt: string;
 
   @ManyToOne(type => User, user => user.comments)
-  @JoinColumn({ name: "commented_by" })
+  @JoinColumn({ name: 'commented_by' })
   commentedBy: User;
 
   @ManyToOne(type => Translation, translation => translation.comments)

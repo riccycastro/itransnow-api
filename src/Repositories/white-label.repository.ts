@@ -14,28 +14,44 @@ export class WhiteLabelRepository extends AbstractRepository<WhiteLabel> {
       .getOne();
   }
 
-  async findByApplication(companyId: number, applicationId: number, query: QueryPaginationInterface): Promise<WhiteLabel[]> {
-    const queryBuilder = this
-      .createQueryBuilder('whiteLabels')
+  async findByApplication(
+    companyId: number,
+    applicationId: number,
+    query: QueryPaginationInterface,
+  ): Promise<WhiteLabel[]> {
+    const queryBuilder = this.createQueryBuilder('whiteLabels')
       .innerJoin('whiteLabels.application', 'application')
       .innerJoin('application.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })
-      .andWhere('application.id = :applicationId', { applicationId: applicationId })
-      .andWhere('whiteLabels.deletedAt = \'0\'');
-    return await this.setPagination(queryBuilder, query, 'whiteLabels').getMany();
+      .andWhere('application.id = :applicationId', {
+        applicationId: applicationId,
+      })
+      .andWhere("whiteLabels.deletedAt = '0'");
+    return await this.setPagination(
+      queryBuilder,
+      query,
+      'whiteLabels',
+    ).getMany();
   }
 
-  async findInList(applicationId: number, query: QueryPaginationInterface): Promise<[WhiteLabel[], number]> {
+  async findInList(
+    applicationId: number,
+    query: QueryPaginationInterface,
+  ): Promise<[WhiteLabel[], number]> {
     let queryBuilder = this.createQueryBuilder('whiteLabels')
       .innerJoin('whiteLabels.application', 'application')
       .where('application.id = :applicationId', { applicationId })
-      .andWhere('whiteLabels.deletedAt = \'0\'')
+      .andWhere("whiteLabels.deletedAt = '0'")
       .andWhere('application.deletedAt = 0');
 
     queryBuilder = this.queryName(queryBuilder, 'whiteLabels', query);
     queryBuilder = this.queryAlias(queryBuilder, 'whiteLabels', query);
     queryBuilder = this.queryActive(queryBuilder, 'whiteLabels', query);
 
-    return await this.setPagination(queryBuilder, query, 'whiteLabels').getManyAndCount();
+    return await this.setPagination(
+      queryBuilder,
+      query,
+      'whiteLabels',
+    ).getManyAndCount();
   }
 }

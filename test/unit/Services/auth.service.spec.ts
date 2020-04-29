@@ -51,24 +51,28 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return null if user not found', async () => {
-
-      const findByCredentialsSpy = jest.spyOn(usersService, 'findByCredentials').mockImplementation(async () => {
-        return undefined;
-      });
+      const findByCredentialsSpy = jest
+        .spyOn(usersService, 'findByCredentials')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
       expect(await authService.validateUser('', '')).toBeNull();
       expect(findByCredentialsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return null if user password doesnt match', async () => {
+      const findByCredentialsSpy = jest
+        .spyOn(usersService, 'findByCredentials')
+        .mockImplementation(async () => {
+          return new User();
+        });
 
-      const findByCredentialsSpy = jest.spyOn(usersService, 'findByCredentials').mockImplementation(async () => {
-        return new User();
-      });
-
-      const compareSpy = jest.spyOn(bcryptProvider, 'compare').mockImplementation(async () => {
-        return false;
-      });
+      const compareSpy = jest
+        .spyOn(bcryptProvider, 'compare')
+        .mockImplementation(async () => {
+          return false;
+        });
 
       expect(await authService.validateUser('', '12345')).toBeNull();
       expect(findByCredentialsSpy).toHaveBeenCalledTimes(1);
@@ -76,13 +80,17 @@ describe('AuthService', () => {
     });
 
     it('should return an user', async () => {
-      const findByCredentialsSpy = jest.spyOn(usersService, 'findByCredentials').mockImplementation(async () => {
-        return new User();
-      });
+      const findByCredentialsSpy = jest
+        .spyOn(usersService, 'findByCredentials')
+        .mockImplementation(async () => {
+          return new User();
+        });
 
-      const compareSpy = jest.spyOn(bcryptProvider, 'compare').mockImplementation(async () => {
-        return true;
-      });
+      const compareSpy = jest
+        .spyOn(bcryptProvider, 'compare')
+        .mockImplementation(async () => {
+          return true;
+        });
 
       expect(await authService.validateUser('', '12345')).toEqual(new User());
       expect(findByCredentialsSpy).toHaveBeenCalledTimes(1);
@@ -97,7 +105,9 @@ describe('AuthService', () => {
         return token;
       });
 
-      expect(await authService.login(buildUserWithId1())).toEqual({ accessToken: token });
+      expect(await authService.login(buildUserWithId1())).toEqual({
+        accessToken: token,
+      });
       expect(signSpy).toHaveBeenCalledTimes(1);
     });
   });

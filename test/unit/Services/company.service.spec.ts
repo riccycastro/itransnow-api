@@ -10,11 +10,7 @@ describe('CompanyService', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      providers: [
-        CompanyService,
-        CompanyRepository,
-        StringProvider,
-      ],
+      providers: [CompanyService, CompanyRepository, StringProvider],
     }).compile();
 
     companyService = app.get<CompanyService>(CompanyService);
@@ -22,7 +18,6 @@ describe('CompanyService', () => {
 
   describe('create', () => {
     it('should return a company', () => {
-
       const expectedResult = new Company();
       expectedResult.name = 'Company Name';
       expectedResult.alias = 'company_name';

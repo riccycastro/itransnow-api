@@ -7,7 +7,10 @@ export abstract class AbstractEntityService<Entity> {
     this.repository = repository;
   }
 
-  async save(entity: Entity, entityManager: EntityManager = null): Promise<Entity> {
+  async save(
+    entity: Entity,
+    entityManager: EntityManager = null,
+  ): Promise<Entity> {
     if (entityManager) {
       return await entityManager.save(entity);
     }
@@ -25,7 +28,11 @@ export abstract class AbstractEntityService<Entity> {
     return indexObject;
   }
 
-  protected async getIncludes(companyId: number, entity: Entity, query: any): Promise<Entity> {
+  protected async getIncludes(
+    parentId: number,
+    entity: Entity,
+    query: any,
+  ): Promise<Entity> {
     return entity;
   }
 }

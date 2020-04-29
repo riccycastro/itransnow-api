@@ -30,16 +30,21 @@ import { ListResult } from '../Types/type';
 export class ApplicationController {
   private readonly applicationService: ApplicationService;
 
-  constructor(
-    applicationService: ApplicationService,
-  ) {
+  constructor(applicationService: ApplicationService) {
     this.applicationService = applicationService;
   }
 
   @ApiParam({ required: true, name: 'alias', type: 'string' })
   @Get(':alias')
-  async getApplicationAction(@Request() req, @Param('alias') alias): Promise<Application> {
-    return await this.applicationService.getByAliasOrFail(req.user.companyId, alias, req.query);
+  async getApplicationAction(
+    @Request() req,
+    @Param('alias') alias,
+  ): Promise<Application> {
+    return await this.applicationService.getByAliasOrFail(
+      req.user.companyId,
+      alias,
+      req.query,
+    );
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -47,11 +52,24 @@ export class ApplicationController {
   @ApiQuery({ name: 'orderField', required: false, type: 'string' })
   @ApiQuery({ name: 'name', required: false, type: 'string' })
   @ApiQuery({ name: 'alias', required: false, type: 'string' })
-  @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
-  @ApiQuery({ name: 'includes', required: false, isArray: true, enum: ApplicationIncludesEnum })
+  @ApiQuery({
+    name: 'orderDirection',
+    required: false,
+    type: 'string',
+    enum: OrderDirectionEnum,
+  })
+  @ApiQuery({
+    name: 'includes',
+    required: false,
+    isArray: true,
+    enum: ApplicationIncludesEnum,
+  })
   @Get()
   @ApiResponse({
-    status: 200, description: 'Returns a list of applications', isArray: true, schema: {
+    status: 200,
+    description: 'Returns a list of applications',
+    isArray: true,
+    schema: {
       type: 'array',
       items: {
         type: 'object',
@@ -65,14 +83,25 @@ export class ApplicationController {
       },
     },
   })
-  async getApplicationsAction(@Request() req): Promise<ListResult<Application>> {
-    return await this.applicationService.findInList(req.user.companyId, req.query);
+  async getApplicationsAction(
+    @Request() req,
+  ): Promise<ListResult<Application>> {
+    return await this.applicationService.findInList(
+      req.user.companyId,
+      req.query,
+    );
   }
 
   @Post()
-  async createApplicationAction(@Body() createApplicationDto: ApplicationDto, @Request() req) {
+  async createApplicationAction(
+    @Body() createApplicationDto: ApplicationDto,
+    @Request() req,
+  ) {
     await this.applicationService.save(
-      await this.applicationService.create(createApplicationDto, req.user.companyId),
+      await this.applicationService.create(
+        createApplicationDto,
+        req.user.companyId,
+      ),
     );
   }
 
@@ -105,7 +134,10 @@ export class ApplicationController {
   ): Promise<Application> {
     return await this.applicationService.save(
       this.applicationService.active(
-        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+        await this.applicationService.getByAliasOrFail(
+          req.user.companyId,
+          alias,
+        ),
         activeApplicationDto,
       ),
     );
@@ -134,11 +166,9 @@ export class ApplicationController {
     @Body() addLanguageToApplicationDto: LanguageToApplicationDto,
     @Param('alias') alias: string,
   ): Promise<Application> {
-    return await this.applicationService.save(
-      await this.applicationService.addLanguages(
-        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
-        addLanguageToApplicationDto,
-      ),
+    return await this.applicationService.addLanguages(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      addLanguageToApplicationDto,
     );
   }
 
@@ -150,7 +180,10 @@ export class ApplicationController {
   ) {
     return await this.applicationService.save(
       await this.applicationService.removeLanguages(
-        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+        await this.applicationService.getByAliasOrFail(
+          req.user.companyId,
+          alias,
+        ),
         removeLanguageToApplicationDto,
       ),
     );
@@ -168,6 +201,4 @@ export class ApplicationController {
       translationDto,
     );
   }
-
 }
-

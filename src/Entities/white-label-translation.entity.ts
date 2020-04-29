@@ -6,20 +6,28 @@ import { Translation } from './translation.entity';
 
 @Entity('white_label_translations')
 export class WhiteLabelTranslation {
-
   @Exclude()
-  @PrimaryGeneratedColumn({type: 'bigint'})
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(type => WhiteLabel, whiteLabel => whiteLabel.whiteLabelTranslations)
+  @ManyToOne(
+    type => WhiteLabel,
+    whiteLabel => whiteLabel.whiteLabelTranslations,
+  )
   @JoinColumn({ name: 'white_label_id' })
   whiteLabel: WhiteLabel;
 
-  @ManyToOne(type => TranslationKey, translationKey => translationKey.whiteLabelTranslations)
+  @ManyToOne(
+    type => TranslationKey,
+    translationKey => translationKey.whiteLabelTranslations,
+  )
   @JoinColumn({ name: 'translation_key_id' })
   translationKey: TranslationKey;
 
-  @ManyToOne(type => Translation, translation => translation.whiteLabelTranslations)
+  @ManyToOne(
+    type => Translation,
+    translation => translation.whiteLabelTranslations,
+  )
   @JoinColumn({ name: 'translation_id' })
   translation: Translation;
 }

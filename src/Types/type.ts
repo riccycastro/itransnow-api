@@ -1,12 +1,12 @@
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
 
 export interface StringIndexedByString {
-  [k: string]: string
+  [k: string]: string;
 }
 
 export interface ListResult<Entity> {
-  data: Entity[],
-  count: number
+  data: Entity[];
+  count: number;
 }
 
 export interface QueryRunner {

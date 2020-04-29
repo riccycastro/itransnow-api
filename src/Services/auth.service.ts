@@ -6,17 +6,15 @@ import { UserService } from './user.service';
 
 @Injectable()
 export class AuthService {
-
   constructor(
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly bcryptProvider: BcryptProvider,
-  ) {
-  }
+  ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByCredentials(username);
-    if (user && await this.bcryptProvider.compare(pass, user.password)) {
+    if (user && (await this.bcryptProvider.compare(pass, user.password))) {
       return user;
     }
     return null;

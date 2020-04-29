@@ -9,7 +9,6 @@ import { QueryRunnerProvider } from './Provider/query-runner.provider';
 
 @Injectable()
 export class UserService extends AbstractEntityService<User> {
-
   private readonly bcryptProvider: BcryptProvider;
   private readonly companyService: CompanyService;
 
@@ -25,7 +24,9 @@ export class UserService extends AbstractEntityService<User> {
   }
 
   async findByCredentials(username: string): Promise<User | undefined> {
-    return await (this.repository as UserRepository).findUserByCredentials(username);
+    return await (this.repository as UserRepository).findUserByCredentials(
+      username,
+    );
   }
 
   async getById(id: number): Promise<User> {
@@ -47,8 +48,10 @@ export class UserService extends AbstractEntityService<User> {
     await queryRunner.startTransaction();
 
     try {
-
-      const company = await this.companyService.save(this.companyService.create(registerUserDto.companyName), queryRunner.manager);
+      const company = await this.companyService.save(
+        this.companyService.create(registerUserDto.companyName),
+        queryRunner.manager,
+      );
 
       let user = new User();
       user.email = registerUserDto.email;

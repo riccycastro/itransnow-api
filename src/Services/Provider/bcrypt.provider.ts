@@ -20,8 +20,8 @@ export class BcryptProvider {
 
     //we need to make sure that if salt is a number in a string(ex: '12')
     //that it returns the value as a number type because of the rounds
-    if(typeof salt === 'string' && !isNaN(Number(salt))) {
-      salt = Number(salt)
+    if (typeof salt === 'string' && !isNaN(Number(salt))) {
+      salt = Number(salt);
     }
 
     return salt;

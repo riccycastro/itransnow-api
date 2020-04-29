@@ -4,12 +4,9 @@ import { QueryRunner } from '../../Types/type';
 
 @Injectable()
 export class QueryRunnerProvider {
-  constructor(
-    private readonly connection: Connection,
-  ) {
-  }
+  constructor(private readonly connection: Connection) {}
 
-  createQueryRunner(mode?: "master" | "slave"): QueryRunner {
+  createQueryRunner(mode?: 'master' | 'slave'): QueryRunner {
     return this.connection.createQueryRunner(mode);
   }
 }

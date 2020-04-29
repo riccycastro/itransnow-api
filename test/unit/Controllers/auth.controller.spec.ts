@@ -52,9 +52,11 @@ describe('AuthController', () => {
         accessToken: 'aVeryStrongAccessToken',
       };
 
-      const loginSpy = jest.spyOn(authService, 'login').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const loginSpy = jest
+        .spyOn(authService, 'login')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
       req.user = buildUserWithId1();
 

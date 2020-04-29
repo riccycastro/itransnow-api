@@ -5,18 +5,17 @@ import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
-  }
-  
+  constructor(private readonly authService: AuthService) {}
+
   @ApiBody({
     schema: {
       properties: {
         username: {
-          type: "string"
+          type: 'string',
         },
         password: {
-          type: "string"
-        }
+          type: 'string',
+        },
       },
     },
   })

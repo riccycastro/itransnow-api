@@ -25,13 +25,18 @@ import { ListResult } from '../Types/type';
 @UseGuards(AuthGuard('jwt'))
 @Controller('sections')
 export class SectionController {
-
-  constructor(private readonly sectionService: SectionService) {
-  }
+  constructor(private readonly sectionService: SectionService) {}
 
   @Get(':alias')
-  async getSectionAction(@Request() req, @Param('alias') alias: string): Promise<Section> {
-    return await this.sectionService.findByAliasOrFail(req.user.companyId, alias, req.query);
+  async getSectionAction(
+    @Request() req,
+    @Param('alias') alias: string,
+  ): Promise<Section> {
+    return await this.sectionService.findByAliasOrFail(
+      req.user.companyId,
+      alias,
+      req.query,
+    );
   }
 
   @ApiQuery({ name: 'offset', required: false, type: 'number' })
@@ -39,15 +44,28 @@ export class SectionController {
   @ApiQuery({ name: 'orderField', required: false, type: 'string' })
   @ApiQuery({ name: 'name', required: false, type: 'string' })
   @ApiQuery({ name: 'alias', required: false, type: 'string' })
-  @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
-  @ApiQuery({ name: 'includes', required: false, isArray: true, enum: SectionIncludesEnum })
+  @ApiQuery({
+    name: 'orderDirection',
+    required: false,
+    type: 'string',
+    enum: OrderDirectionEnum,
+  })
+  @ApiQuery({
+    name: 'includes',
+    required: false,
+    isArray: true,
+    enum: SectionIncludesEnum,
+  })
   @Get()
   async getSectionsAction(@Request() req): Promise<ListResult<Section>> {
     return await this.sectionService.findInList(req.user.companyId, req.query);
   }
 
   @Delete(':alias')
-  async deleteSectionAction(@Request() req, @Param('alias') alias: string): Promise<void> {
+  async deleteSectionAction(
+    @Request() req,
+    @Param('alias') alias: string,
+  ): Promise<void> {
     await this.sectionService.save(
       this.sectionService.delete(
         await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
@@ -56,7 +74,11 @@ export class SectionController {
   }
 
   @Patch(':alias')
-  async updateSectionAction(@Request() req, @Body() sectionDto: SectionDto, @Param('alias') alias: string): Promise<Section> {
+  async updateSectionAction(
+    @Request() req,
+    @Body() sectionDto: SectionDto,
+    @Param('alias') alias: string,
+  ): Promise<Section> {
     return await this.sectionService.save(
       await this.sectionService.update(
         await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
@@ -66,7 +88,11 @@ export class SectionController {
   }
 
   @Patch(':alias/active')
-  async activeSectionAction(@Request() req, @Body() activeSectionDto: ActiveSectionDto, @Param('alias') alias: string): Promise<Section> {
+  async activeSectionAction(
+    @Request() req,
+    @Body() activeSectionDto: ActiveSectionDto,
+    @Param('alias') alias: string,
+  ): Promise<Section> {
     return await this.sectionService.save(
       await this.sectionService.active(
         await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
@@ -76,7 +102,11 @@ export class SectionController {
   }
 
   @Post(':alias/translation-keys')
-  async addTranslationKeyToSectionAction(@Request() req, @Body() addTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
+  async addTranslationKeyToSectionAction(
+    @Request() req,
+    @Body() addTranslationKeyToSectionDto: TranslationKeyToSectionDto,
+    @Param('alias') alias: string,
+  ): Promise<void> {
     await this.sectionService.addTranslationKeys(
       req.user.companyId,
       await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
@@ -85,7 +115,11 @@ export class SectionController {
   }
 
   @Delete(':alias/translation-keys')
-  async removeTranslationKeyToSectionAction(@Request() req, @Body() removeTranslationKeyToSectionDto: TranslationKeyToSectionDto, @Param('alias') alias: string): Promise<void> {
+  async removeTranslationKeyToSectionAction(
+    @Request() req,
+    @Body() removeTranslationKeyToSectionDto: TranslationKeyToSectionDto,
+    @Param('alias') alias: string,
+  ): Promise<void> {
     await this.sectionService.removeTranslationKeys(
       req.user.companyId,
       await this.sectionService.findByAliasOrFail(req.user.companyId, alias),

@@ -10,7 +10,7 @@ export class ApplicationDto {
 
   @ApiProperty()
   @IsDefined({ groups: ['post'] })
-  @IsOptional({groups: ['patch']})
+  @IsOptional({ groups: ['patch'] })
   @IsNotEmpty()
   @IsString()
   alias: string;
@@ -18,6 +18,6 @@ export class ApplicationDto {
 
 export class ActiveApplicationDto {
   @ApiProperty()
-  @IsDefined({groups: ['patch']})
+  @IsDefined({ groups: ['patch'] })
   isActive: boolean;
 }

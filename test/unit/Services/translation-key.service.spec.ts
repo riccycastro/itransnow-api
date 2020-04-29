@@ -12,14 +12,15 @@ describe('TranslationKeyService', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      providers: [
-        TranslationKeyService,
-        TranslationKeyRepository,
-      ],
+      providers: [TranslationKeyService, TranslationKeyRepository],
     }).compile();
 
-    translationKeyService = app.get<TranslationKeyService>(TranslationKeyService);
-    translationKeyRepository = app.get<TranslationKeyRepository>(TranslationKeyRepository);
+    translationKeyService = app.get<TranslationKeyService>(
+      TranslationKeyService,
+    );
+    translationKeyRepository = app.get<TranslationKeyRepository>(
+      TranslationKeyRepository,
+    );
   });
 
   afterEach(() => {
@@ -28,53 +29,77 @@ describe('TranslationKeyService', () => {
 
   describe('getByTranslationKeyInApplication', () => {
     it('should throw a not found exception error', async () => {
-      const findByTranslationKeyInApplicationSpy = jest.spyOn(translationKeyRepository, 'findByTranslationKeyInApplication').mockImplementation(async () => {
-        return undefined;
-      });
+      const findByTranslationKeyInApplicationSpy = jest
+        .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
-      await expect(translationKeyService.getByTranslationKeyInApplication(1, 1, 'string')).rejects.toThrow(NotFoundException);
+      await expect(
+        translationKeyService.getByTranslationKeyInApplication(1, 1, 'string'),
+      ).rejects.toThrow(NotFoundException);
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a transaltion key', async () => {
-      const findByTranslationKeyInApplicationSpy = jest.spyOn(translationKeyRepository, 'findByTranslationKeyInApplication').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
-      });
+      const findByTranslationKeyInApplicationSpy = jest
+        .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
+        .mockImplementation(async () => {
+          return buildTranslationKeyWithId1();
+        });
 
-      expect(await translationKeyService.getByTranslationKeyInApplication(1, 1, 'string')).toEqual(buildTranslationKeyWithId1());
+      expect(
+        await translationKeyService.getByTranslationKeyInApplication(
+          1,
+          1,
+          'string',
+        ),
+      ).toEqual(buildTranslationKeyWithId1());
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('getByTranslationKeys', () => {
     it('should return a translation key array', async () => {
-      const findByTranslationKeysInApplicationSpy = jest.spyOn(translationKeyRepository, 'findByTranslationKeysInApplication').mockImplementation(async () => {
-        return buildTranslationKeyArray();
-      });
+      const findByTranslationKeysInApplicationSpy = jest
+        .spyOn(translationKeyRepository, 'findByTranslationKeysInApplication')
+        .mockImplementation(async () => {
+          return buildTranslationKeyArray();
+        });
 
-      expect(await translationKeyService.getByTranslationKeys(1, ['keys'])).toEqual(buildTranslationKeyArray());
+      expect(
+        await translationKeyService.getByTranslationKeys(1, ['keys']),
+      ).toEqual(buildTranslationKeyArray());
       expect(findByTranslationKeysInApplicationSpy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('get', () => {
     it('should return a new translation key', async () => {
-      const findByTranslationKeyInApplicationSpy = jest.spyOn(translationKeyRepository, 'findByTranslationKeyInApplication').mockImplementation(async () => {
-        return undefined;
-      });
+      const findByTranslationKeyInApplicationSpy = jest
+        .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
+        .mockImplementation(async () => {
+          return undefined;
+        });
       const expectedResult = new TranslationKey();
       expectedResult.alias = 'translationKey';
 
-      expect(await translationKeyService.get(1, 1, 'translationKey')).toEqual(expectedResult);
+      expect(await translationKeyService.get(1, 1, 'translationKey')).toEqual(
+        expectedResult,
+      );
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return retrieved translation key', async () => {
-      const findByTranslationKeyInApplicationSpy = jest.spyOn(translationKeyRepository, 'findByTranslationKeyInApplication').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
-      });
+      const findByTranslationKeyInApplicationSpy = jest
+        .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
+        .mockImplementation(async () => {
+          return buildTranslationKeyWithId1();
+        });
 
-      expect(await translationKeyService.get(1, 1, 'translationKey')).toEqual(buildTranslationKeyWithId1());
+      expect(await translationKeyService.get(1, 1, 'translationKey')).toEqual(
+        buildTranslationKeyWithId1(),
+      );
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
   });

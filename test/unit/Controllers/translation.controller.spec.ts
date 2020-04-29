@@ -52,7 +52,9 @@ describe('TranslationController', () => {
       ],
     }).compile();
 
-    translationController = app.get<TranslationController>(TranslationController);
+    translationController = app.get<TranslationController>(
+      TranslationController,
+    );
     translationService = app.get<TranslationService>(TranslationService);
 
     req = createRequest({
@@ -96,13 +98,20 @@ describe('TranslationController', () => {
   describe('getTranslationsAction', () => {
     it('should return a translation string', async () => {
       const expectedResult = {
-        'translationKey': 'translation value',
+        translationKey: 'translation value',
       };
-      const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return JSON.stringify(expectedResult);
-      });
+      const getTranslationsSpy = jest
+        .spyOn(translationService, 'getTranslations')
+        .mockImplementation(async () => {
+          return JSON.stringify(expectedResult);
+        });
 
-      expect(await translationController.getTranslationsAction(req, new TranslationDto())).toEqual(JSON.stringify(expectedResult));
+      expect(
+        await translationController.getTranslationsAction(
+          req,
+          new TranslationDto(),
+        ),
+      ).toEqual(JSON.stringify(expectedResult));
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -110,32 +119,50 @@ describe('TranslationController', () => {
   describe('getTranslationsJsonFile', () => {
     it('should throw internal server error exception', async () => {
       const expectedResult = {
-        'translationKey': 'translation value',
+        translationKey: 'translation value',
       };
 
-      const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return JSON.stringify(expectedResult);
-      });
+      const getTranslationsSpy = jest
+        .spyOn(translationService, 'getTranslations')
+        .mockImplementation(async () => {
+          return JSON.stringify(expectedResult);
+        });
 
       res.write = (data: any, func: Function) => {
         func({});
       };
 
-      await expect(translationController.getTranslationsJsonFile(req, new TranslationDto(), res)).rejects.toThrow(InternalServerErrorException);
+      await expect(
+        translationController.getTranslationsJsonFile(
+          req,
+          new TranslationDto(),
+          res,
+        ),
+      ).rejects.toThrow(InternalServerErrorException);
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a json translation file', async () => {
       const expectedResult = {
-        'translationKey': 'translation value',
+        translationKey: 'translation value',
       };
-      const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return JSON.stringify(expectedResult);
-      });
+      const getTranslationsSpy = jest
+        .spyOn(translationService, 'getTranslations')
+        .mockImplementation(async () => {
+          return JSON.stringify(expectedResult);
+        });
 
-      expect(await translationController.getTranslationsJsonFile(req, new TranslationDto(), res)).toBe(undefined);
+      expect(
+        await translationController.getTranslationsJsonFile(
+          req,
+          new TranslationDto(),
+          res,
+        ),
+      ).toBe(undefined);
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
-      expect(res.getHeader('Content-disposition')).toBe('attachment; filename=translation.json');
+      expect(res.getHeader('Content-disposition')).toBe(
+        'attachment; filename=translation.json',
+      );
       expect(res.getHeader('Content-type')).toBe('application/json');
       expect(res.getData()).toBe(JSON.stringify(expectedResult));
     });
@@ -144,32 +171,50 @@ describe('TranslationController', () => {
   describe('getTranslationsYamlFile', () => {
     it('should throw internal server error exception', async () => {
       const expectedResult = {
-        'translationKey': 'translation value',
+        translationKey: 'translation value',
       };
 
-      const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return JSON.stringify(expectedResult);
-      });
+      const getTranslationsSpy = jest
+        .spyOn(translationService, 'getTranslations')
+        .mockImplementation(async () => {
+          return JSON.stringify(expectedResult);
+        });
 
       res.write = (data: any, func: Function) => {
         func({});
       };
 
-      await expect(translationController.getTranslationsYamlFile(req, new TranslationDto(), res)).rejects.toThrow(InternalServerErrorException);
+      await expect(
+        translationController.getTranslationsYamlFile(
+          req,
+          new TranslationDto(),
+          res,
+        ),
+      ).rejects.toThrow(InternalServerErrorException);
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a yml translation file', async () => {
       const expectedResult = {
-        'translationKey': 'translation value',
+        translationKey: 'translation value',
       };
-      const getTranslationsSpy = jest.spyOn(translationService, 'getTranslations').mockImplementation(async () => {
-        return JSON.stringify(expectedResult);
-      });
+      const getTranslationsSpy = jest
+        .spyOn(translationService, 'getTranslations')
+        .mockImplementation(async () => {
+          return JSON.stringify(expectedResult);
+        });
 
-      expect(await translationController.getTranslationsYamlFile(req, new TranslationDto(), res)).toBe(undefined);
+      expect(
+        await translationController.getTranslationsYamlFile(
+          req,
+          new TranslationDto(),
+          res,
+        ),
+      ).toBe(undefined);
       expect(getTranslationsSpy).toHaveBeenCalledTimes(1);
-      expect(res.getHeader('Content-disposition')).toBe('attachment; filename=translation.yaml');
+      expect(res.getHeader('Content-disposition')).toBe(
+        'attachment; filename=translation.yaml',
+      );
       expect(res.getHeader('Content-type')).toBe('text/yaml');
       expect(res.getData()).toBe(JSON.stringify(expectedResult));
     });

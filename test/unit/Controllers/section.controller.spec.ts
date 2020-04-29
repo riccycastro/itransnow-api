@@ -62,21 +62,29 @@ describe('SectionController', () => {
 
   describe('getSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.getSectionAction(req, 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.getSectionAction(req, 'alias'),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a section', async () => {
       const section = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return section;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return section;
+        });
 
-      expect(await sectionController.getSectionAction(req, 'alias')).toEqual(section);
+      expect(await sectionController.getSectionAction(req, 'alias')).toEqual(
+        section,
+      );
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -90,51 +98,71 @@ describe('SectionController', () => {
         count: 5,
       };
 
-      const findInListSpy = jest.spyOn(sectionService, 'findInList').mockImplementation(async () => {
-        return expectedResponse;
-      });
+      const findInListSpy = jest
+        .spyOn(sectionService, 'findInList')
+        .mockImplementation(async () => {
+          return expectedResponse;
+        });
 
-      expect(await sectionController.getSectionsAction(req)).toEqual(expectedResponse);
+      expect(await sectionController.getSectionsAction(req)).toEqual(
+        expectedResponse,
+      );
       expect(findInListSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return an empty list of section with count equal 0', async () => {
       const expectedResponse = { data: [], count: 0 };
 
-      const findInListSpy = jest.spyOn(sectionService, 'findInList').mockImplementation(async () => {
-        return expectedResponse;
-      });
+      const findInListSpy = jest
+        .spyOn(sectionService, 'findInList')
+        .mockImplementation(async () => {
+          return expectedResponse;
+        });
 
-      expect(await sectionController.getSectionsAction(req)).toEqual(expectedResponse);
+      expect(await sectionController.getSectionsAction(req)).toEqual(
+        expectedResponse,
+      );
       expect(findInListSpy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('deleteSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.deleteSectionAction(req, 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.deleteSectionAction(req, 'alias'),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should call all necessary methods to delete section', async () => {
       const section = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return section;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return section;
+        });
 
-      const deleteSpy = jest.spyOn(sectionService, 'delete').mockImplementation(() => {
-        return section;
-      });
+      const deleteSpy = jest
+        .spyOn(sectionService, 'delete')
+        .mockImplementation(() => {
+          return section;
+        });
 
-      const saveSpy = jest.spyOn(sectionService, 'save').mockImplementation(async () => {
-        return section;
-      });
+      const saveSpy = jest
+        .spyOn(sectionService, 'save')
+        .mockImplementation(async () => {
+          return section;
+        });
 
-      expect(await sectionController.deleteSectionAction(req, 'alias')).toBe(undefined);
+      expect(await sectionController.deleteSectionAction(req, 'alias')).toBe(
+        undefined,
+      );
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(deleteSpy).toHaveBeenCalledTimes(1);
       expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -143,25 +171,39 @@ describe('SectionController', () => {
 
   describe('updateSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.updateSectionAction(req, new SectionDto(), 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.updateSectionAction(req, new SectionDto(), 'alias'),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a section', async () => {
       const expectedResult = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      const updateSpy = jest.spyOn(sectionService, 'update').mockImplementation(() => {
-        return expectedResult;
-      });
+      const updateSpy = jest
+        .spyOn(sectionService, 'update')
+        .mockImplementation(() => {
+          return expectedResult;
+        });
 
-      expect(await sectionController.updateSectionAction(req, new SectionDto(), 'alias')).toEqual(expectedResult);
+      expect(
+        await sectionController.updateSectionAction(
+          req,
+          new SectionDto(),
+          'alias',
+        ),
+      ).toEqual(expectedResult);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(updateSpy).toHaveBeenCalledTimes(1);
     });
@@ -169,29 +211,49 @@ describe('SectionController', () => {
 
   describe('activeSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.activeSectionAction(req, new ActiveSectionDto(), 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.activeSectionAction(
+          req,
+          new ActiveSectionDto(),
+          'alias',
+        ),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a section', async () => {
       const expectedResult = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      const activeSpy = jest.spyOn(sectionService, 'active').mockImplementation(() => {
-        return expectedResult;
-      });
+      const activeSpy = jest
+        .spyOn(sectionService, 'active')
+        .mockImplementation(() => {
+          return expectedResult;
+        });
 
-      const saveSpy = jest.spyOn(sectionService, 'save').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const saveSpy = jest
+        .spyOn(sectionService, 'save')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      expect(await sectionController.activeSectionAction(req, new ActiveSectionDto(), 'alias')).toEqual(expectedResult);
+      expect(
+        await sectionController.activeSectionAction(
+          req,
+          new ActiveSectionDto(),
+          'alias',
+        ),
+      ).toEqual(expectedResult);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(activeSpy).toHaveBeenCalledTimes(1);
       expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -200,53 +262,89 @@ describe('SectionController', () => {
 
   describe('addTranslationKeyToSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.addTranslationKeyToSectionAction(req, new TranslationKeyToSectionDto(), 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.addTranslationKeyToSectionAction(
+          req,
+          new TranslationKeyToSectionDto(),
+          'alias',
+        ),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should call all necessary methods to add translation key to section', async () => {
       const expectedResult = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      const addTranslationKeysSpy = jest.spyOn(sectionService, 'addTranslationKeys').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const addTranslationKeysSpy = jest
+        .spyOn(sectionService, 'addTranslationKeys')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      expect(await sectionController.addTranslationKeyToSectionAction(req, new TranslationKeyToSectionDto(), 'alias')).toBe(undefined);
+      expect(
+        await sectionController.addTranslationKeyToSectionAction(
+          req,
+          new TranslationKeyToSectionDto(),
+          'alias',
+        ),
+      ).toBe(undefined);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(addTranslationKeysSpy).toHaveBeenCalledTimes(1);
-    })
+    });
   });
 
   describe('removeTranslationKeyToSectionAction', () => {
     it('should throw not found exception', async () => {
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        throw new NotFoundException();
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          throw new NotFoundException();
+        });
 
-      await expect(sectionController.removeTranslationKeyToSectionAction(req, new TranslationKeyToSectionDto(), 'alias')).rejects.toThrow();
+      await expect(
+        sectionController.removeTranslationKeyToSectionAction(
+          req,
+          new TranslationKeyToSectionDto(),
+          'alias',
+        ),
+      ).rejects.toThrow();
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should call all necessary methods to remove translation key to section', async () => {
       const expectedResult = buildSectionWithId1();
-      const findByAliasOrFailSpy = jest.spyOn(sectionService, 'findByAliasOrFail').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const findByAliasOrFailSpy = jest
+        .spyOn(sectionService, 'findByAliasOrFail')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      const removeTranslationKeysSpy = jest.spyOn(sectionService, 'removeTranslationKeys').mockImplementation(async () => {
-        return expectedResult;
-      });
+      const removeTranslationKeysSpy = jest
+        .spyOn(sectionService, 'removeTranslationKeys')
+        .mockImplementation(async () => {
+          return expectedResult;
+        });
 
-      expect(await sectionController.removeTranslationKeyToSectionAction(req, new TranslationKeyToSectionDto(), 'alias')).toBe(undefined);
+      expect(
+        await sectionController.removeTranslationKeyToSectionAction(
+          req,
+          new TranslationKeyToSectionDto(),
+          'alias',
+        ),
+      ).toBe(undefined);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(removeTranslationKeysSpy).toHaveBeenCalledTimes(1);
-    })
+    });
   });
 });

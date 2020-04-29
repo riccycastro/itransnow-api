@@ -2,8 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn, ManyToOne, OneToMany,
-  PrimaryGeneratedColumn, RelationId,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
@@ -12,7 +15,6 @@ import { WhiteLabelTranslation } from './white-label-translation.entity';
 
 @Entity('white_labels')
 export class WhiteLabel {
-
   @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
@@ -27,13 +29,21 @@ export class WhiteLabel {
   isActive: boolean;
 
   @Exclude()
-  @Column({name: 'deleted_at_unix'})
+  @Column({ name: 'deleted_at_unix' })
   deletedAt: number;
 
-  @CreateDateColumn({ name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({
+    name: 'created_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: string;
 
-  @UpdateDateColumn({ name: 'updated_at', precision: 0, default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   updatedAt: string;
 
   @ManyToOne(type => Application, application => application.whiteLabels)
@@ -44,6 +54,9 @@ export class WhiteLabel {
   @RelationId((whiteLabel: WhiteLabel) => whiteLabel.application)
   applicationId: number;
 
-  @OneToMany(type => WhiteLabelTranslation, whiteLabelTranslation => whiteLabelTranslation.whiteLabel)
+  @OneToMany(
+    type => WhiteLabelTranslation,
+    whiteLabelTranslation => whiteLabelTranslation.whiteLabel,
+  )
   whiteLabelTranslations: WhiteLabelTranslation[];
 }

@@ -36,35 +36,69 @@ import { ExtensionValidatorMiddleware } from './Middleware/extension-validator.m
 import { MomentProvider } from './Services/Provider/moment.provider';
 import { QueryRunnerProvider } from './Services/Provider/query-runner.provider';
 import { StringProvider } from './Services/Provider/string.provider';
+import { TranslationKeyController } from './Controllers/translation-key.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    TypeOrmModule.forFeature([ApplicationRepository, CompanyRepository, UserRepository, LanguageRepository, SectionRepository, TranslationRepository, TranslationKeyRepository, TranslationStatusRepository, WhiteLabelRepository]),
+    TypeOrmModule.forFeature([
+      ApplicationRepository,
+      CompanyRepository,
+      UserRepository,
+      LanguageRepository,
+      SectionRepository,
+      TranslationRepository,
+      TranslationKeyRepository,
+      TranslationStatusRepository,
+      WhiteLabelRepository,
+    ]),
     PassportModule,
     JwtModule.register({
       secret: process.env.SECRET,
-      signOptions: {expiresIn: process.env.HASH_EXPIRES_IN},
+      signOptions: { expiresIn: process.env.HASH_EXPIRES_IN },
     }),
   ],
-  controllers: [AppController, AuthController, UserController, ApplicationController, SectionController, TranslationController, WhiteLabelController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    ApplicationController,
+    SectionController,
+    TranslationController,
+    WhiteLabelController,
+    TranslationKeyController,
+  ],
   providers: [
-    UserService, AuthService, CompanyService, ApplicationService, LanguageService, SectionService, TranslationService, TranslationKeyService, TranslationStatusService, WhiteLabelService,
-    BcryptProvider, MomentProvider, QueryRunnerProvider, StringProvider,
-    LocalStrategy, JwtStrategy,
+    UserService,
+    AuthService,
+    CompanyService,
+    ApplicationService,
+    LanguageService,
+    SectionService,
+    TranslationService,
+    TranslationKeyService,
+    TranslationStatusService,
+    WhiteLabelService,
+    BcryptProvider,
+    MomentProvider,
+    QueryRunnerProvider,
+    StringProvider,
+    LocalStrategy,
+    JwtStrategy,
   ],
 })
-
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer
-        .apply(TableListMiddleware)
-        .forRoutes(
-            {path: 'applications*', method: RequestMethod.GET},
-            {path: 'sections*', method: RequestMethod.GET},
-            {path: 'white-labels*', method: RequestMethod.GET},
-        )
-        .apply(ExtensionValidatorMiddleware)
-        .forRoutes({path: 'translations*', method: RequestMethod.GET});
+      .apply(TableListMiddleware)
+      .forRoutes(
+        { path: 'applications*', method: RequestMethod.GET },
+        { path: 'sections*', method: RequestMethod.GET },
+        { path: 'white-labels*', method: RequestMethod.GET },
+        { path: 'translations', method: RequestMethod.GET },
+        { path: 'translations.*', method: RequestMethod.GET },
+      )
+      .apply(ExtensionValidatorMiddleware)
+      .forRoutes({ path: 'translations.*', method: RequestMethod.GET });
   }
 }

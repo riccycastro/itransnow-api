@@ -1,10 +1,11 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Translation } from './translation.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('translation_status')
 export class TranslationStatus {
-
-  @PrimaryGeneratedColumn({type: 'bigint'})
+  @Exclude()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column()

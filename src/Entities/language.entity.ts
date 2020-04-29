@@ -1,49 +1,59 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToMany,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Translation } from './translation.entity';
-import {Application} from "./application.entity";
+import { Application } from './application.entity';
 import { LanguageTeam } from './language-team.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('languages')
 export class Language {
+  @Exclude()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
 
-    @Exclude()
-    @PrimaryGeneratedColumn({type: 'bigint'})
-    id: number;
+  @Column()
+  name: string;
 
-    @Column()
-    name: string;
+  @Column()
+  code: string;
 
-    @Column()
-    code: string;
+  @Exclude()
+  @Column({ name: 'is_active' })
+  isActive: boolean;
 
-    @Column({name: 'is_active'})
-    isActive: boolean;
+  @Exclude()
+  @Column({ name: 'deleted_at_unix' })
+  deletedAt: number;
 
-    @Exclude()
-    @Column({name: 'deleted_at_unix'})
-    deletedAt: number;
+  @Exclude()
+  @CreateDateColumn({
+    name: 'created_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: string;
 
-    @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: string;
+  @Exclude()
+  @UpdateDateColumn({
+    name: 'updated_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: string;
 
-    @UpdateDateColumn({name: 'updated_at',  precision: 0, default: () => 'CURRENT_TIMESTAMP' })
-    updatedAt: string;
+  @OneToMany(type => Translation, translation => translation.language)
+  translations: Translation[];
 
-    @OneToMany(type => Translation, translation => translation.language)
-    translations: Translation[];
+  @ManyToMany(type => Application, application => application.languages)
+  applications: Application[];
 
-    @ManyToMany(type => Application, application => application.languages)
-    applications: Application[];
-
-    @OneToMany(type => LanguageTeam, languageTeam => languageTeam.language)
-    languageTeams: LanguageTeam[];
+  @OneToMany(type => LanguageTeam, languageTeam => languageTeam.language)
+  languageTeams: LanguageTeam[];
 }

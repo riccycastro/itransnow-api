@@ -12,4 +12,5 @@ export const buildLanguage = (index): Language => {
 
 export const buildLanguageWithId1 = () => buildLanguage(1);
 
-export const buildLanguageArray = () => [1, 2, 3, 4, 5].map(index => buildLanguage(index));
+export const buildLanguageArray = () =>
+  [1, 2, 3, 4, 5].map(index => buildLanguage(index));

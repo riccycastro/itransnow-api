@@ -1,57 +1,69 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    JoinTable,
-    ManyToMany,
-    ManyToOne,
-    PrimaryGeneratedColumn, RelationId,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+  UpdateDateColumn,
 } from 'typeorm';
-import {Application} from './application.entity';
-import {TranslationKey} from './translation-key.entity';
+import { Application } from './application.entity';
+import { TranslationKey } from './translation-key.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('sections')
 export class Section {
+  @Exclude()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
 
-    @Exclude()
-    @PrimaryGeneratedColumn({type: 'bigint'})
-    id: number;
+  @Column()
+  name: string;
 
-    @Column()
-    name: string;
+  @Column()
+  alias: string;
 
-    @Column()
-    alias: string;
+  @Column({ name: 'is_active' })
+  isActive: boolean;
 
-    @Column({name: 'is_active'})
-    isActive: boolean;
+  @Exclude()
+  @Column({ name: 'deleted_at_unix' })
+  deletedAt: number;
 
-    @Exclude()
-    @Column({name: 'deleted_at_unix'})
-    deletedAt: number;
+  @CreateDateColumn({
+    name: 'created_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: string;
 
-    @CreateDateColumn({name: 'created_at', precision: 0, default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: string;
+  @UpdateDateColumn({
+    name: 'updated_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: string;
 
-    @UpdateDateColumn({name: 'updated_at',  precision: 0, default: () => 'CURRENT_TIMESTAMP' })
-    updatedAt: string;
+  @ManyToOne(type => Application, application => application.sections)
+  @JoinColumn({ name: 'application_id' })
+  application: Application;
 
-    @ManyToOne(type => Application, application => application.sections)
-    @JoinColumn({ name: "application_id" })
-    application: Application;
+  @Exclude()
+  @RelationId((section: Section) => section.application)
+  applicationId: number;
 
-    @Exclude()
-    @RelationId((section: Section) => section.application)
-    applicationId: number;
-
-    @ManyToMany(type => TranslationKey, translationKey => translationKey.sections)
-    @JoinTable({name: 'section_translation_key', inverseJoinColumn: {name: 'translation_key_id'}, joinColumn: {name: 'section_id'}})
-    translationKeys: TranslationKey[];
-    //
-    // @Exclude()
-    // @RelationId((section: Section) => section.translationKeys)
-    // translationKeysId: number[]
+  @ManyToMany(type => TranslationKey, translationKey => translationKey.sections)
+  @JoinTable({
+    name: 'section_translation_key',
+    inverseJoinColumn: { name: 'translation_key_id' },
+    joinColumn: { name: 'section_id' },
+  })
+  translationKeys: TranslationKey[];
+  //
+  // @Exclude()
+  // @RelationId((section: Section) => section.translationKeys)
+  // translationKeysId: number[]
 }

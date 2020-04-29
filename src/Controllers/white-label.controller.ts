@@ -26,9 +26,7 @@ import { ApplicationService } from '../Services/application.service';
 @UseGuards(AuthGuard('jwt'))
 @Controller('applications/:alias/white-labels')
 export class WhiteLabelController {
-
-  constructor(private readonly applicationService: ApplicationService) {
-  }
+  constructor(private readonly applicationService: ApplicationService) {}
 
   @Post()
   async addWhiteLabelToApplicationAction(
@@ -78,10 +76,23 @@ export class WhiteLabelController {
   @ApiQuery({ name: 'orderField', required: false, type: 'string' })
   @ApiQuery({ name: 'name', required: false, type: 'string' })
   @ApiQuery({ name: 'alias', required: false, type: 'string' })
-  @ApiQuery({ name: 'orderDirection', required: false, type: 'string', enum: OrderDirectionEnum })
-  @ApiQuery({ name: 'includes', required: false, isArray: true, enum: WhiteLabelIncludesEnum })
+  @ApiQuery({
+    name: 'orderDirection',
+    required: false,
+    type: 'string',
+    enum: OrderDirectionEnum,
+  })
+  @ApiQuery({
+    name: 'includes',
+    required: false,
+    isArray: true,
+    enum: WhiteLabelIncludesEnum,
+  })
   @Get()
-  async getWhiteLabelsAction(@Request() req, @Param('alias') alias: string): Promise<ListResult<WhiteLabel>> {
+  async getWhiteLabelsAction(
+    @Request() req,
+    @Param('alias') alias: string,
+  ): Promise<ListResult<WhiteLabel>> {
     return await this.applicationService.getWhiteLabels(
       await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       req.query,

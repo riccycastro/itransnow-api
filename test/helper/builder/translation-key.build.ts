@@ -10,4 +10,5 @@ export const buildTranslationKey = (index: number): TranslationKey => {
 };
 
 export const buildTranslationKeyWithId1 = () => buildTranslationKey(1);
-export const buildTranslationKeyArray = () => [1, 2, 3, 4, 5].map(index => buildTranslationKey(index));
+export const buildTranslationKeyArray = () =>
+  [1, 2, 3, 4, 5].map(index => buildTranslationKey(index));

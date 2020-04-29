@@ -12,11 +12,15 @@ export const buildWhitelabel = (index: number) => {
   return whiteLabel;
 };
 
-export const buildWhiteLabelWithApplication = (whiteLabelIndex: number, applicationIndex: number) => {
+export const buildWhiteLabelWithApplication = (
+  whiteLabelIndex: number,
+  applicationIndex: number,
+) => {
   const whiteLabel = buildWhitelabel(whiteLabelIndex);
   whiteLabel.application = buildApplication(applicationIndex);
   return whiteLabel;
 };
 
 export const buildWhiteLabelWithId1 = () => buildWhitelabel(1);
-export const buildWhiteLabelArray = () => [1, 2, 3, 4, 5].map(index => buildWhitelabel(index));
+export const buildWhiteLabelArray = () =>
+  [1, 2, 3, 4, 5].map(index => buildWhitelabel(index));

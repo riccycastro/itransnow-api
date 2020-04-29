@@ -29,6 +29,8 @@ import { ListResult } from '../Types/type';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 import { WhiteLabelTranslation } from '../Entities/white-label-translation.entity';
 import { StringProvider } from './Provider/string.provider';
+import { TranslationKeyService } from './translation-key.service';
+import { TranslationKey } from '../Entities/translation-key.entity';
 
 export enum ApplicationIncludesEnum {
   language = 'languages',
@@ -37,33 +39,37 @@ export enum ApplicationIncludesEnum {
 }
 
 @Injectable()
-export class ApplicationService extends AbstractEntityListingService<Application> {
+export class ApplicationService extends AbstractEntityListingService<
+  Application
+> {
   private readonly languageService: LanguageService;
   private readonly sectionService: SectionService;
   private readonly whiteLabelService: WhiteLabelService;
-  private readonly translationService: TranslationService;
 
   constructor(
     applicationRepository: ApplicationRepository,
     languageService: LanguageService,
     @Inject(forwardRef(() => SectionService))
-      sectionService: SectionService,
+    sectionService: SectionService,
     @Inject(forwardRef(() => WhiteLabelService))
-      whiteLabelService: WhiteLabelService,
+    whiteLabelService: WhiteLabelService,
     @Inject(forwardRef(() => TranslationService))
-      translationService: TranslationService,
+    private readonly translationService: TranslationService,
     private readonly momentProvider: MomentProvider,
     private readonly queryRunnerProvider: QueryRunnerProvider,
     private readonly stringProvider: StringProvider,
+    private readonly translationKeyService: TranslationKeyService,
   ) {
     super(applicationRepository);
     this.languageService = languageService;
     this.sectionService = sectionService;
     this.whiteLabelService = whiteLabelService;
-    this.translationService = translationService;
   }
 
-  async create(createApplicationDto: ApplicationDto, companyId: number): Promise<Application> {
+  async create(
+    createApplicationDto: ApplicationDto,
+    companyId: number,
+  ): Promise<Application> {
     createApplicationDto.alias = this.stringProvider.removeDiacritics(
       createApplicationDto.alias,
     );
@@ -79,7 +85,11 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return applicationEntity;
   }
 
-  async getByAliasOrFail(companyId: number, alias: string, query?: any): Promise<Application> {
+  async getByAliasOrFail(
+    companyId: number,
+    alias: string,
+    query?: QueryPaginationInterface,
+  ): Promise<Application> {
     const application = await this.findByAlias(companyId, alias);
 
     if (!application) {
@@ -89,7 +99,10 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return await this.getIncludes(companyId, application, query);
   }
 
-  private async findByAlias(companyId: number, alias: string): Promise<Application> {
+  private async findByAlias(
+    companyId: number,
+    alias: string,
+  ): Promise<Application> {
     return await this.repository.findOne({
       where: {
         alias: alias,
@@ -107,12 +120,13 @@ export class ApplicationService extends AbstractEntityListingService<Application
     companyId: number,
     query?: QueryPaginationInterface,
   ): Promise<[Application[], number]> {
-    const listResult = await (this.repository as ApplicationRepository).findInList(companyId, query);
+    const listResult = await (this
+      .repository as ApplicationRepository).findInList(companyId, query);
 
-    const applications = listResult[0];
-    for (const key in applications) {
-      applications[key] = await this.getIncludes(companyId, applications[key], query);
+    for await (let application of listResult[0]) {
+      application = await this.getIncludes(companyId, application, query);
     }
+
     return listResult;
   }
 
@@ -122,23 +136,35 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return await this.save(application);
   }
 
-  active(application: Application, activeApplicationDto: ActiveApplicationDto): Application {
+  active(
+    application: Application,
+    activeApplicationDto: ActiveApplicationDto,
+  ): Application {
     application.isActive = activeApplicationDto.isActive;
     return application;
   }
 
-  async update(application: Application, updateApplicationDto: ApplicationDto): Promise<Application> {
+  async update(
+    application: Application,
+    updateApplicationDto: ApplicationDto,
+  ): Promise<Application> {
     application.name = updateApplicationDto.name;
     return await this.save(application);
   }
 
-  async createSection(application: Application, sectionDto: SectionDto): Promise<Section> {
+  async createSection(
+    application: Application,
+    sectionDto: SectionDto,
+  ): Promise<Section> {
     return this.sectionService.save(
       await this.sectionService.create(sectionDto, application),
     );
   }
 
-  async createWhiteLabel(application: Application, whiteLabelDto: WhiteLabelDto): Promise<WhiteLabel> {
+  async createWhiteLabel(
+    application: Application,
+    whiteLabelDto: WhiteLabelDto,
+  ): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       await this.whiteLabelService.create(whiteLabelDto, application),
     );
@@ -151,25 +177,78 @@ export class ApplicationService extends AbstractEntityListingService<Application
   ): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       await this.whiteLabelService.update(
-        await this.whiteLabelService.findByAliasOrFail(application.companyId, whiteLabelAlias),
+        await this.whiteLabelService.findByAliasOrFail(
+          application.companyId,
+          whiteLabelAlias,
+        ),
         application,
         whiteLabelDto,
       ),
     );
   }
 
-  async getWhiteLabel(application: Application, whiteLabelAlias: string, query?: any): Promise<WhiteLabel> {
-    return await this.whiteLabelService.findByAliasOrFail(application.id, whiteLabelAlias, query);
+  async getWhiteLabel(
+    application: Application,
+    whiteLabelAlias: string,
+    query?: QueryPaginationInterface,
+  ): Promise<WhiteLabel> {
+    return await this.whiteLabelService.findByAliasOrFail(
+      application.id,
+      whiteLabelAlias,
+      query,
+    );
   }
 
-  async getWhiteLabels(application: Application, query: any): Promise<ListResult<WhiteLabel>> {
+  async getWhiteLabels(
+    application: Application,
+    query: QueryPaginationInterface,
+  ): Promise<ListResult<WhiteLabel>> {
     return await this.whiteLabelService.findInList(application.id, query);
   }
 
-  async deleteWhiteLabel(application: Application, whiteLabelAlias: string): Promise<WhiteLabel> {
+  async deleteWhiteLabel(
+    application: Application,
+    whiteLabelAlias: string,
+  ): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       this.whiteLabelService.delete(
-        await this.whiteLabelService.findByAliasOrFail(application.id, whiteLabelAlias),
+        await this.whiteLabelService.findByAliasOrFail(
+          application.id,
+          whiteLabelAlias,
+        ),
+      ),
+    );
+  }
+
+  async getTranslationKey(
+    application: Application,
+    translationKeyAlias: string,
+    query?: QueryPaginationInterface,
+  ): Promise<TranslationKey> {
+    return await this.translationKeyService.getByAliasOrFail(
+      application.id,
+      translationKeyAlias,
+      query,
+    );
+  }
+
+  async getTranslationKeys(
+    application: Application,
+    query: QueryPaginationInterface,
+  ): Promise<ListResult<TranslationKey>> {
+    return await this.translationKeyService.findInList(application.id, query);
+  }
+
+  async deleteTranslationKey(
+    application: Application,
+    translationKeyAlias: string,
+  ): Promise<TranslationKey> {
+    return await this.translationKeyService.save(
+      this.translationKeyService.delete(
+        await this.translationKeyService.getByAliasOrFail(
+          application.id,
+          translationKeyAlias,
+        ),
       ),
     );
   }
@@ -182,7 +261,10 @@ export class ApplicationService extends AbstractEntityListingService<Application
   ): Promise<WhiteLabelTranslation> {
     return await this.whiteLabelService.createWhiteLabelTranslation(
       user,
-      await this.whiteLabelService.findByAliasOrFail(application.id, whiteLabelAlias),
+      await this.whiteLabelService.findByAliasOrFail(
+        application.id,
+        whiteLabelAlias,
+      ),
       whiteLabelTranslationDto,
     );
   }
@@ -190,11 +272,14 @@ export class ApplicationService extends AbstractEntityListingService<Application
   async activeWhiteLabel(
     application: Application,
     whiteLabelAlias: string,
-    activeWhiteLabelDto: ActiveWhiteLabelDto
+    activeWhiteLabelDto: ActiveWhiteLabelDto,
   ): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
       await this.whiteLabelService.active(
-        await this.whiteLabelService.findByAliasOrFail(application.id, whiteLabelAlias),
+        await this.whiteLabelService.findByAliasOrFail(
+          application.id,
+          whiteLabelAlias,
+        ),
         activeWhiteLabelDto,
       ),
     );
@@ -205,7 +290,11 @@ export class ApplicationService extends AbstractEntityListingService<Application
     application: Application,
     translationDto: TranslationDto,
   ): Promise<Translation> {
-    return await this.translationService.persist(user, application, translationDto);
+    return await this.translationService.persist(
+      user,
+      application,
+      translationDto,
+    );
   }
 
   async addLanguages(
@@ -214,7 +303,9 @@ export class ApplicationService extends AbstractEntityListingService<Application
   ): Promise<Application> {
     const languagesList = this.languageService.indexBy(
       'id',
-      await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode),
+      await this.languageService.getByCodes(
+        addLanguageToApplicationDto.languagesCode,
+      ),
     );
 
     const queryRunner = this.queryRunnerProvider.createQueryRunner();
@@ -236,11 +327,15 @@ export class ApplicationService extends AbstractEntityListingService<Application
       await Promise.all(addLanguagesTask);
 
       await queryRunner.commitTransaction();
-      application.languages = Object.keys(languagesList).map(index => languagesList[index]);
+      application.languages = Object.keys(languagesList).map(
+        index => languagesList[index],
+      );
     } catch (e) {
       await queryRunner.rollbackTransaction();
       if (e.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException(`'${languagesList[e.parameters[1]].code}' is already assigned to ${application.alias}`);
+        throw new ConflictException(
+          `'${languagesList[e.parameters[1]].code}' is already assigned to ${application.alias}`,
+        );
       }
 
       throw new InternalServerErrorException();
@@ -251,13 +346,23 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return application;
   }
 
-  async removeLanguages(application: Application, addLanguageToApplicationDto: LanguageToApplicationDto) {
-    const languagesList = await this.languageService.getByCodes(addLanguageToApplicationDto.languagesCode);
+  async removeLanguages(
+    application: Application,
+    addLanguageToApplicationDto: LanguageToApplicationDto,
+  ) {
+    const languagesList = await this.languageService.getByCodes(
+      addLanguageToApplicationDto.languagesCode,
+    );
 
     const removeLanguageTask = [];
 
     for (const language of languagesList) {
-      removeLanguageTask.push((this.repository as ApplicationRepository).removeLanguage(application, language));
+      removeLanguageTask.push(
+        (this.repository as ApplicationRepository).removeLanguage(
+          application,
+          language,
+        ),
+      );
     }
 
     await Promise.all(removeLanguageTask);
@@ -265,22 +370,37 @@ export class ApplicationService extends AbstractEntityListingService<Application
     return application;
   }
 
-  protected async getIncludes(companyId: number, application: Application, query: any): Promise<Application> {
-
+  protected async getIncludes(
+    companyId: number,
+    application: Application,
+    query: QueryPaginationInterface,
+  ): Promise<Application> {
     if (!query || !query.includes) {
       return application;
     }
 
     if (query.includes.includes('languages')) {
-      application.languages = await this.languageService.getByApplication(companyId, application.id, {});
+      application.languages = await this.languageService.getByApplication(
+        companyId,
+        application.id,
+        {},
+      );
     }
 
     if (query.includes.includes('sections')) {
-      application.sections = await this.sectionService.getByApplication(companyId, application.id, {});
+      application.sections = await this.sectionService.getByApplication(
+        companyId,
+        application.id,
+        {},
+      );
     }
 
     if (query.includes.includes('white-labels')) {
-      application.whiteLabels = await this.whiteLabelService.getByApplication(companyId, application.id, {});
+      application.whiteLabels = await this.whiteLabelService.getByApplication(
+        companyId,
+        application.id,
+        {},
+      );
     }
 
     return application;

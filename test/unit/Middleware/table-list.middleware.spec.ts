@@ -40,7 +40,7 @@ describe('TableListMiddleware', () => {
 
       expect(tableListMiddleware.use(req, res, next)).toBe(undefined);
       expect(next).toHaveBeenCalledTimes(1);
-      expect(req.query.includes).toEqual(includes.split(','))
+      expect(req.query.includes).toEqual(includes.split(','));
     });
   });
 });

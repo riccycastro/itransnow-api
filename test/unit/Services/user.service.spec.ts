@@ -55,38 +55,48 @@ describe('UserService', () => {
 
   describe('findByCredentials', () => {
     it('should return undefined if user nor found', async () => {
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return undefined;
-      });
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
       expect(await userService.findByCredentials('username')).toBeUndefined();
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return an user', async () => {
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return buildUserWithId1();
-      });
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return buildUserWithId1();
+        });
 
-      expect(await userService.findByCredentials('username')).toEqual(buildUserWithId1());
+      expect(await userService.findByCredentials('username')).toEqual(
+        buildUserWithId1(),
+      );
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('getById', () => {
     it('should throw a not found exception', async () => {
-      const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
-        return undefined;
-      });
+      const findOneSpy = jest
+        .spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
       await expect(userService.getById(1)).rejects.toThrow(NotFoundException);
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return an user', async () => {
-      const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
-        return buildUserWithId1();
-      });
+      const findOneSpy = jest
+        .spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => {
+          return buildUserWithId1();
+        });
 
       expect(await userService.getById(1)).toEqual(buildUserWithId1());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
@@ -95,9 +105,11 @@ describe('UserService', () => {
 
   describe('register', () => {
     it('should return undefined', async () => {
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return buildUserWithId1();
-      });
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return buildUserWithId1();
+        });
 
       const registerUserDto = new RegisterUserDto();
       registerUserDto.email = 'fake@email.phake';
@@ -107,38 +119,46 @@ describe('UserService', () => {
     });
 
     it('should an internal server error exception on company save', async () => {
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return undefined;
-      });
+      const companyServiceCreateSpy = jest
+        .spyOn(companyService, 'create')
+        .mockImplementation(() => {
+          return buildCompanyWithId1();
+        });
 
-      const companyServiceCreateSpy = jest.spyOn(companyService, 'create').mockImplementation(() => {
-        return buildCompanyWithId1();
-      });
+      const companyServiceSaveSpy = jest
+        .spyOn(companyService, 'save')
+        .mockImplementation(async () => {
+          throw new Error();
+        });
 
-
-      const companyServiceSaveSpy = jest.spyOn(companyService, 'save').mockImplementation(async () => {
-        throw new Error();
-      });
-
-      const createQueryRunnerSpy = jest.spyOn(queryRunnerProvider, 'createQueryRunner').mockImplementation(() => {
-        return {
-          startTransaction() {
-            return;
-          },
-          release() {
-            return;
-          },
-          rollbackTransaction() {
-            return;
-          },
-        } as QueryRunner;
-      });
+      const createQueryRunnerSpy = jest
+        .spyOn(queryRunnerProvider, 'createQueryRunner')
+        .mockImplementation(() => {
+          return {
+            startTransaction() {
+              return;
+            },
+            release() {
+              return;
+            },
+            rollbackTransaction() {
+              return;
+            },
+          } as QueryRunner;
+        });
 
       const registerUserDto = new RegisterUserDto();
       registerUserDto.email = 'fake@email.phake';
 
-      await expect(userService.register(registerUserDto)).rejects.toThrow(InternalServerErrorException);
+      await expect(userService.register(registerUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
       expect(companyServiceSaveSpy).toHaveBeenCalledTimes(1);
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
       expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1);
@@ -146,40 +166,51 @@ describe('UserService', () => {
     });
 
     it('should an internal server error exception on user save', async () => {
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return undefined;
-      });
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
-      const companyServiceCreateSpy = jest.spyOn(companyService, 'create').mockImplementation(() => {
-        return buildCompanyWithId1();
-      });
+      const companyServiceCreateSpy = jest
+        .spyOn(companyService, 'create')
+        .mockImplementation(() => {
+          return buildCompanyWithId1();
+        });
 
-      const companyServiceSaveSpy = jest.spyOn(companyService, 'save').mockImplementation(async (company: Company) => {
-        return company;
-      });
+      const companyServiceSaveSpy = jest
+        .spyOn(companyService, 'save')
+        .mockImplementation(async (company: Company) => {
+          return company;
+        });
 
+      const hashSpy = jest
+        .spyOn(bcryptProvider, 'hash')
+        .mockImplementation(async () => {
+          return '';
+        });
 
-      const hashSpy = jest.spyOn(bcryptProvider, 'hash').mockImplementation(async () => {
-        return '';
-      });
+      const userSaveSpy = jest
+        .spyOn(userRepository, 'save')
+        .mockImplementation(async () => {
+          throw new Error();
+        });
 
-      const userSaveSpy = jest.spyOn(userRepository, 'save').mockImplementation(async () => {
-        throw new Error();
-      });
-
-      const createQueryRunnerSpy = jest.spyOn(queryRunnerProvider, 'createQueryRunner').mockImplementation(() => {
-        return {
-          startTransaction() {
-            return;
-          },
-          release() {
-            return;
-          },
-          rollbackTransaction() {
-            return;
-          },
-        } as QueryRunner;
-      });
+      const createQueryRunnerSpy = jest
+        .spyOn(queryRunnerProvider, 'createQueryRunner')
+        .mockImplementation(() => {
+          return {
+            startTransaction() {
+              return;
+            },
+            release() {
+              return;
+            },
+            rollbackTransaction() {
+              return;
+            },
+          } as QueryRunner;
+        });
 
       const registerUserDto = new RegisterUserDto();
       registerUserDto.email = 'fake@email.phake';
@@ -187,7 +218,9 @@ describe('UserService', () => {
       registerUserDto.username = 'phake';
       registerUserDto.password = 'phakest';
 
-      await expect(userService.register(registerUserDto)).rejects.toThrow(InternalServerErrorException);
+      await expect(userService.register(registerUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
       expect(companyServiceSaveSpy).toHaveBeenCalledTimes(1);
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
       expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1);
@@ -197,40 +230,51 @@ describe('UserService', () => {
     });
 
     it('should return a new user', async () => {
-      const findUserByCredentialsSpy = jest.spyOn(userRepository, 'findUserByCredentials').mockImplementation(async () => {
-        return undefined;
-      });
+      const findUserByCredentialsSpy = jest
+        .spyOn(userRepository, 'findUserByCredentials')
+        .mockImplementation(async () => {
+          return undefined;
+        });
 
-      const companyServiceCreateSpy = jest.spyOn(companyService, 'create').mockImplementation(() => {
-        return buildCompanyWithId1();
-      });
+      const companyServiceCreateSpy = jest
+        .spyOn(companyService, 'create')
+        .mockImplementation(() => {
+          return buildCompanyWithId1();
+        });
 
-      const companyServiceSaveSpy = jest.spyOn(companyService, 'save').mockImplementation(async (company: Company) => {
-        return company;
-      });
+      const companyServiceSaveSpy = jest
+        .spyOn(companyService, 'save')
+        .mockImplementation(async (company: Company) => {
+          return company;
+        });
 
+      const hashSpy = jest
+        .spyOn(bcryptProvider, 'hash')
+        .mockImplementation(async () => {
+          return '';
+        });
 
-      const hashSpy = jest.spyOn(bcryptProvider, 'hash').mockImplementation(async () => {
-        return '';
-      });
+      const userSaveSpy = jest
+        .spyOn(userRepository, 'save')
+        .mockImplementation(async () => {
+          return buildUserWithId1();
+        });
 
-      const userSaveSpy = jest.spyOn(userRepository, 'save').mockImplementation(async () => {
-        return buildUserWithId1();
-      });
-
-      const createQueryRunnerSpy = jest.spyOn(queryRunnerProvider, 'createQueryRunner').mockImplementation(() => {
-        return {
-          startTransaction() {
-            return;
-          },
-          release() {
-            return;
-          },
-          commitTransaction() {
-            return;
-          },
-        } as QueryRunner;
-      });
+      const createQueryRunnerSpy = jest
+        .spyOn(queryRunnerProvider, 'createQueryRunner')
+        .mockImplementation(() => {
+          return {
+            startTransaction() {
+              return;
+            },
+            release() {
+              return;
+            },
+            commitTransaction() {
+              return;
+            },
+          } as QueryRunner;
+        });
 
       const registerUserDto = new RegisterUserDto();
       registerUserDto.email = 'fake@email.phake';
@@ -238,7 +282,9 @@ describe('UserService', () => {
       registerUserDto.username = 'phake';
       registerUserDto.password = 'phakest';
 
-      expect(await userService.register(registerUserDto)).toEqual(buildUserWithId1());
+      expect(await userService.register(registerUserDto)).toEqual(
+        buildUserWithId1(),
+      );
       expect(companyServiceSaveSpy).toHaveBeenCalledTimes(1);
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
       expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1);
