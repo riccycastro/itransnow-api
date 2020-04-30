@@ -50,6 +50,14 @@ describe('SectionService', () => {
           provide: 'Connection',
           useValue: {},
         },
+        {
+          provide: 'TranslationService',
+          useValue: {},
+        },
+        {
+          provide: 'TranslationStatusService',
+          useValue: {},
+        },
       ],
     }).compile();
 

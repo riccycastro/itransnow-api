@@ -49,6 +49,10 @@ describe('TranslationController', () => {
           provide: 'MomentProvider',
           useValue: {},
         },
+        {
+          provide: 'StringProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

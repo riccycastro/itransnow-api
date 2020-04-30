@@ -27,6 +27,7 @@ import { buildLanguageWithId1 } from '../../helper/builder/language.builder';
 import { WhiteLabelService } from '../../../src/Services/white-label.service';
 import { buildTranslationKey, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
 import { buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
+import { StringProvider } from '../../../src/Services/Provider/string.provider';
 
 describe('TranslationService', () => {
   let app: TestingModule;
@@ -38,6 +39,7 @@ describe('TranslationService', () => {
   let translationKeyService: TranslationKeyService;
   let queryRunnerProvider: QueryRunnerProvider;
   let whiteLabelService: WhiteLabelService;
+  let stringProvider: StringProvider;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
@@ -50,6 +52,7 @@ describe('TranslationService', () => {
         QueryRunnerProvider,
         TranslationRepository,
         WhiteLabelService,
+        StringProvider,
         {
           provide: 'ApplicationRepository',
           useValue: {},
@@ -82,10 +85,6 @@ describe('TranslationService', () => {
           provide: 'WhiteLabelRepository',
           useValue: {},
         },
-        {
-          provide: 'StringProvider',
-          useValue: {},
-        },
       ],
     }).compile();
 
@@ -103,6 +102,7 @@ describe('TranslationService', () => {
     );
     queryRunnerProvider = app.get<QueryRunnerProvider>(QueryRunnerProvider);
     whiteLabelService = app.get<WhiteLabelService>(WhiteLabelService);
+    stringProvider = app.get<StringProvider>(StringProvider);
   });
 
   afterEach(() => {
@@ -112,10 +112,17 @@ describe('TranslationService', () => {
   describe('create', () => {
     it('should return a new translation without translation key', () => {
       const expectedResult = new Translation();
+      expectedResult.alias = 'oucpzhxvzs';
       expectedResult.language = new Language();
       expectedResult.createdBy = new User();
-      expectedResult.translationStatus = new TranslationStatus();
       expectedResult.translation = 'my translation';
+      expectedResult.translationKey = undefined;
+      expectedResult.translationStatus = new TranslationStatus();
+
+      const generateRandomStringWithLength10Spy = jest.spyOn(stringProvider, 'generateRandomStringWithLength10')
+        .mockImplementation(() => {
+          return 'oucpzhxvzs';
+        });
 
       expect(
         translationService.create(
@@ -125,15 +132,22 @@ describe('TranslationService', () => {
           'my translation',
         ),
       ).toEqual(expectedResult);
+      expect(generateRandomStringWithLength10Spy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a new translation with a translation key', () => {
       const expectedResult = new Translation();
+      expectedResult.alias = 'oucpzhxvzs';
       expectedResult.language = new Language();
       expectedResult.createdBy = new User();
       expectedResult.translationStatus = new TranslationStatus();
       expectedResult.translation = 'my translation';
       expectedResult.translationKey = new TranslationKey();
+
+      const generateRandomStringWithLength10Spy = jest.spyOn(stringProvider, 'generateRandomStringWithLength10')
+        .mockImplementation(() => {
+          return 'oucpzhxvzs';
+        });
 
       expect(
         translationService.create(
@@ -144,6 +158,7 @@ describe('TranslationService', () => {
           new TranslationKey(),
         ),
       ).toEqual(expectedResult);
+      expect(generateRandomStringWithLength10Spy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -318,7 +333,13 @@ describe('TranslationService', () => {
           return translation;
         });
 
+      const generateRandomStringWithLength10Spy = jest.spyOn(stringProvider, 'generateRandomStringWithLength10')
+        .mockImplementation(() => {
+          return 'oucpzhxvzs';
+        });
+
       const expectedResult = new Translation();
+      expectedResult.alias = 'oucpzhxvzs';
       expectedResult.language = new Language();
       expectedResult.createdBy = new User();
       expectedResult.translation = 'my translation';
@@ -341,6 +362,7 @@ describe('TranslationService', () => {
       expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1);
       expect(translationKeyServiceSaveSpy).toHaveBeenCalledTimes(1);
       expect(translationSaveSpy).toHaveBeenCalledTimes(1);
+      expect(generateRandomStringWithLength10Spy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -487,7 +509,7 @@ describe('TranslationService', () => {
         });
 
       const translationDto = new TranslationDto();
-      translationDto.extension = '.yaml';
+      translationDto.extension = 'yaml';
 
       expect(
         await translationService.getTranslations(1, translationDto),

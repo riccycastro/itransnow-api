@@ -58,7 +58,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
       query && query.whiteLabel
         ? await this.getByAliasInWhiteLabel(
             translationKeyId,
-            query.whiteLabel,
+            query.whiteLabel as string,
             alias,
           )
         : await this.getByAlias(translationKeyId, alias);

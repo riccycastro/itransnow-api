@@ -188,7 +188,7 @@ export class TranslationKeyService extends AbstractEntityListingService<
     if (query.includes.includes('translations')) {
       translationKey.translations = await this.translationService.getTranslationsWithLanguageAndStatusByTranslationKey(
         translationKey.id,
-        query.whiteLabel,
+        query.whiteLabel as string,
       );
     }
 

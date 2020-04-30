@@ -1,8 +1,7 @@
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { StringIndexedByString } from '../Types/type';
 
 export interface QueryPaginationInterface {
-  [k: string]: string;
+  [k: string]: string | string[];
 }
 
 export type OrderDirection = 'ASC' | 'DESC';
@@ -15,7 +14,7 @@ export enum OrderDirectionEnum {
 export class AbstractRepository<Entity> extends Repository<Entity> {
   private isQueryInitialized = false;
 
-  private initQuery(query: StringIndexedByString) {
+  private initQuery(query: QueryPaginationInterface) {
     if (!this.isQueryInitialized) {
       query.offset = query.offset || '0';
       query.limit = query.limit || '10';
@@ -25,7 +24,7 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
 
   protected setLimit(
     queryBuilder: SelectQueryBuilder<Entity>,
-    query: StringIndexedByString,
+    query: QueryPaginationInterface,
   ): SelectQueryBuilder<Entity> {
     this.initQuery(query);
 
@@ -34,7 +33,7 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
 
   protected setOrderBy(
     queryBuilder: SelectQueryBuilder<Entity>,
-    query: StringIndexedByString,
+    query: QueryPaginationInterface,
     tableName: string,
   ): SelectQueryBuilder<Entity> {
     this.initQuery(query);
@@ -43,7 +42,7 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
     }
     return queryBuilder.orderBy(
       `${tableName}.${query.orderField}`,
-      this.getOrderDirection(query.orderDirection),
+      this.getOrderDirection(query.orderDirection as string),
     );
   }
 
@@ -53,7 +52,7 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
 
   protected setPagination(
     queryBuilder: SelectQueryBuilder<Entity>,
-    query: StringIndexedByString,
+    query: QueryPaginationInterface,
     tableName: string,
   ): SelectQueryBuilder<Entity> {
     this.initQuery(query);

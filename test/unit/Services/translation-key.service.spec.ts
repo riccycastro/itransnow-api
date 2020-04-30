@@ -4,6 +4,7 @@ import { TranslationKeyRepository } from '../../../src/Repositories/translation-
 import { NotFoundException } from '@nestjs/common';
 import { buildTranslationKeyArray, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
 import { TranslationKey } from '../../../src/Entities/translation-key.entity';
+import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
 describe('TranslationKeyService', () => {
   let app: TestingModule;
@@ -12,7 +13,23 @@ describe('TranslationKeyService', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      providers: [TranslationKeyService, TranslationKeyRepository],
+      providers: [
+        TranslationKeyService,
+        TranslationKeyRepository,
+        MomentProvider,
+        {
+          provide: 'TranslationService',
+          useValue: {},
+        },
+        {
+          provide: 'TranslationStatusService',
+          useValue: {},
+        },
+        {
+          provide: 'TranslationStatusRepository',
+          useValue: {},
+        },
+      ],
     }).compile();
 
     translationKeyService = app.get<TranslationKeyService>(

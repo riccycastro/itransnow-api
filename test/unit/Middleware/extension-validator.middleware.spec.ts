@@ -39,8 +39,8 @@ describe('ExtensionValidatorMiddleware', () => {
       expect(err).toBeInstanceOf(NotFoundException);
     });
 
-    it('should accept .json extension', () => {
-      const jsonExtension = '.json';
+    it('should accept json extension', () => {
+      const jsonExtension = 'json';
       req = {
         params: [jsonExtension],
         query: {},
@@ -51,8 +51,8 @@ describe('ExtensionValidatorMiddleware', () => {
       expect(req.query.extension).toBe(jsonExtension);
     });
 
-    it('should accept .yaml extension', () => {
-      const yamlExtension = '.yaml';
+    it('should accept yaml extension', () => {
+      const yamlExtension = 'yaml';
       req = {
         params: [yamlExtension],
         query: {},

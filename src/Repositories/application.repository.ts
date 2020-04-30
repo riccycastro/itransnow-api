@@ -1,6 +1,6 @@
 import { EntityManager, EntityRepository } from 'typeorm';
 import { Application } from '../Entities/application.entity';
-import { AbstractRepository } from './abstract.repository';
+import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
 import { StringIndexedByString } from '../Types/type';
 import { Language } from '../Entities/language.entity';
 
@@ -8,7 +8,7 @@ import { Language } from '../Entities/language.entity';
 export class ApplicationRepository extends AbstractRepository<Application> {
   async findInList(
     companyId: number,
-    query: StringIndexedByString,
+    query: QueryPaginationInterface,
   ): Promise<[Application[], number]> {
     const queryBuilder = this.listQuery(companyId, query);
     return await this.setPagination(
@@ -25,7 +25,7 @@ export class ApplicationRepository extends AbstractRepository<Application> {
     return this.listQuery(companyId, query).getCount();
   }
 
-  private listQuery(companyId: number, query: StringIndexedByString) {
+  private listQuery(companyId: number, query: QueryPaginationInterface) {
     let queryBuilder = this.createQueryBuilder('applications')
       .innerJoin('applications.company', 'company')
       .where('company.id = :companyId', { companyId: companyId })

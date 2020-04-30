@@ -52,6 +52,10 @@ describe('ApplicationController', () => {
           provide: 'StringProvider',
           useValue: {},
         },
+        {
+          provide: 'TranslationKeyService',
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -393,12 +397,6 @@ describe('ApplicationController', () => {
           return expectedResult;
         });
 
-      const saveSpy = jest
-        .spyOn(applicationService, 'save')
-        .mockImplementation(async () => {
-          return expectedResult;
-        });
-
       expect(
         await applicationController.addLanguageToApplicationAction(
           req,
@@ -408,7 +406,6 @@ describe('ApplicationController', () => {
       ).toEqual(expectedResult);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(addLanguagesSpy).toHaveBeenCalledTimes(1);
-      expect(saveSpy).toHaveBeenCalledTimes(1);
     });
   });
 
