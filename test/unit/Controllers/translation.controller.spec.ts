@@ -223,4 +223,21 @@ describe('TranslationController', () => {
       expect(res.getData()).toBe(JSON.stringify(expectedResult));
     });
   });
+
+  describe('nextStatusAction', () => {
+
+    const tests = {
+      'approval_pending': ['approved', 'rejected'],
+      approved: ['deprecated'],
+      rejected: ['approved'],
+      deprecated: [],
+    };
+
+    Object.keys(tests).forEach(status => {
+      it(`should return ${JSON.stringify(tests[status])} for ${status} next status`, async () => {
+        expect(await translationController.nextStatusAction({ status: status }))
+          .toEqual(tests[status]);
+      });
+    });
+  });
 });
