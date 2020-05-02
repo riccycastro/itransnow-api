@@ -151,21 +151,21 @@ export class TranslationKeyService extends AbstractEntityListingService<
     );
 
     if (query) {
-      query.includes = 'applicationStatus';
+      query.includes = 'translationStatus';
     }
 
     const translation = await this.translationService.getByAliasOrFail(
       translationKey.id,
       translationAlias,
-      query || { includes: 'applicationStatus' },
+      query || { includes: 'translationStatus' },
     );
     const allowedStatus = TranslationStatusService.statusTranslationStateMachine(
       translation.translationStatus.status,
     );
 
-    if (!allowedStatus.includes(translationStatusDto.status)) {
+    if (!allowedStatus.includes(translationStatus.status)) {
       throw new BadRequestException(
-        `You cannot go to status '${translationStatusDto.status}' from ${translation.translationStatus.status}`,
+        `You cannot go to status '${translationStatus.status}' from ${translation.translationStatus.status}`,
       );
     }
 

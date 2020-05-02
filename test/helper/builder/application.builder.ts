@@ -9,6 +9,7 @@ export const buildApplication = (index: number): Application => {
   application.isActive = true;
   application.deletedAt = utc().unix();
   application.languages = [];
+  application.companyId = 1;
   return application;
 };
 

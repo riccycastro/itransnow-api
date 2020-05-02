@@ -14,7 +14,7 @@ import { QueryRunner } from '../../../src/Types/type';
 import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner.provider';
 import { Application } from '../../../src/Entities/application.entity';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import {
   buildTranslation,
   buildTranslationArray,
@@ -28,6 +28,9 @@ import { WhiteLabelService } from '../../../src/Services/white-label.service';
 import { buildTranslationKey, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
 import { buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
 import { StringProvider } from '../../../src/Services/Provider/string.provider';
+import { buildTranslationStatusWithId1 } from '../../helper/builder/translation-status.builder';
+import { utc as MomentUtc } from 'moment';
+import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
 describe('TranslationService', () => {
   let app: TestingModule;
@@ -53,16 +56,13 @@ describe('TranslationService', () => {
         TranslationRepository,
         WhiteLabelService,
         StringProvider,
+        MomentProvider,
         {
           provide: 'ApplicationRepository',
           useValue: {},
         },
         {
           provide: 'SectionService',
-          useValue: {},
-        },
-        {
-          provide: 'MomentProvider',
           useValue: {},
         },
         {
@@ -580,6 +580,77 @@ describe('TranslationService', () => {
       expect(findTranslationInApplicationByLanguageSpy).toHaveBeenCalledTimes(
         1,
       );
+    });
+  });
+
+  describe('getByAliasOrFail', () => {
+    it('should throw a not found exception', async () => {
+      const findOneSpy = jest.spyOn(translationRepository, 'findOne').mockImplementation(async () => {
+        return undefined;
+      });
+
+      await expect(translationService.getByAliasOrFail(
+        1,
+        'translationAlias',
+      )).rejects.toThrow(NotFoundException);
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return a translation', async () => {
+      const findOneSpy = jest.spyOn(translationRepository, 'findOne').mockImplementation(async () => {
+        return buildTranslationWithId1();
+      });
+
+      expect(await translationService.getByAliasOrFail(
+        1,
+        'translationAlias',
+      )).toEqual(buildTranslationWithId1());
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return a translation with translation status', async () => {
+      const findOneSpy = jest.spyOn(translationRepository, 'findOne').mockImplementation(async () => {
+        return buildTranslationWithId1();
+      });
+
+      const getTranslationStatusByTranslationSpy = jest.spyOn(translationStatusService, 'getTranslationStatusByTranslation').mockImplementation(async () => {
+        return buildTranslationStatusWithId1();
+      });
+
+      const expectedResult = buildTranslationWithId1();
+      expectedResult.translationStatus = buildTranslationStatusWithId1();
+
+      expect(await translationService.getByAliasOrFail(
+        1,
+        'translationAlias',
+        { includes: ['translationStatus'] },
+      )).toEqual(expectedResult);
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+      expect(getTranslationStatusByTranslationSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should return the deleted translation', () => {
+      const expectedResult = buildTranslationWithId1();
+      expectedResult.deletedAt = MomentUtc().unix();
+
+      expect(translationService.delete(buildTranslationWithId1()))
+        .toEqual(expectedResult);
+    });
+  });
+
+  describe('getTranslationsWithLanguageAndStatusByTranslationKey', () => {
+    it('should return an array of translations', async () => {
+      const findTranslationsWithLanguageAndStatusSpy = jest.spyOn(translationRepository, 'findTranslationsWithLanguageAndStatus').mockImplementation(async () => {
+        return buildTranslationArray();
+      });
+
+      expect(await translationService.getTranslationsWithLanguageAndStatusByTranslationKey(
+        1,
+        'whiteLabelAlias',
+      )).toEqual(buildTranslationArray());
+      expect(findTranslationsWithLanguageAndStatusSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

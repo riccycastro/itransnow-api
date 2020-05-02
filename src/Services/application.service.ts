@@ -275,7 +275,7 @@ export class ApplicationService extends AbstractEntityListingService<
     activeWhiteLabelDto: ActiveWhiteLabelDto,
   ): Promise<WhiteLabel> {
     return await this.whiteLabelService.save(
-      await this.whiteLabelService.active(
+      this.whiteLabelService.active(
         await this.whiteLabelService.findByAliasOrFail(
           application.id,
           whiteLabelAlias,

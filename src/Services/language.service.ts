@@ -2,8 +2,8 @@ import { AbstractEntityService } from './AbstractEntityService';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LanguageRepository } from '../Repositories/language.repository';
 import { Language } from '../Entities/language.entity';
-import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { In } from 'typeorm';
+import { StringIndexedByString } from '../Types/type';
 
 @Injectable()
 export class LanguageService extends AbstractEntityService<Language> {
@@ -14,7 +14,7 @@ export class LanguageService extends AbstractEntityService<Language> {
   async getByApplication(
     companyId: number,
     applicationId: number,
-    query: QueryPaginationInterface,
+    query: StringIndexedByString,
   ): Promise<Language[]> {
     return (this.repository as LanguageRepository).findByApplication(
       companyId,

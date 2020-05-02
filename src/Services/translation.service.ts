@@ -70,25 +70,6 @@ export class TranslationService extends AbstractEntityService<Translation> {
     return await this.getIncludes(translationKeyId, translation, query);
   }
 
-  protected async getIncludes(
-    translationKeyId: number,
-    translation: Translation,
-    query: QueryPaginationInterface,
-  ): Promise<Translation> {
-    if (!query || !query.includes) {
-      return translation;
-    }
-
-    // todo@rcastro - create const for the includes... all of them
-    if (query.includes.includes('applicationStatus')) {
-      translation.translationStatus = await this.translationStatusService.getTranslationStatusByTranslation(
-        translation.id,
-      );
-    }
-
-    return translation;
-  }
-
   create(
     language: Language,
     user: User,
@@ -363,6 +344,25 @@ export class TranslationService extends AbstractEntityService<Translation> {
         )
       : undefined;
     return translationNodeDto;
+  }
+
+  protected async getIncludes(
+    translationKeyId: number,
+    translation: Translation,
+    query: QueryPaginationInterface,
+  ): Promise<Translation> {
+    if (!query || !query.includes) {
+      return translation;
+    }
+
+    // todo@rcastro - create const for the includes... all of them
+    if (query.includes.includes('translationStatus')) {
+      translation.translationStatus = await this.translationStatusService.getTranslationStatusByTranslation(
+        translation.id,
+      );
+    }
+
+    return translation;
   }
 
   static moveWhiteLabelSectionsToTranslation(

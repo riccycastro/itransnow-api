@@ -53,4 +53,17 @@ describe('TranslationStatusService', () => {
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('getTranslationStatusByTranslation', () => {
+    it('should return a translation status', async () => {
+      const findTranslationStatusSpy = jest.spyOn(translationStatusRepository, 'findTranslationStatus').mockImplementation(async () => {
+        return buildTranslationStatusWithId1();
+      });
+      
+      expect(await translationStatusService.getTranslationStatusByTranslation(
+        1,
+      )).toEqual(buildTranslationStatusWithId1());
+      expect(findTranslationStatusSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });

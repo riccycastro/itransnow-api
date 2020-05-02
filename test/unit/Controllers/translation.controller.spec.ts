@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TranslationService } from '../../../src/Services/translation.service';
 import { TranslationController } from '../../../src/Controllers/translation.controller';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { createRequest } from 'node-mocks-http';
 
 describe('TranslationController', () => {
@@ -238,6 +238,11 @@ describe('TranslationController', () => {
         expect(await translationController.nextStatusAction({ status: status }))
           .toEqual(tests[status]);
       });
+    });
+
+    it('should throw not found exception', async() => {
+      await expect(translationController.nextStatusAction({ status: '' }))
+        .rejects.toThrow(NotFoundException);
     });
   });
 });
