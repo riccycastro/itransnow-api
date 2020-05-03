@@ -1,27 +1,22 @@
 import { Section } from '../../../src/Entities/section.entity';
-import { buildApplication } from './application.builder';
-import { utc } from 'moment';
 
-export const buildSection = (index: number) => {
+export const buildSection = (sectionData?: any) => {
+  sectionData = sectionData || {};
+
   const section = new Section();
-  section.id = index;
-  section.name = 'section_name_' + index;
-  section.alias = 'section_alias_' + index;
-  section.isActive = true;
-  section.deletedAt = utc().unix();
-  section.translationKeys = [];
+  section.id = sectionData.id || 1;
+  section.name = sectionData.name || 'section_name_1';
+  section.alias = sectionData.alias || 'section_alias_1';
+  section.isActive = sectionData.isActive !== undefined ? sectionData.isActive : true;
+  section.deletedAt = sectionData.deletedAt || 0;
+  section.translationKeys = sectionData.translationKeys || [];
+  section.application = sectionData.application;
   return section;
 };
 
-export const buildSectionWithApplication = (
-  sectionIndex: number,
-  applicationIndex: number,
-) => {
-  const section = buildSection(sectionIndex);
-  section.application = buildApplication(applicationIndex);
-  return section;
-};
-
-export const buildSectionWithId1 = () => buildSection(1);
 export const buildSectionArray = () =>
-  [1, 2, 3, 4, 5].map(index => buildSection(index));
+  [1, 2, 3, 4, 5].map(index => buildSection({
+    id: index,
+    name: 'section_name_' + index,
+    alias: 'section_alias_' + index,
+  }));

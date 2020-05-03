@@ -7,12 +7,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { buildSectionArray, buildSectionWithId1 } from '../../helper/builder/section.builder';
+import { buildSection, buildSectionArray } from '../../helper/builder/section.builder';
 import { classToClass } from 'class-transformer';
 import { Section } from '../../../src/Entities/section.entity';
 import { Application } from '../../../src/Entities/application.entity';
 import { SectionDto } from '../../../src/Dto/section.dto';
-import { buildApplicationWithId1 } from '../../helper/builder/application.builder';
+import { buildApplication } from '../../helper/builder/application.builder';
 import { utc as MomentUtc } from 'moment';
 import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 import { TranslationKeyService } from '../../../src/Services/translation-key.service';
@@ -91,11 +91,11 @@ describe('SectionService', () => {
       const findByAliasSpy = jest
         .spyOn(sectionRepository, 'findByAlias')
         .mockImplementation(async () => {
-          return buildSectionWithId1();
+          return buildSection();
         });
 
       expect(await sectionService.findByAliasOrFail(1, '')).toEqual(
-        buildSectionWithId1(),
+        buildSection(),
       );
       expect(findByAliasSpy).toHaveBeenCalledTimes(1);
     });
@@ -152,7 +152,7 @@ describe('SectionService', () => {
         });
 
       await expect(
-        sectionService.create(buildSectionWithId1(), new Application()),
+        sectionService.create(buildSection(), new Application()),
       ).rejects.toThrow(BadRequestException);
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
@@ -169,12 +169,12 @@ describe('SectionService', () => {
       sectionDto.alias = 'new_section';
 
       const expectedSection = new Section();
-      expectedSection.application = buildApplicationWithId1();
+      expectedSection.application = buildApplication();
       expectedSection.name = sectionDto.name;
       expectedSection.alias = sectionDto.alias;
 
       expect(
-        await sectionService.create(sectionDto, buildApplicationWithId1()),
+        await sectionService.create(sectionDto, buildApplication()),
       ).toEqual(expectedSection);
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
@@ -182,10 +182,10 @@ describe('SectionService', () => {
 
   describe('delete', () => {
     it('should return a section', () => {
-      const expectedSection = buildSectionWithId1();
+      const expectedSection = buildSection();
       expectedSection.deletedAt = MomentUtc().unix();
 
-      expect(sectionService.delete(buildSectionWithId1())).toEqual(
+      expect(sectionService.delete(buildSection())).toEqual(
         expectedSection,
       );
     });
@@ -193,32 +193,32 @@ describe('SectionService', () => {
 
   describe('active', () => {
     it('should return an inactive section', () => {
-      const expectedSection = buildSectionWithId1();
+      const expectedSection = buildSection();
       expectedSection.isActive = false;
 
       expect(
-        sectionService.active(buildSectionWithId1(), { isActive: false }),
+        sectionService.active(buildSection(), { isActive: false }),
       ).toEqual(expectedSection);
     });
 
     it('should return an active section', () => {
-      const expectedSection = buildSectionWithId1();
+      const expectedSection = buildSection();
       expectedSection.isActive = true;
 
       expect(
-        sectionService.active(buildSectionWithId1(), { isActive: true }),
+        sectionService.active(buildSection(), { isActive: true }),
       ).toEqual(expectedSection);
     });
   });
 
   describe('update', () => {
     it('should return he updated section', () => {
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
       expectedResult.name = 'The nice Section';
       expectedResult.alias = 'the_nice_section';
 
       expect(
-        sectionService.update(buildSectionWithId1(), {
+        sectionService.update(buildSection(), {
           name: 'The nice Section',
           alias: 'The nice Section',
         }),
@@ -341,12 +341,12 @@ describe('SectionService', () => {
           return;
         });
 
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
 
       expect(
         await sectionService.addTranslationKeys(
           1,
-          buildSectionWithId1(),
+          buildSection(),
           new TranslationKeyToSectionDto(),
         ),
       ).toEqual(expectedResult);

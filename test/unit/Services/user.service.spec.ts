@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../../../src/Services/user.service';
 import { UserRepository } from '../../../src/Repositories/user.repository';
-import { buildUser, buildUserWithId1 } from '../../helper/builder/user.builder';
+import { buildUser } from '../../helper/builder/user.builder';
 import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { RegisterUserDto } from '../../../src/Dto/register-user.dto';
 import { CompanyService } from '../../../src/Services/company.service';
 import { QueryRunner } from '../../../src/Types/type';
 import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner.provider';
-import { buildCompanyWithId1 } from '../../helper/builder/company.builder';
+import { buildCompany } from '../../helper/builder/company.builder';
 import { Company } from '../../../src/Entities/company.entity';
 import { BcryptProvider } from '../../../src/Services/Provider/bcrypt.provider';
 import { User } from '../../../src/Entities/user.entity';
@@ -75,11 +75,11 @@ describe('UserService', () => {
       const findUserByCredentialsSpy = jest
         .spyOn(userRepository, 'findUserByCredentials')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       expect(await userService.findByCredentials('username')).toEqual(
-        buildUserWithId1(),
+        buildUser(),
       );
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
     });
@@ -101,10 +101,10 @@ describe('UserService', () => {
       const findOneSpy = jest
         .spyOn(userRepository, 'findOne')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
-      expect(await userService.getById(1)).toEqual(buildUserWithId1());
+      expect(await userService.getById(1)).toEqual(buildUser());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -114,7 +114,7 @@ describe('UserService', () => {
       const findUserByCredentialsSpy = jest
         .spyOn(userRepository, 'findUserByCredentials')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       const registerUserDto = new RegisterUserDto();
@@ -134,7 +134,7 @@ describe('UserService', () => {
       const companyServiceCreateSpy = jest
         .spyOn(companyService, 'create')
         .mockImplementation(() => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       const companyServiceSaveSpy = jest
@@ -181,7 +181,7 @@ describe('UserService', () => {
       const companyServiceCreateSpy = jest
         .spyOn(companyService, 'create')
         .mockImplementation(() => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       const companyServiceSaveSpy = jest
@@ -245,7 +245,7 @@ describe('UserService', () => {
       const companyServiceCreateSpy = jest
         .spyOn(companyService, 'create')
         .mockImplementation(() => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       const companyServiceSaveSpy = jest
@@ -263,7 +263,7 @@ describe('UserService', () => {
       const userSaveSpy = jest
         .spyOn(userRepository, 'save')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       const createQueryRunnerSpy = jest
@@ -289,7 +289,7 @@ describe('UserService', () => {
       registerUserDto.password = 'phakest';
 
       expect(await userService.register(registerUserDto)).toEqual(
-        buildUserWithId1(),
+        buildUser(),
       );
       expect(companyServiceSaveSpy).toHaveBeenCalledTimes(1);
       expect(findUserByCredentialsSpy).toHaveBeenCalledTimes(1);
@@ -312,10 +312,10 @@ describe('UserService', () => {
 
     it('should return the found user', async () => {
       const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
-      expect(await userService.findByCredentialsInCompany(1, 'credential')).toEqual(buildUserWithId1());
+      expect(await userService.findByCredentialsInCompany(1, 'credential')).toEqual(buildUser());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -333,10 +333,10 @@ describe('UserService', () => {
 
     it('should return an user', async () => {
       const getByUsernameSpy = jest.spyOn(userRepository, 'findOne')
-        .mockImplementation(async () => buildUserWithId1());
+        .mockImplementation(async () => buildUser());
 
       expect(await userService.getByUsernameOrFail(1, 'username'))
-        .toEqual(buildUserWithId1());
+        .toEqual(buildUser());
       expect(getByUsernameSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -385,7 +385,7 @@ describe('UserService', () => {
   describe('setAdminUser', () => {
     it('should return an admin user', () => {
       expect(userService.setAdminUser(
-        buildUserWithId1(),
+        buildUser(),
         { isAdmin: true },
       )).toEqual(buildUser({ isAdmin: true }));
     });
@@ -394,7 +394,7 @@ describe('UserService', () => {
       expect(userService.setAdminUser(
         buildUser({ isAdmin: true }),
         { isAdmin: false },
-      )).toEqual(buildUserWithId1());
+      )).toEqual(buildUser());
     });
   });
 
@@ -403,11 +403,11 @@ describe('UserService', () => {
       expect(userService.setActive(
         buildUser({ isActive: false }),
         { isActive: true }))
-        .toEqual(buildUserWithId1());
+        .toEqual(buildUser());
     });
 
     it('should return an inactive user', () => {
-      expect(userService.setActive(buildUserWithId1(), { isActive: false }))
+      expect(userService.setActive(buildUser(), { isActive: false }))
         .toEqual(buildUser({ isActive: false }));
     });
   });
@@ -419,7 +419,7 @@ describe('UserService', () => {
           return 123456;
         });
 
-      expect(userService.delete(buildUserWithId1()))
+      expect(userService.delete(buildUser()))
         .toEqual(buildUser({ deletedAt: 123456 }));
       expect(unixSpy).toHaveBeenCalledTimes(1);
     });

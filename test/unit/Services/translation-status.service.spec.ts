@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TranslationStatusService } from '../../../src/Services/translation-status.service';
 import { TranslationStatusRepository } from '../../../src/Repositories/translation-status.repository';
 import { NotFoundException } from '@nestjs/common';
-import { buildTranslationStatusWithId1 } from '../../helper/builder/translation-status.builder';
+import { buildTranslationStatus } from '../../helper/builder/translation-status.builder';
 
 describe('TranslationStatusService', () => {
   let app: TestingModule;
@@ -44,12 +44,12 @@ describe('TranslationStatusService', () => {
       const findOneSpy = jest
         .spyOn(translationStatusRepository, 'findOne')
         .mockImplementation(async () => {
-          return buildTranslationStatusWithId1();
+          return buildTranslationStatus();
         });
 
       expect(
         await translationStatusService.getByStatus('status_alias'),
-      ).toEqual(buildTranslationStatusWithId1());
+      ).toEqual(buildTranslationStatus());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -57,12 +57,12 @@ describe('TranslationStatusService', () => {
   describe('getTranslationStatusByTranslation', () => {
     it('should return a translation status', async () => {
       const findTranslationStatusSpy = jest.spyOn(translationStatusRepository, 'findTranslationStatus').mockImplementation(async () => {
-        return buildTranslationStatusWithId1();
+        return buildTranslationStatus();
       });
       
       expect(await translationStatusService.getTranslationStatusByTranslation(
         1,
-      )).toEqual(buildTranslationStatusWithId1());
+      )).toEqual(buildTranslationStatus());
       expect(findTranslationStatusSpy).toHaveBeenCalledTimes(1);
     });
   });

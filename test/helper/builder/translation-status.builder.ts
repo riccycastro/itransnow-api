@@ -1,11 +1,11 @@
 import { TranslationStatus } from '../../../src/Entities/translation-status.entity';
 
-export const buildTranslationStatus = (index: number): TranslationStatus => {
+export const buildTranslationStatus = (translationStatusData?: any): TranslationStatus => {
+  translationStatusData = translationStatusData || {};
+
   const translationStatus = new TranslationStatus();
-  translationStatus.id = index;
-  translationStatus.status = 'status_' + index;
+  translationStatus.id = translationStatusData.id || 1;
+  translationStatus.status = translationStatusData.status || 'status_1';
 
   return translationStatus;
 };
-
-export const buildTranslationStatusWithId1 = () => buildTranslationStatus(1);

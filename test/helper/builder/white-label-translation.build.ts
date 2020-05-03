@@ -1,10 +1,9 @@
 import { WhiteLabelTranslation } from '../../../src/Entities/white-label-translation.entity';
 
-export const buildWhiteLabelTranslation = (index): WhiteLabelTranslation => {
+export const buildWhiteLabelTranslation = (whiteLabelTranslationData?: any): WhiteLabelTranslation => {
+  whiteLabelTranslationData = whiteLabelTranslationData || {};
+
   const whiteLabelTranslation = new WhiteLabelTranslation();
-  whiteLabelTranslation.id = index;
+  whiteLabelTranslation.id = whiteLabelTranslationData.id || 1;
   return whiteLabelTranslation;
 };
-
-export const buildWhiteLabelTranslationWithId1 = () =>
-  buildWhiteLabelTranslation(1);

@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TranslationKeyController } from '../../../src/Controllers/translation-key.controller';
 import { TranslationKeyService } from '../../../src/Services/translation-key.service';
 import { ApplicationService } from '../../../src/Services/application.service';
-import { buildApplicationWithId1 } from '../../helper/builder/application.builder';
-import { buildTranslationKeyArray, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
+import { buildApplication } from '../../helper/builder/application.builder';
+import { buildTranslationKey, buildTranslationKeyArray } from '../../helper/builder/translation-key.build';
 import { createRequest } from 'node-mocks-http';
-import { buildTranslationWithId1 } from '../../helper/builder/translation.builder';
+import { buildTranslation } from '../../helper/builder/translation.builder';
 import { TranslationStatusDto } from '../../../src/Dto/translation.dto';
 
 describe('TranslationKeyController', () => {
@@ -83,15 +83,15 @@ describe('TranslationKeyController', () => {
   describe('getTranslationKeyAction', () => {
     it('should return a translation key', async () => {
       const getTranslationKeySpy = jest.spyOn(applicationService, 'getTranslationKey').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       const getByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildApplicationWithId1();
+        return buildApplication();
       });
 
       expect(await translationKeyController.getTranslationKeyAction(req, 'applicationAlias', 'translationKeyAlias'))
-        .toEqual(buildTranslationKeyWithId1());
+        .toEqual(buildTranslationKey());
       expect(getTranslationKeySpy).toHaveBeenCalledTimes(1);
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
@@ -100,7 +100,7 @@ describe('TranslationKeyController', () => {
   describe('getTranslationKeysAction', () => {
     it('should return an array of translation keys', async () => {
       const getByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildApplicationWithId1();
+        return buildApplication();
       });
 
       const getTranslationKeysSpy = jest.spyOn(applicationService, 'getTranslationKeys').mockImplementation(async () => {
@@ -123,11 +123,11 @@ describe('TranslationKeyController', () => {
   describe('deleteTranslationKey', () => {
     it('should call all necessary methods to delete', async () => {
       const getByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildApplicationWithId1();
+        return buildApplication();
       });
 
       const deleteTranslationKeySpy = jest.spyOn(applicationService, 'deleteTranslationKey').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       expect(await translationKeyController.deleteTranslationKey(req, 'applicationAlias', 'translationKeyAlias'))
@@ -140,15 +140,15 @@ describe('TranslationKeyController', () => {
   describe('statusTranslation', () => {
     it('should return the updated translation', async () => {
       const statusTranslationSpy = jest.spyOn(translationKeyService, 'statusTranslation').mockImplementation(async () => {
-        return buildTranslationWithId1();
+        return buildTranslation();
       });
 
       const getByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildApplicationWithId1();
+        return buildApplication();
       });
 
       const getTranslationKeySpy = jest.spyOn(applicationService, 'getTranslationKey').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
 
@@ -159,7 +159,7 @@ describe('TranslationKeyController', () => {
         'translationKeyAlias',
         'translationAlias',
         ),
-      ).toEqual(buildTranslationWithId1());
+      ).toEqual(buildTranslation());
       expect(getTranslationKeySpy).toHaveBeenCalledTimes(1);
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(statusTranslationSpy).toHaveBeenCalledTimes(1);
@@ -169,15 +169,15 @@ describe('TranslationKeyController', () => {
   describe('deleteTranslation', () => {
     it('should call all necessary methods to delete a translation', async () => {
       const getByAliasOrFailSpy = jest.spyOn(applicationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildApplicationWithId1();
+        return buildApplication();
       });
 
       const getTranslationKeySpy = jest.spyOn(applicationService, 'getTranslationKey').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       const deleteTranslationSpy = jest.spyOn(translationKeyService, 'deleteTranslation').mockImplementation(async () => {
-        return buildTranslationWithId1();
+        return buildTranslation();
       });
 
       expect(await translationKeyController.deleteTranslation(

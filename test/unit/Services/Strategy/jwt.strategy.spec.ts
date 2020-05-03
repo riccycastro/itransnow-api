@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../../../../src/Services/user.service';
 import { CompanyService } from '../../../../src/Services/company.service';
-import { buildUserWithId1 } from '../../../helper/builder/user.builder';
-import { buildCompanyWithId1 } from '../../../helper/builder/company.builder';
+import { buildUser } from '../../../helper/builder/user.builder';
+import { buildCompany } from '../../../helper/builder/company.builder';
 import { JwtStrategy } from '../../../../src/Services/Strategy/jwt.strategy';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
@@ -59,13 +59,13 @@ describe('JwtStrategy', () => {
       const findUserByIdSpy = jest
         .spyOn(userService, 'getById')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       const findCompanyByIdSpy = jest
         .spyOn(companyService, 'getById')
         .mockImplementation(async () => {
-          const company = buildCompanyWithId1();
+          const company = buildCompany();
           company.deletedAt = 123;
           return company;
         });
@@ -81,13 +81,13 @@ describe('JwtStrategy', () => {
       const findUserByIdSpy = jest
         .spyOn(userService, 'getById')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       const findCompanyByIdSpy = jest
         .spyOn(companyService, 'getById')
         .mockImplementation(async () => {
-          const company = buildCompanyWithId1();
+          const company = buildCompany();
           company.isActive = false;
           return company;
         });
@@ -103,7 +103,7 @@ describe('JwtStrategy', () => {
       const findUserByIdSpy = jest
         .spyOn(userService, 'getById')
         .mockImplementation(async () => {
-          const user = buildUserWithId1();
+          const user = buildUser();
           user.deletedAt = 123;
           return user;
         });
@@ -111,7 +111,7 @@ describe('JwtStrategy', () => {
       const findCompanyByIdSpy = jest
         .spyOn(companyService, 'getById')
         .mockImplementation(async () => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       await expect(
@@ -125,7 +125,7 @@ describe('JwtStrategy', () => {
       const findUserByIdSpy = jest
         .spyOn(userService, 'getById')
         .mockImplementation(async () => {
-          const user = buildUserWithId1();
+          const user = buildUser();
           user.isActive = false;
           return user;
         });
@@ -133,7 +133,7 @@ describe('JwtStrategy', () => {
       const findCompanyByIdSpy = jest
         .spyOn(companyService, 'getById')
         .mockImplementation(async () => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       await expect(
@@ -147,17 +147,17 @@ describe('JwtStrategy', () => {
       const findUserByIdSpy = jest
         .spyOn(userService, 'getById')
         .mockImplementation(async () => {
-          return buildUserWithId1();
+          return buildUser();
         });
 
       const findCompanyByIdSpy = jest
         .spyOn(companyService, 'getById')
         .mockImplementation(async () => {
-          return buildCompanyWithId1();
+          return buildCompany();
         });
 
       expect(await jwtStrategy.validate({ sub: 1, companyId: 1 })).toEqual(
-        buildUserWithId1(),
+        buildUser(),
       );
       expect(findUserByIdSpy).toHaveBeenCalledTimes(1);
       expect(findCompanyByIdSpy).toHaveBeenCalledTimes(1);

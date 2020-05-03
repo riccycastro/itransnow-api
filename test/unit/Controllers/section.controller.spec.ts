@@ -2,15 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SectionController } from '../../../src/Controllers/section.controller';
 import { SectionService } from '../../../src/Services/section.service';
 import { NotFoundException } from '@nestjs/common';
-import { buildSection, buildSectionWithId1 } from '../../helper/builder/section.builder';
+import { buildSection } from '../../helper/builder/section.builder';
 import { ActiveSectionDto, SectionDto } from '../../../src/Dto/section.dto';
 import { TranslationKeyToSectionDto } from '../../../src/Dto/translation-key.dto';
 import { createRequest } from 'node-mocks-http';
+import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
 describe('SectionController', () => {
   let app: TestingModule;
   let sectionController: SectionController;
   let sectionService: SectionService;
+  let momentProvider: MomentProvider;
   let req: any = {};
 
   beforeAll(async () => {
@@ -18,6 +20,7 @@ describe('SectionController', () => {
       controllers: [SectionController],
       providers: [
         SectionService,
+        MomentProvider,
         {
           provide: 'SectionRepository',
           useValue: {},
@@ -35,10 +38,6 @@ describe('SectionController', () => {
           useValue: {},
         },
         {
-          provide: 'MomentProvider',
-          useValue: {},
-        },
-        {
           provide: 'StringProvider',
           useValue: {},
         },
@@ -47,6 +46,7 @@ describe('SectionController', () => {
 
     sectionController = app.get<SectionController>(SectionController);
     sectionService = app.get<SectionService>(SectionService);
+    momentProvider = app.get<MomentProvider>(MomentProvider);
 
     req = createRequest({
       user: {
@@ -75,7 +75,7 @@ describe('SectionController', () => {
     });
 
     it('should return a section', async () => {
-      const section = buildSectionWithId1();
+      const section = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {
@@ -141,7 +141,7 @@ describe('SectionController', () => {
     });
 
     it('should call all necessary methods to delete section', async () => {
-      const section = buildSectionWithId1();
+      const section = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {
@@ -184,7 +184,7 @@ describe('SectionController', () => {
     });
 
     it('should return a section', async () => {
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {
@@ -228,7 +228,7 @@ describe('SectionController', () => {
     });
 
     it('should return a section', async () => {
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {
@@ -279,7 +279,7 @@ describe('SectionController', () => {
     });
 
     it('should call all necessary methods to add translation key to section', async () => {
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {
@@ -323,7 +323,7 @@ describe('SectionController', () => {
     });
 
     it('should call all necessary methods to remove translation key to section', async () => {
-      const expectedResult = buildSectionWithId1();
+      const expectedResult = buildSection();
       const findByAliasOrFailSpy = jest
         .spyOn(sectionService, 'findByAliasOrFail')
         .mockImplementation(async () => {

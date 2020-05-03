@@ -1,7 +1,7 @@
 import { FlatIndexNode } from '../../../../../src/Services/TranslationChainResponsability/Node/flat-index.node';
 import { Translation } from '../../../../../src/Entities/translation.entity';
-import { buildTranslationWithId1 } from '../../../../helper/builder/translation.builder';
-import { buildTranslationKeyWithId1 } from '../../../../helper/builder/translation-key.build';
+import { buildTranslation } from '../../../../helper/builder/translation.builder';
+import { buildTranslationKey } from '../../../../helper/builder/translation-key.build';
 
 describe('FlatIndexNode', () => {
   let flatIndexNode: FlatIndexNode;
@@ -23,8 +23,8 @@ describe('FlatIndexNode', () => {
       };
 
       Object.keys(expectedResult).forEach(translationKeys => {
-        const translation = buildTranslationWithId1();
-        const translationKey = buildTranslationKeyWithId1();
+        const translation = buildTranslation();
+        const translationKey = buildTranslationKey();
 
         translation.translation = expectedResult[translationKeys];
         translationKey.alias = translationKeys;

@@ -1,5 +1,5 @@
-import { buildTranslationWithId1 } from '../../../../helper/builder/translation.builder';
-import { buildTranslationKeyWithId1 } from '../../../../helper/builder/translation-key.build';
+import { buildTranslation } from '../../../../helper/builder/translation.builder';
+import { buildTranslationKey } from '../../../../helper/builder/translation-key.build';
 import { Translation } from '../../../../../src/Entities/translation.entity';
 import { NestedIndexNode } from '../../../../../src/Services/TranslationChainResponsability/Node/nested-index.node';
 
@@ -25,8 +25,8 @@ describe('NestedIndexNode', () => {
       };
 
       Object.keys(translationObject).forEach(translationKeys => {
-        const translation = buildTranslationWithId1();
-        const translationKey = buildTranslationKeyWithId1();
+        const translation = buildTranslation();
+        const translationKey = buildTranslationKey();
 
         translation.translation = translationObject[translationKeys];
         translationKey.alias = translationKeys;

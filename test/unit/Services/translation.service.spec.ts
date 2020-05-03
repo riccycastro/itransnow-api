@@ -19,16 +19,14 @@ import {
   buildTranslation,
   buildTranslationArray,
   buildTranslationArrayWhitTranslationKey,
-  buildTranslationWithId1,
-  buildTranslationWithTranslationKey,
 } from '../../helper/builder/translation.builder';
-import { buildApplicationWithId1 } from '../../helper/builder/application.builder';
-import { buildLanguageWithId1 } from '../../helper/builder/language.builder';
+import { buildApplication } from '../../helper/builder/application.builder';
+import { buildLanguage } from '../../helper/builder/language.builder';
 import { WhiteLabelService } from '../../../src/Services/white-label.service';
-import { buildTranslationKey, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
-import { buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
+import { buildTranslationKey } from '../../helper/builder/translation-key.build';
+import { buildWhitelabel } from '../../helper/builder/white-label.builder';
 import { StringProvider } from '../../../src/Services/Provider/string.provider';
-import { buildTranslationStatusWithId1 } from '../../helper/builder/translation-status.builder';
+import { buildTranslationStatus } from '../../helper/builder/translation-status.builder';
 import { utc as MomentUtc } from 'moment';
 import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
@@ -418,13 +416,13 @@ describe('TranslationService', () => {
       const getApplicationByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getByCodeInApplicationSpy = jest
         .spyOn(languageService, 'getByCodeInApplication')
         .mockImplementation(async () => {
-          return buildLanguageWithId1();
+          return buildLanguage();
         });
 
       const findTranslationInApplicationByLanguageSpy = jest
@@ -449,25 +447,26 @@ describe('TranslationService', () => {
       const getApplicationByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getByCodeInApplicationSpy = jest
         .spyOn(languageService, 'getByCodeInApplication')
         .mockImplementation(async () => {
-          return buildLanguageWithId1();
+          return buildLanguage();
         });
 
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          const translation = buildTranslationWithId1();
-          const translation2 = buildTranslation(2);
-          const translationKey = buildTranslationKeyWithId1();
+          const translation = buildTranslation();
+          const translation2 = buildTranslation({ id: 2, translation: 'translation_translation_2' });
+
+          const translationKey = buildTranslationKey();
           translationKey.alias = 'translationTest.' + translationKey.alias;
           translation.translationKey = translationKey;
 
-          const translationKey2 = buildTranslationKey(2);
+          const translationKey2 = buildTranslationKey({ id: 2, alias: 'translation_key_alias_2' });
           translationKey2.alias = 'translationTest.' + translationKey2.alias;
           translation2.translationKey = translationKey2;
 
@@ -493,13 +492,13 @@ describe('TranslationService', () => {
       const getApplicationByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getByCodeInApplicationSpy = jest
         .spyOn(languageService, 'getByCodeInApplication')
         .mockImplementation(async () => {
-          return buildLanguageWithId1();
+          return buildLanguage();
         });
 
       const findTranslationInApplicationByLanguageSpy = jest
@@ -533,19 +532,19 @@ describe('TranslationService', () => {
       const getApplicationByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getByCodeInApplicationSpy = jest
         .spyOn(languageService, 'getByCodeInApplication')
         .mockImplementation(async () => {
-          return buildLanguageWithId1();
+          return buildLanguage();
         });
 
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          return [buildTranslationWithTranslationKey(1)];
+          return [buildTranslation({ translationKey: buildTranslationKey() })];
         });
 
       const findTranslationInWhiteLabelTranslationByLanguageSpy = jest
@@ -554,7 +553,7 @@ describe('TranslationService', () => {
           'findTranslationInWhiteLabelTranslationByLanguage',
         )
         .mockImplementation(async () => {
-          const translation = buildTranslationWithTranslationKey(1);
+          const translation = buildTranslation({ translationKey: buildTranslationKey() });
           translation.translation = 'white label Translation';
           return [translation];
         });
@@ -562,7 +561,7 @@ describe('TranslationService', () => {
       const findWhiteLabelByAliasOrFail = jest
         .spyOn(whiteLabelService, 'findByAliasOrFail')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       const translationDto = new TranslationDto();
@@ -598,27 +597,27 @@ describe('TranslationService', () => {
 
     it('should return a translation', async () => {
       const findOneSpy = jest.spyOn(translationRepository, 'findOne').mockImplementation(async () => {
-        return buildTranslationWithId1();
+        return buildTranslation();
       });
 
       expect(await translationService.getByAliasOrFail(
         1,
         'translationAlias',
-      )).toEqual(buildTranslationWithId1());
+      )).toEqual(buildTranslation());
       expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a translation with translation status', async () => {
       const findOneSpy = jest.spyOn(translationRepository, 'findOne').mockImplementation(async () => {
-        return buildTranslationWithId1();
+        return buildTranslation();
       });
 
       const getTranslationStatusByTranslationSpy = jest.spyOn(translationStatusService, 'getTranslationStatusByTranslation').mockImplementation(async () => {
-        return buildTranslationStatusWithId1();
+        return buildTranslationStatus();
       });
 
-      const expectedResult = buildTranslationWithId1();
-      expectedResult.translationStatus = buildTranslationStatusWithId1();
+      const expectedResult = buildTranslation();
+      expectedResult.translationStatus = buildTranslationStatus();
 
       expect(await translationService.getByAliasOrFail(
         1,
@@ -632,10 +631,10 @@ describe('TranslationService', () => {
 
   describe('delete', () => {
     it('should return the deleted translation', () => {
-      const expectedResult = buildTranslationWithId1();
+      const expectedResult = buildTranslation();
       expectedResult.deletedAt = MomentUtc().unix();
 
-      expect(translationService.delete(buildTranslationWithId1()))
+      expect(translationService.delete(buildTranslation()))
         .toEqual(expectedResult);
     });
   });

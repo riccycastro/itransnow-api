@@ -12,10 +12,10 @@ import {
 import { LanguageService } from '../../../src/Services/language.service';
 import { SectionService } from '../../../src/Services/section.service';
 import { WhiteLabelService } from '../../../src/Services/white-label.service';
-import { buildApplicationArray, buildApplicationWithId1 } from '../../helper/builder/application.builder';
-import { buildLanguageWithId1 } from '../../helper/builder/language.builder';
-import { buildSectionWithId1 } from '../../helper/builder/section.builder';
-import { buildWhiteLabelArray, buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
+import { buildApplication, buildApplicationArray } from '../../helper/builder/application.builder';
+import { buildLanguage } from '../../helper/builder/language.builder';
+import { buildSection } from '../../helper/builder/section.builder';
+import { buildWhitelabel, buildWhiteLabelArray } from '../../helper/builder/white-label.builder';
 import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 import { utc as MomentUtc } from 'moment';
 import { SectionDto } from '../../../src/Dto/section.dto';
@@ -23,15 +23,15 @@ import { ActiveWhiteLabelDto, WhiteLabelDto } from '../../../src/Dto/white-label
 import { TranslationService } from '../../../src/Services/translation.service';
 import { User } from '../../../src/Entities/user.entity';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
-import { buildTranslationWithId1 } from '../../helper/builder/translation.builder';
+import { buildTranslation } from '../../helper/builder/translation.builder';
 import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner.provider';
 import { QueryRunner } from '../../../src/Types/type';
 import { LanguageToApplicationDto } from '../../../src/Dto/language.dto';
 import { classToClass } from 'class-transformer';
 import { StringProvider } from '../../../src/Services/Provider/string.provider';
-import { buildTranslationKeyArray, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
+import { buildTranslationKey, buildTranslationKeyArray } from '../../helper/builder/translation-key.build';
 import { TranslationKeyService } from '../../../src/Services/translation-key.service';
-import { buildWhiteLabelTranslationWithId1 } from '../../helper/builder/white-label-translation.build';
+import { buildWhiteLabelTranslation } from '../../helper/builder/white-label-translation.build';
 import { WhiteLabelTranslationDto } from '../../../src/Dto/white-label-translation.dto';
 
 describe('ApplicationService', () => {
@@ -160,7 +160,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return an application', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasSpy = jest
         .spyOn(applicationRepository, 'findOne')
         .mockImplementation(async () => {
@@ -174,7 +174,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return an application with language', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       const findByAliasSpy = jest
         .spyOn(applicationRepository, 'findOne')
         .mockImplementation(async () => {
@@ -184,11 +184,11 @@ describe('ApplicationService', () => {
       const getLanguageByApplicationSpy = jest
         .spyOn(languageService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
-      const expectedResult = buildApplicationWithId1();
-      expectedResult.languages = [buildLanguageWithId1()];
+      const expectedResult = buildApplication();
+      expectedResult.languages = [buildLanguage()];
 
       expect(
         await applicationService.getByAliasOrFail(1, 'alias', {
@@ -200,7 +200,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return an application with section', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       const findByAliasSpy = jest
         .spyOn(applicationRepository, 'findOne')
         .mockImplementation(async () => {
@@ -210,11 +210,11 @@ describe('ApplicationService', () => {
       const getSectionByApplicationSpy = jest
         .spyOn(sectionService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildSectionWithId1()];
+          return [buildSection()];
         });
 
-      const expectedResult = buildApplicationWithId1();
-      expectedResult.sections = [buildSectionWithId1()];
+      const expectedResult = buildApplication();
+      expectedResult.sections = [buildSection()];
 
       expect(
         await applicationService.getByAliasOrFail(1, 'alias', {
@@ -226,7 +226,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return an application with white labels', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       const findByAliasSpy = jest
         .spyOn(applicationRepository, 'findOne')
         .mockImplementation(async () => {
@@ -236,11 +236,11 @@ describe('ApplicationService', () => {
       const getWhitelabelByApplicationSpy = jest
         .spyOn(whiteLabelService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildWhiteLabelWithId1()];
+          return [buildWhitelabel()];
         });
 
-      const expectedResult = buildApplicationWithId1();
-      expectedResult.whiteLabels = [buildWhiteLabelWithId1()];
+      const expectedResult = buildApplication();
+      expectedResult.whiteLabels = [buildWhitelabel()];
 
       expect(
         await applicationService.getByAliasOrFail(1, 'alias', {
@@ -252,7 +252,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return an application which includes white label, section and language', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       const findByAliasSpy = jest
         .spyOn(applicationRepository, 'findOne')
         .mockImplementation(async () => {
@@ -262,25 +262,25 @@ describe('ApplicationService', () => {
       const getLanguageByApplicationSpy = jest
         .spyOn(languageService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
       const getSectionByApplicationSpy = jest
         .spyOn(sectionService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildSectionWithId1()];
+          return [buildSection()];
         });
 
       const getWhitelabelByApplicationSpy = jest
         .spyOn(whiteLabelService, 'getByApplication')
         .mockImplementation(async () => {
-          return [buildWhiteLabelWithId1()];
+          return [buildWhitelabel()];
         });
 
-      const expectedResult = buildApplicationWithId1();
-      expectedResult.languages = [buildLanguageWithId1()];
-      expectedResult.sections = [buildSectionWithId1()];
-      expectedResult.whiteLabels = [buildWhiteLabelWithId1()];
+      const expectedResult = buildApplication();
+      expectedResult.languages = [buildLanguage()];
+      expectedResult.sections = [buildSection()];
+      expectedResult.whiteLabels = [buildWhitelabel()];
 
       expect(
         await applicationService.getByAliasOrFail(1, 'alias', {
@@ -309,7 +309,7 @@ describe('ApplicationService', () => {
 
   describe('delete', () => {
     it('should return an application with the properties set as deleted', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
 
       const saveSpy = jest
         .spyOn(applicationRepository, 'save')
@@ -317,7 +317,7 @@ describe('ApplicationService', () => {
           return application;
         });
 
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       expectedResult.isActive = false;
       expectedResult.deletedAt = MomentUtc().unix();
 
@@ -330,9 +330,9 @@ describe('ApplicationService', () => {
 
   describe('active', () => {
     it('should return an inactive application', () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
 
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       expectedResult.isActive = false;
 
       const activeApplicationDto = new ActiveApplicationDto();
@@ -344,10 +344,10 @@ describe('ApplicationService', () => {
     });
 
     it('should return an active application', () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       application.isActive = false;
 
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
 
       const activeApplicationDto = new ActiveApplicationDto();
       activeApplicationDto.isActive = true;
@@ -360,7 +360,7 @@ describe('ApplicationService', () => {
 
   describe('update', () => {
     it('should return an updated application', async () => {
-      const application = buildApplicationWithId1();
+      const application = buildApplication();
       const saveSpy = jest
         .spyOn(applicationRepository, 'save')
         .mockImplementation(async () => {
@@ -370,7 +370,7 @@ describe('ApplicationService', () => {
       const applicationDto = new ApplicationDto();
       applicationDto.name = 'Castro app';
 
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       expectedResult.name = 'Castro app';
 
       expect(
@@ -395,8 +395,8 @@ describe('ApplicationService', () => {
     });
 
     it('should return a new section', async () => {
-      const section = buildSectionWithId1();
-      section.application = buildApplicationWithId1();
+      const section = buildSection();
+      section.application = buildApplication();
 
       const createSpy = jest
         .spyOn(sectionService, 'create')
@@ -410,12 +410,12 @@ describe('ApplicationService', () => {
           return section;
         });
 
-      const expectedResult = buildSectionWithId1();
-      expectedResult.application = buildApplicationWithId1();
+      const expectedResult = buildSection();
+      expectedResult.application = buildApplication();
 
       expect(
         await applicationService.createSection(
-          buildApplicationWithId1(),
+          buildApplication(),
           new SectionDto(),
         ),
       ).toEqual(expectedResult);
@@ -442,8 +442,8 @@ describe('ApplicationService', () => {
     });
 
     it('should return a new white label', async () => {
-      const whiteLabel = buildWhiteLabelWithId1();
-      whiteLabel.application = buildApplicationWithId1();
+      const whiteLabel = buildWhitelabel();
+      whiteLabel.application = buildApplication();
 
       const createSpy = jest
         .spyOn(whiteLabelService, 'create')
@@ -457,12 +457,12 @@ describe('ApplicationService', () => {
           return whiteLabel;
         });
 
-      const expectedResult = buildWhiteLabelWithId1();
-      expectedResult.application = buildApplicationWithId1();
+      const expectedResult = buildWhitelabel();
+      expectedResult.application = buildApplication();
 
       expect(
         await applicationService.createWhiteLabel(
-          buildApplicationWithId1(),
+          buildApplication(),
           new SectionDto(),
         ),
       ).toEqual(expectedResult);
@@ -490,7 +490,7 @@ describe('ApplicationService', () => {
     });
 
     it('should return a new translation', async () => {
-      const translation = buildTranslationWithId1();
+      const translation = buildTranslation();
 
       const persistSpy = jest
         .spyOn(translationService, 'persist')
@@ -498,7 +498,7 @@ describe('ApplicationService', () => {
           return translation;
         });
 
-      const expectResult = buildTranslationWithId1();
+      const expectResult = buildTranslation();
 
       expect(
         await applicationService.createTranslation(
@@ -516,7 +516,7 @@ describe('ApplicationService', () => {
       const getByCodesSpy = jest
         .spyOn(languageService, 'getByCodes')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
       const createQueryRunnerSpy = jest
@@ -559,7 +559,7 @@ describe('ApplicationService', () => {
       const getByCodesSpy = jest
         .spyOn(languageService, 'getByCodes')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
       const createQueryRunnerSpy = jest
@@ -599,7 +599,7 @@ describe('ApplicationService', () => {
       const getByCodesSpy = jest
         .spyOn(languageService, 'getByCodes')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
       const createQueryRunnerSpy = jest
@@ -624,12 +624,12 @@ describe('ApplicationService', () => {
           return;
         });
 
-      const expectedResult = buildApplicationWithId1();
-      expectedResult.languages.push(buildLanguageWithId1());
+      const expectedResult = buildApplication();
+      expectedResult.languages.push(buildLanguage());
 
       expect(
         await applicationService.addLanguages(
-          buildApplicationWithId1(),
+          buildApplication(),
           new LanguageToApplicationDto(),
         ),
       ).toEqual(expectedResult);
@@ -644,7 +644,7 @@ describe('ApplicationService', () => {
       const getByCodesSpy = jest
         .spyOn(languageService, 'getByCodes')
         .mockImplementation(async () => {
-          return [buildLanguageWithId1()];
+          return [buildLanguage()];
         });
 
       const removeLanguageSpy = jest
@@ -691,14 +691,14 @@ describe('ApplicationService', () => {
       });
 
       const findByAliasOrFailSpy = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
       expect(await applicationService.updateWhiteLabel(
-        buildApplicationWithId1(),
+        buildApplication(),
         new WhiteLabelDto(),
         'whiteLabelAlias',
-      )).toEqual(buildWhiteLabelWithId1());
+      )).toEqual(buildWhitelabel());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(updateSpy).toHaveBeenCalledTimes(1);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
@@ -708,13 +708,13 @@ describe('ApplicationService', () => {
   describe('getWhiteLabel', () => {
     it('should return a white label', async () => {
       const findByAliasOrFailSpy = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
       expect(await applicationService.getWhiteLabel(
-        buildApplicationWithId1(),
+        buildApplication(),
         'whitelabelAlias',
-      )).toEqual(buildWhiteLabelWithId1());
+      )).toEqual(buildWhitelabel());
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -729,7 +729,7 @@ describe('ApplicationService', () => {
       });
 
       expect(await applicationService.getWhiteLabels(
-        buildApplicationWithId1(),
+        buildApplication(),
         {},
       )).toEqual({
           data: buildWhiteLabelArray(),
@@ -751,13 +751,13 @@ describe('ApplicationService', () => {
       });
 
       const findByAliasOrFailSpy = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
       expect(await applicationService.deleteWhiteLabel(
-        buildApplicationWithId1(),
+        buildApplication(),
         'whiteLabelAlias',
-      )).toEqual(buildWhiteLabelWithId1());
+      )).toEqual(buildWhitelabel());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(deleteSpy).toHaveBeenCalledTimes(1);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
@@ -767,13 +767,13 @@ describe('ApplicationService', () => {
   describe('getTranslationKey', () => {
     it('should return a translation key', async () => {
       const getByAliasOrFailSpy = jest.spyOn(translationKeyService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       expect(await applicationService.getTranslationKey(
-        buildApplicationWithId1(),
+        buildApplication(),
         'translationKeyAlias',
-      )).toEqual(buildTranslationKeyWithId1());
+      )).toEqual(buildTranslationKey());
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -788,7 +788,7 @@ describe('ApplicationService', () => {
       });
 
       expect(await applicationService.getTranslationKeys(
-        buildApplicationWithId1(),
+        buildApplication(),
         {},
       )).toEqual({
         data: buildTranslationKeyArray(),
@@ -809,13 +809,13 @@ describe('ApplicationService', () => {
       });
 
       const findByAliasOrFailSpy = jest.spyOn(translationKeyService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       expect(await applicationService.deleteTranslationKey(
-        buildApplicationWithId1(),
+        buildApplication(),
         'translationKeyAlias',
-      )).toEqual(buildTranslationKeyWithId1());
+      )).toEqual(buildTranslationKey());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(deleteSpy).toHaveBeenCalledTimes(1);
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
@@ -825,19 +825,19 @@ describe('ApplicationService', () => {
   describe('addTranslationToWhiteLabel', () => {
     it('should return a white label translation', async () => {
       const findByAliasOrFailSpy = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
       const createWhiteLabelTranslationSpy = jest.spyOn(whiteLabelService, 'createWhiteLabelTranslation').mockImplementation(async () => {
-        return buildWhiteLabelTranslationWithId1();
+        return buildWhiteLabelTranslation();
       });
 
       expect(await applicationService.addTranslationToWhiteLabel(
         new User(),
-        buildApplicationWithId1(),
+        buildApplication(),
         'whiteLabelAlias',
         new WhiteLabelTranslationDto(),
-      )).toEqual(buildWhiteLabelTranslationWithId1());
+      )).toEqual(buildWhiteLabelTranslation());
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(createWhiteLabelTranslationSpy).toHaveBeenCalledTimes(1);
     });
@@ -850,20 +850,20 @@ describe('ApplicationService', () => {
       });
 
       const activeSpy = jest.spyOn(whiteLabelService, 'active').mockImplementation(() => {
-        const whiteLabel = buildWhiteLabelWithId1();
+        const whiteLabel = buildWhitelabel();
         whiteLabel.isActive = true;
         return whiteLabel;
       });
 
       const findByAliasOrFail = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
       expect(await applicationService.activeWhiteLabel(
-        buildApplicationWithId1(),
+        buildApplication(),
         'whiteLabelAlias',
         new ActiveWhiteLabelDto(),
-      )).toEqual(buildWhiteLabelWithId1());
+      )).toEqual(buildWhitelabel());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(activeSpy).toHaveBeenCalledTimes(1);
       expect(findByAliasOrFail).toHaveBeenCalledTimes(1);
@@ -875,20 +875,20 @@ describe('ApplicationService', () => {
       });
 
       const activeSpy = jest.spyOn(whiteLabelService, 'active').mockImplementation(() => {
-        const whiteLabel = buildWhiteLabelWithId1();
+        const whiteLabel = buildWhitelabel();
         whiteLabel.isActive = false;
         return whiteLabel;
       });
 
       const findByAliasOrFail = jest.spyOn(whiteLabelService, 'findByAliasOrFail').mockImplementation(async () => {
-        return buildWhiteLabelWithId1();
+        return buildWhitelabel();
       });
 
-      const expectedResult = buildWhiteLabelWithId1();
+      const expectedResult = buildWhitelabel();
       expectedResult.isActive = false;
 
       expect(await applicationService.activeWhiteLabel(
-        buildApplicationWithId1(),
+        buildApplication(),
         'whiteLabelAlias',
         new ActiveWhiteLabelDto(),
       )).toEqual(expectedResult);

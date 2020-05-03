@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApplicationController } from '../../../src/Controllers/application.controller';
 import { ApplicationService } from '../../../src/Services/application.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { buildApplication, buildApplicationWithId1 } from '../../helper/builder/application.builder';
+import { buildApplication } from '../../helper/builder/application.builder';
 import { ActiveApplicationDto, ApplicationDto } from '../../../src/Dto/application.dto';
 import { SectionDto } from '../../../src/Dto/section.dto';
-import { buildSectionWithApplication } from '../../helper/builder/section.builder';
+import { buildSection } from '../../helper/builder/section.builder';
 import { LanguageToApplicationDto } from '../../../src/Dto/language.dto';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
 import { buildTranslation } from '../../helper/builder/translation.builder';
@@ -95,12 +95,12 @@ describe('ApplicationController', () => {
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       expect(
         await applicationController.getApplicationAction(req, 'alias'),
-      ).toEqual(buildApplicationWithId1());
+      ).toEqual(buildApplication());
       expect(findByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -163,7 +163,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return undefine and call create and save methods', async () => {
-      const expectedResponse = buildApplicationWithId1();
+      const expectedResponse = buildApplication();
       const createSpy = jest
         .spyOn(applicationService, 'create')
         .mockImplementation(async () => {
@@ -206,7 +206,7 @@ describe('ApplicationController', () => {
     });
 
     it('should save delete operation', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
@@ -242,7 +242,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return application if success', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
@@ -286,7 +286,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return activated application', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
@@ -337,7 +337,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return created section', async () => {
-      const section = buildSectionWithApplication(1, 1);
+      const section = buildSection({ application: buildApplication() });
 
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
@@ -384,7 +384,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return application', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
@@ -428,7 +428,7 @@ describe('ApplicationController', () => {
     });
 
     it('should return application', async () => {
-      const expectedResult = buildApplicationWithId1();
+      const expectedResult = buildApplication();
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
@@ -482,7 +482,7 @@ describe('ApplicationController', () => {
       const findByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const createTranslationSpy = jest

@@ -1,13 +1,12 @@
 import { Company } from '../../../src/Entities/company.entity';
 
-export const buildCompany = (index: number): Company => {
+export const buildCompany = (companyData?: any): Company => {
+  companyData = companyData || {};
   const company = new Company();
-  company.id = index;
-  company.name = 'company_name' + index;
-  company.alias = 'company_alias' + index;
-  company.isActive = true;
-  company.deletedAt = 0;
+  company.id = companyData.id || 1;
+  company.name = companyData.name || 'company_name1';
+  company.alias = companyData.alias || 'company_alias1';
+  company.isActive = companyData.isActive !== undefined ? companyData.isActive : true;
+  company.deletedAt = companyData.deletedAt || 0;
   return company;
 };
-
-export const buildCompanyWithId1 = () => buildCompany(1);

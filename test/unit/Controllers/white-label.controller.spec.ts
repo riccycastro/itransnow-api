@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WhiteLabelController } from '../../../src/Controllers/white-label.controller';
-import { buildWhiteLabelArray, buildWhiteLabelWithId1 } from '../../helper/builder/white-label.builder';
+import { buildWhitelabel, buildWhiteLabelArray } from '../../helper/builder/white-label.builder';
 import { ActiveWhiteLabelDto, WhiteLabelDto } from '../../../src/Dto/white-label.dto';
 import { WhiteLabelTranslationDto } from '../../../src/Dto/white-label-translation.dto';
 import { createRequest } from 'node-mocks-http';
 import { ApplicationService } from '../../../src/Services/application.service';
-import { buildApplicationWithId1 } from '../../helper/builder/application.builder';
+import { buildApplication } from '../../helper/builder/application.builder';
 import { buildWhiteLabelTranslation } from '../../helper/builder/white-label-translation.build';
 
 describe('WhiteLabelController', () => {
@@ -83,17 +83,17 @@ describe('WhiteLabelController', () => {
 
   describe('getWhiteLabelAction', () => {
     it('should return a white label', async () => {
-      const expectedResult = buildWhiteLabelWithId1();
+      const expectedResult = buildWhitelabel();
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getWhiteLabelSpy = jest
         .spyOn(applicationService, 'getWhiteLabel')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       expect(
@@ -113,7 +113,7 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getWhiteLabelsSpy = jest
@@ -141,7 +141,7 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const getWhiteLabelsSpy = jest
@@ -165,13 +165,13 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const deleteWhiteLabelSpy = jest
         .spyOn(applicationService, 'deleteWhiteLabel')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       expect(
@@ -191,13 +191,13 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const updateWhiteLabelSpy = jest
         .spyOn(applicationService, 'updateWhiteLabel')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       expect(
@@ -207,7 +207,7 @@ describe('WhiteLabelController', () => {
           'alias',
           'whiteLabelAlias',
         ),
-      ).toEqual(buildWhiteLabelWithId1());
+      ).toEqual(buildWhitelabel());
       expect(updateWhiteLabelSpy).toHaveBeenCalledTimes(1);
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
     });
@@ -218,7 +218,7 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const addTranslationToWhiteLabelSpy = jest
@@ -245,13 +245,13 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const activeWhiteLabelSpy = jest
         .spyOn(applicationService, 'activeWhiteLabel')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       expect(
@@ -261,7 +261,7 @@ describe('WhiteLabelController', () => {
           'alias',
           'whiteLabelAlias',
         ),
-      ).toEqual(buildWhiteLabelWithId1());
+      ).toEqual(buildWhitelabel());
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(activeWhiteLabelSpy).toHaveBeenCalledTimes(1);
     });
@@ -272,13 +272,13 @@ describe('WhiteLabelController', () => {
       const getByAliasOrFailSpy = jest
         .spyOn(applicationService, 'getByAliasOrFail')
         .mockImplementation(async () => {
-          return buildApplicationWithId1();
+          return buildApplication();
         });
 
       const createWhiteLabelSpy = jest
         .spyOn(applicationService, 'createWhiteLabel')
         .mockImplementation(async () => {
-          return buildWhiteLabelWithId1();
+          return buildWhitelabel();
         });
 
       expect(
@@ -287,7 +287,7 @@ describe('WhiteLabelController', () => {
           new WhiteLabelDto(),
           'alias',
         ),
-      ).toEqual(buildWhiteLabelWithId1());
+      ).toEqual(buildWhitelabel());
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(createWhiteLabelSpy).toHaveBeenCalledTimes(1);
     });

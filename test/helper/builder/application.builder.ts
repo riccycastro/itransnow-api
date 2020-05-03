@@ -1,18 +1,21 @@
 import { Application } from '../../../src/Entities/application.entity';
-import { utc } from 'moment';
 
-export const buildApplication = (index: number): Application => {
+export const buildApplication = (applicationData?: any): Application => {
+  applicationData = applicationData || {};
   const application = new Application();
-  application.id = 1;
-  application.alias = 'application_alias_' + index;
-  application.name = 'application name_' + index;
-  application.isActive = true;
-  application.deletedAt = utc().unix();
-  application.languages = [];
-  application.companyId = 1;
+  application.id = applicationData.id || 1;
+  application.alias = applicationData.alias || 'application_alias_1';
+  application.name = applicationData.name || 'application name_1';
+  application.isActive = applicationData.isActive !== undefined ? applicationData.isActive : true;
+  application.deletedAt = applicationData.deletedAt || 0;
+  application.languages = applicationData.languages || [];
+  application.companyId = applicationData.companyId || 1;
   return application;
 };
 
-export const buildApplicationWithId1 = (): Application => buildApplication(1);
 export const buildApplicationArray = () =>
-  [1, 2, 3, 4, 5].map(index => buildApplication(index));
+  [1, 2, 3, 4, 5].map(index => buildApplication({
+    id: index,
+    alias: 'application_alias_' + index,
+    name: 'application name_' + index,
+  }));

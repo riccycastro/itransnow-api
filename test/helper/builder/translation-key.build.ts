@@ -1,14 +1,17 @@
 import { TranslationKey } from '../../../src/Entities/translation-key.entity';
 
-export const buildTranslationKey = (index: number): TranslationKey => {
+export const buildTranslationKey = (translationKeyData?: any): TranslationKey => {
+  translationKeyData = translationKeyData || {};
   const translationKey = new TranslationKey();
-  translationKey.id = index;
-  translationKey.alias = 'translation_key_alias_' + index;
-  translationKey.isActive = true;
-  translationKey.deletedAt = 0;
+  translationKey.id = translationKeyData.id || 1;
+  translationKey.alias = translationKeyData.alias || 'translation_key_alias_1';
+  translationKey.isActive = translationKeyData.isActive !== undefined ? translationKeyData.isActive : true;
+  translationKey.deletedAt = translationKeyData.isDeletedAt || 0;
   return translationKey;
 };
 
-export const buildTranslationKeyWithId1 = () => buildTranslationKey(1);
 export const buildTranslationKeyArray = () =>
-  [1, 2, 3, 4, 5].map(index => buildTranslationKey(index));
+  [1, 2, 3, 4, 5].map(index => buildTranslationKey({
+    id: index,
+    alias: 'translation_key_alias_' + index,
+  }));

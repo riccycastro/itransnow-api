@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../../src/Controllers/auth.controller';
-import { buildUserWithId1 } from '../../helper/builder/user.builder';
+import { buildUser } from '../../helper/builder/user.builder';
 import { AuthService } from '../../../src/Services/auth.service';
 import { createRequest } from 'node-mocks-http';
 
@@ -62,7 +62,7 @@ describe('AuthController', () => {
           return expectedResult;
         });
 
-      req.user = buildUserWithId1();
+      req.user = buildUser();
 
       expect(await authController.loginAction(req)).toEqual(expectedResult);
       expect(loginSpy).toHaveBeenCalledTimes(1);

@@ -4,7 +4,7 @@ import { UserService } from '../../../src/Services/user.service';
 import { BcryptProvider } from '../../../src/Services/Provider/bcrypt.provider';
 import { User } from '../../../src/Entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { buildUserWithId1 } from '../../helper/builder/user.builder';
+import { buildUser } from '../../helper/builder/user.builder';
 
 describe('AuthService', () => {
   let app: TestingModule;
@@ -109,7 +109,7 @@ describe('AuthService', () => {
         return token;
       });
 
-      expect(await authService.login(buildUserWithId1())).toEqual({
+      expect(await authService.login(buildUser())).toEqual({
         accessToken: token,
       });
       expect(signSpy).toHaveBeenCalledTimes(1);

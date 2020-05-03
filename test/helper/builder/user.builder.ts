@@ -16,5 +16,9 @@ export const buildUser = (userData?: any): User => {
   return user;
 };
 
-export const buildUserWithId1 = () => buildUser();
-export const buildUserArray = () => [1, 2, 3, 4, 5].map(index => buildUser());
+export const buildUserArray = () => [1, 2, 3, 4, 5].map(index => buildUser({
+  id: index,
+  name: 'user_name_' + index,
+  email: 'user_email_' + index,
+  username: 'user_username_' + index,
+}));

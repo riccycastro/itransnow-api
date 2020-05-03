@@ -1,16 +1,17 @@
 import { Language } from '../../../src/Entities/language.entity';
-import { utc } from 'moment';
 
-export const buildLanguage = (index): Language => {
+export const buildLanguage = (languageData?: any): Language => {
+  languageData = languageData || {};
   const language = new Language();
-  language.id = index;
-  language.code = 'code_' + index;
-  language.isActive = true;
-  language.deletedAt = utc().unix();
+  language.id = languageData.id || 1;
+  language.code = languageData.code || 'code_1';
+  language.isActive = languageData.isActive !== undefined ? languageData.isActive : true;
+  language.deletedAt = languageData.deletedAt || 0;
   return language;
 };
 
-export const buildLanguageWithId1 = () => buildLanguage(1);
-
 export const buildLanguageArray = () =>
-  [1, 2, 3, 4, 5].map(index => buildLanguage(index));
+  [1, 2, 3, 4, 5].map(index => buildLanguage({
+    id: index,
+    code: 'code_' + index,
+  }));

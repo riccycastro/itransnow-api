@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TranslationKeyService } from '../../../src/Services/translation-key.service';
 import { TranslationKeyRepository } from '../../../src/Repositories/translation-key.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { buildTranslationKeyArray, buildTranslationKeyWithId1 } from '../../helper/builder/translation-key.build';
+import { buildTranslationKey, buildTranslationKeyArray } from '../../helper/builder/translation-key.build';
 import { TranslationKey } from '../../../src/Entities/translation-key.entity';
 import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
-import { buildTranslationArray, buildTranslationWithId1 } from '../../helper/builder/translation.builder';
+import { buildTranslation, buildTranslationArray } from '../../helper/builder/translation.builder';
 import { TranslationService } from '../../../src/Services/translation.service';
 import { utc as MomentUtc } from 'moment';
-import { buildTranslationStatusWithId1 } from '../../helper/builder/translation-status.builder';
+import { buildTranslationStatus } from '../../helper/builder/translation-status.builder';
 import { TranslationStatusService } from '../../../src/Services/translation-status.service';
 import { TranslationStatusDto } from '../../../src/Dto/translation.dto';
 
@@ -90,7 +90,7 @@ describe('TranslationKeyService', () => {
       const findByTranslationKeyInApplicationSpy = jest
         .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
         .mockImplementation(async () => {
-          return buildTranslationKeyWithId1();
+          return buildTranslationKey();
         });
 
       expect(
@@ -99,7 +99,7 @@ describe('TranslationKeyService', () => {
           1,
           'string',
         ),
-      ).toEqual(buildTranslationKeyWithId1());
+      ).toEqual(buildTranslationKey());
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -139,11 +139,11 @@ describe('TranslationKeyService', () => {
       const findByTranslationKeyInApplicationSpy = jest
         .spyOn(translationKeyRepository, 'findByTranslationKeyInApplication')
         .mockImplementation(async () => {
-          return buildTranslationKeyWithId1();
+          return buildTranslationKey();
         });
 
       expect(await translationKeyService.get(1, 1, 'translationKey')).toEqual(
-        buildTranslationKeyWithId1(),
+        buildTranslationKey(),
       );
       expect(findByTranslationKeyInApplicationSpy).toHaveBeenCalledTimes(1);
     });
@@ -164,26 +164,26 @@ describe('TranslationKeyService', () => {
 
     it('should return a translation key', async () => {
       const findByAliasSpy = jest.spyOn(translationKeyRepository, 'findByAlias').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       expect(await translationKeyService.getByAliasOrFail(
         1,
         'translationKeyAlias',
-      )).toEqual(buildTranslationKeyWithId1());
+      )).toEqual(buildTranslationKey());
       expect(findByAliasSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a translation key with translations', async () => {
       const findByAliasSpy = jest.spyOn(translationKeyRepository, 'findByAlias').mockImplementation(async () => {
-        return buildTranslationKeyWithId1();
+        return buildTranslationKey();
       });
 
       const getTranslationsWithLanguageAndStatusByTranslationKeySpy = jest.spyOn(translationService, 'getTranslationsWithLanguageAndStatusByTranslationKey').mockImplementation(async () => {
         return buildTranslationArray();
       });
 
-      const expectedResult = buildTranslationKeyWithId1();
+      const expectedResult = buildTranslationKey();
       expectedResult.translations = buildTranslationArray();
 
       expect(await translationKeyService.getByAliasOrFail(
@@ -198,10 +198,10 @@ describe('TranslationKeyService', () => {
 
   describe('delete', () => {
     it('should return the deleted translation key', async () => {
-      const expectedResult = buildTranslationKeyWithId1();
+      const expectedResult = buildTranslationKey();
       expectedResult.deletedAt = MomentUtc().unix();
 
-      expect(await translationKeyService.delete(buildTranslationKeyWithId1()))
+      expect(await translationKeyService.delete(buildTranslationKey()))
         .toEqual(expectedResult);
     });
   });
@@ -209,7 +209,7 @@ describe('TranslationKeyService', () => {
   describe('deleteTranslation', () => {
     it('should return the deleted translation', async () => {
       const getByAliasOrFailSpy = jest.spyOn(translationService, 'getByAliasOrFail').mockImplementation(async () => {
-        return buildTranslationWithId1();
+        return buildTranslation();
       });
 
       const deleteSpy = jest.spyOn(translationService, 'delete').mockImplementation((translation) => {
@@ -221,9 +221,9 @@ describe('TranslationKeyService', () => {
       });
 
       expect(await translationKeyService.deleteTranslation(
-        buildTranslationKeyWithId1(),
+        buildTranslationKey(),
         'translationAlias',
-      )).toEqual(buildTranslationWithId1());
+      )).toEqual(buildTranslation());
       expect(getByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(deleteSpy).toHaveBeenCalledTimes(1);
       expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -233,14 +233,14 @@ describe('TranslationKeyService', () => {
   describe('statusTranslation', () => {
     it('should throw a bad request exception', async () => {
       const getByStatusSpy = jest.spyOn(translationStatusService, 'getByStatus').mockImplementation(async () => {
-        const translationStatus = buildTranslationStatusWithId1();
+        const translationStatus = buildTranslationStatus();
         translationStatus.status = 'deprecated';
         return translationStatus;
       });
 
       const getByAliasOrFailSpy = jest.spyOn(translationService, 'getByAliasOrFail').mockImplementation(async () => {
-        const translation = buildTranslationWithId1();
-        const translationStatus = buildTranslationStatusWithId1();
+        const translation = buildTranslation();
+        const translationStatus = buildTranslationStatus();
         translationStatus.status = 'approval_pending';
         translation.translationStatus = translationStatus;
         return translation;
@@ -250,7 +250,7 @@ describe('TranslationKeyService', () => {
       translationStatusDto.status = '';
 
       await expect(translationKeyService.statusTranslation(
-        buildTranslationKeyWithId1(),
+        buildTranslationKey(),
         'translationAlias',
         translationStatusDto,
       )).rejects.toThrow(BadRequestException);
@@ -260,14 +260,14 @@ describe('TranslationKeyService', () => {
 
     it('should return the updated translation', async () => {
       const getByStatusSpy = jest.spyOn(translationStatusService, 'getByStatus').mockImplementation(async () => {
-        const translationStatus = buildTranslationStatusWithId1();
+        const translationStatus = buildTranslationStatus();
         translationStatus.status = 'approved';
         return translationStatus;
       });
 
       const getByAliasOrFailSpy = jest.spyOn(translationService, 'getByAliasOrFail').mockImplementation(async () => {
-        const translation = buildTranslationWithId1();
-        const translationStatus = buildTranslationStatusWithId1();
+        const translation = buildTranslation();
+        const translationStatus = buildTranslationStatus();
         translationStatus.status = 'approval_pending';
         translation.translationStatus = translationStatus;
         return translation;
@@ -280,13 +280,13 @@ describe('TranslationKeyService', () => {
       const translationStatusDto = new TranslationStatusDto();
       translationStatusDto.status = '';
 
-      const expectedResult = buildTranslationWithId1();
-      const translationStatus = buildTranslationStatusWithId1();
+      const expectedResult = buildTranslation();
+      const translationStatus = buildTranslationStatus();
       translationStatus.status = 'approved';
       expectedResult.translationStatus = translationStatus;
 
       expect(await translationKeyService.statusTranslation(
-        buildTranslationKeyWithId1(),
+        buildTranslationKey(),
         'translationAlias',
         translationStatusDto,
       )).toEqual(expectedResult);

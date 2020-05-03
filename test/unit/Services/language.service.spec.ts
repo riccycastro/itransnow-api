@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageService } from '../../../src/Services/language.service';
 import { LanguageRepository } from '../../../src/Repositories/language.repository';
-import { buildLanguageArray, buildLanguageWithId1 } from '../../helper/builder/language.builder';
+import { buildLanguage, buildLanguageArray } from '../../helper/builder/language.builder';
 import { NotFoundException } from '@nestjs/common';
 
 describe('LanguageService', () => {
@@ -90,12 +90,12 @@ describe('LanguageService', () => {
     });
 
     it('should return a language', async () => {
-      const expectedResult = buildLanguageWithId1();
+      const expectedResult = buildLanguage();
 
       const findByCodeInApplicationSpy = jest
         .spyOn(languageRepository, 'findByCodeInApplication')
         .mockImplementation(async () => {
-          return buildLanguageWithId1();
+          return buildLanguage();
         });
 
       expect(await languageService.getByCodeInApplication(1, 'en')).toEqual(

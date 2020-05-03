@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../../../src/Controllers/user.controller';
-import { buildUserArray, buildUserWithId1 } from '../../helper/builder/user.builder';
+import { buildUser, buildUserArray } from '../../helper/builder/user.builder';
 import { createRequest } from 'node-mocks-http';
 import { UserService } from '../../../src/Services/user.service';
 import { ActiveUserDto, AdminUserDto, CreateUserDto, UserDto } from '../../../src/Dto/user.dto';
@@ -58,7 +58,7 @@ describe('UserController', () => {
 
   describe('profileAction', () => {
     it('should return a user', () => {
-      const expectedResult = buildUserWithId1();
+      const expectedResult = buildUser();
       req.user = expectedResult;
 
       expect(userController.profileAction(req)).toEqual(expectedResult);
@@ -72,10 +72,10 @@ describe('UserController', () => {
       });
 
       const createSpy = jest.spyOn(userService, 'create').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
-      expect(await userController.createAction(req, new CreateUserDto())).toEqual(buildUserWithId1());
+      expect(await userController.createAction(req, new CreateUserDto())).toEqual(buildUser());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(createSpy).toHaveBeenCalledTimes(1);
     });
@@ -84,10 +84,10 @@ describe('UserController', () => {
   describe('getUserAction', () => {
     it('should return a user', async () => {
       const getByUsernameOrFailSpy = jest.spyOn(userService, 'getByUsernameOrFail').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
-      expect(await userController.getUserAction(req, 'username')).toEqual(buildUserWithId1());
+      expect(await userController.getUserAction(req, 'username')).toEqual(buildUser());
       expect(getByUsernameOrFailSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -121,11 +121,11 @@ describe('UserController', () => {
       });
 
       const getByUsernameOrFailSpy = jest.spyOn(userService, 'getByUsernameOrFail').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
       expect(await userController.updateAction(req, new UserDto(), 'username'))
-        .toEqual(buildUserWithId1());
+        .toEqual(buildUser());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(updateSpy).toHaveBeenCalledTimes(1);
       expect(getByUsernameOrFailSpy).toHaveBeenCalledTimes(1);
@@ -143,7 +143,7 @@ describe('UserController', () => {
       });
 
       const getByUsernameOrFailSpy = jest.spyOn(userService, 'getByUsernameOrFail').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
       expect(await userController.deleteAction(req, 'username'))
@@ -165,11 +165,11 @@ describe('UserController', () => {
       });
 
       const getByUsernameOrFailSpy = jest.spyOn(userService, 'getByUsernameOrFail').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
       expect(await userController.setAdminAction(req, new AdminUserDto(), 'username'))
-        .toEqual(buildUserWithId1());
+        .toEqual(buildUser());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(setAdminUserSpy).toHaveBeenCalledTimes(1);
       expect(getByUsernameOrFailSpy).toHaveBeenCalledTimes(1);
@@ -187,11 +187,11 @@ describe('UserController', () => {
       });
 
       const getByUsernameOrFailSpy = jest.spyOn(userService, 'getByUsernameOrFail').mockImplementation(async () => {
-        return buildUserWithId1();
+        return buildUser();
       });
 
       expect(await userController.setActiveAction(req, new ActiveUserDto(), 'username'))
-        .toEqual(buildUserWithId1());
+        .toEqual(buildUser());
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(setActiveSpy).toHaveBeenCalledTimes(1);
       expect(getByUsernameOrFailSpy).toHaveBeenCalledTimes(1);
