@@ -11,4 +11,13 @@ export class MomentProvider {
   ): Moment {
     return MomentUtc(inp, format, language, strict);
   }
+
+  unix(
+    inp?: MomentInput,
+    format?: MomentFormatSpecification,
+    language?: string,
+    strict?: boolean,
+  ): number {
+    return MomentUtc(inp, format, language, strict).unix();
+  }
 }

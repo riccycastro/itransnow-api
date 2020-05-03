@@ -1,14 +1,17 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from '../Entities/user.entity';
 import { UserRepository } from '../Repositories/user.repository';
 import { RegisterUserDto } from '../Dto/register-user.dto';
 import { BcryptProvider } from './Provider/bcrypt.provider';
 import { CompanyService } from './company.service';
-import { AbstractEntityService } from './AbstractEntityService';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
+import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { QueryPaginationInterface } from '../Repositories/abstract.repository';
+import { ActiveUserDto, AdminUserDto, CreateUserDto, UserDto } from '../Dto/user.dto';
+import { MomentProvider } from './Provider/moment.provider';
 
 @Injectable()
-export class UserService extends AbstractEntityService<User> {
+export class UserService extends AbstractEntityListingService<User> {
   private readonly bcryptProvider: BcryptProvider;
   private readonly companyService: CompanyService;
 
@@ -17,6 +20,7 @@ export class UserService extends AbstractEntityService<User> {
     bcryptProvider: BcryptProvider,
     companyService: CompanyService,
     private readonly queryRunnerProvider: QueryRunnerProvider,
+    private readonly momentProvider: MomentProvider,
   ) {
     super(userRepository);
     this.bcryptProvider = bcryptProvider;
@@ -72,5 +76,79 @@ export class UserService extends AbstractEntityService<User> {
       await queryRunner.release();
       throw new InternalServerErrorException();
     }
+  }
+
+  async findByCredentialsInCompany(companyId: number, credential: string): Promise<User | undefined> {
+    return this.repository.findOne({
+      where: [{ username: credential, company: companyId }, { email: credential, company: companyId }],
+    });
+  }
+
+  async getByUsernameOrFail(companyId: number, username: string): Promise<User> {
+    const user = await this.getByUsername(companyId, username);
+    if (!user) {
+      throw new NotFoundException(`User with username ${username} not found`);
+    }
+
+    return user;
+  }
+
+  private async getByUsername(companyId: number, username: string): Promise<User | undefined> {
+    return await this.repository.findOne({
+      where: { username: username, company: companyId },
+    });
+  }
+
+  async create(companyId: number, createUserDto: CreateUserDto) {
+    const existentUsers = await Promise.all(
+      [
+        this.findByCredentialsInCompany(companyId, createUserDto.username),
+        this.findByCredentialsInCompany(companyId, createUserDto.email),
+      ],
+    );
+
+    for (const existentUser of existentUsers) {
+      if (existentUser) {
+        throw new ConflictException('User');
+      }
+    }
+
+    const user = new User();
+    user.email = createUserDto.email;
+    user.name = createUserDto.name;
+    user.username = createUserDto.username;
+    user.password = await this.bcryptProvider.hash(createUserDto.password);
+    user.company = companyId;
+    return user;
+  }
+
+  setAdminUser(user: User, adminUserDto: AdminUserDto): User {
+    user.isAdmin = adminUserDto.isAdmin;
+    return user;
+  }
+
+  setActive(user: User, activeUserDto: ActiveUserDto): User {
+    user.isActive = activeUserDto.isActive;
+    return user;
+  }
+
+  delete(user: User): User {
+    user.deletedAt = this.momentProvider.unix();
+    return user;
+  }
+
+  update(user: User, userDto: UserDto) {
+    user.name = userDto.name;
+    return user;
+  }
+
+  protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[User[], number]> {
+    const listResult = await (this.repository as UserRepository).findInList(companyId, query);
+
+    for await (let user of listResult[0]) {
+      user = await this.getIncludes(companyId, user, query);
+    }
+
+    return listResult;
   }
 }

@@ -94,6 +94,53 @@ export class AbstractRepository<Entity> extends Repository<Entity> {
     return queryBuilder;
   }
 
+  protected queryUsername(
+    queryBuilder,
+    tableName: string,
+    search: any,
+  ): SelectQueryBuilder<Entity> {
+    if (search.username) {
+      const username = search.username.split(',');
+      queryBuilder = this.substringStatement(
+        queryBuilder,
+        tableName,
+        'username',
+        username,
+      );
+    }
+    return queryBuilder;
+  }
+
+  protected queryEmail(
+    queryBuilder,
+    tableName: string,
+    search: any,
+  ): SelectQueryBuilder<Entity> {
+    if (search.email) {
+      const email = search.email.split(',');
+      queryBuilder = this.substringStatement(
+        queryBuilder,
+        tableName,
+        'email',
+        email,
+      );
+    }
+    return queryBuilder;
+  }
+
+  protected queryAdmin(
+    queryBuilder,
+    tableName: string,
+    search: any,
+  ): SelectQueryBuilder<Entity> {
+    if (search.admin) {
+      queryBuilder.andWhere(`${tableName}.isAdmin = :admin`, {
+        admin: search.admin,
+      });
+    }
+    return queryBuilder;
+  }
+
   protected queryActive(
     queryBuilder,
     tableName: string,

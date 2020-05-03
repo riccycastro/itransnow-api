@@ -17,6 +17,7 @@ import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
+  @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
@@ -29,15 +30,18 @@ export class User {
   @Column()
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
   @Column({ name: 'is_active' })
   isActive: boolean;
 
+  @Exclude()
   @Column({ name: 'deleted_at_unix' })
   deletedAt: number;
 
+  @Exclude()
   @Column({ name: 'is_visible' })
   isVisible: boolean;
 
@@ -60,7 +64,7 @@ export class User {
 
   @ManyToOne(type => Company, company => company.users)
   @JoinColumn({ name: 'company_id' })
-  company: Company;
+  company: Company | number;
 
   @Exclude()
   @RelationId((user: User) => user.company)

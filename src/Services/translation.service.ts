@@ -203,6 +203,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     if (translationDto.includes.length) {
       const getWhiteLabelTask = [];
+      // todo@rcastro - change this to for await
       for (const include of translationDto.includes) {
         getWhiteLabelTask.push(
           this.getWhiteLabelsIncludes(
