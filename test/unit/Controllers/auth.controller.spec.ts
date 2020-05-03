@@ -31,6 +31,10 @@ describe('AuthController', () => {
           provide: 'CompanyService',
           useValue: {},
         },
+        {
+          provide: 'MomentProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../../../src/Services/user.service';
 import { UserRepository } from '../../../src/Repositories/user.repository';
-import { buildUserWithId1 } from '../../helper/builder/user.builder';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { buildUser, buildUserWithId1 } from '../../helper/builder/user.builder';
+import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { RegisterUserDto } from '../../../src/Dto/register-user.dto';
 import { CompanyService } from '../../../src/Services/company.service';
 import { QueryRunner } from '../../../src/Types/type';
@@ -10,6 +10,9 @@ import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner
 import { buildCompanyWithId1 } from '../../helper/builder/company.builder';
 import { Company } from '../../../src/Entities/company.entity';
 import { BcryptProvider } from '../../../src/Services/Provider/bcrypt.provider';
+import { User } from '../../../src/Entities/user.entity';
+import { CreateUserDto } from '../../../src/Dto/user.dto';
+import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
 
 describe('UserService', () => {
   let app: TestingModule;
@@ -18,6 +21,7 @@ describe('UserService', () => {
   let companyService: CompanyService;
   let queryRunnerProvider: QueryRunnerProvider;
   let bcryptProvider: BcryptProvider;
+  let momentProvider: MomentProvider;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
@@ -27,6 +31,7 @@ describe('UserService', () => {
         CompanyService,
         QueryRunnerProvider,
         BcryptProvider,
+        MomentProvider,
         {
           provide: 'CompanyRepository',
           useValue: {},
@@ -47,6 +52,7 @@ describe('UserService', () => {
     companyService = app.get<CompanyService>(CompanyService);
     queryRunnerProvider = app.get<QueryRunnerProvider>(QueryRunnerProvider);
     bcryptProvider = app.get<BcryptProvider>(BcryptProvider);
+    momentProvider = app.get<MomentProvider>(MomentProvider);
   });
 
   afterEach(() => {
@@ -291,6 +297,138 @@ describe('UserService', () => {
       expect(hashSpy).toHaveBeenCalledTimes(1);
       expect(companyServiceCreateSpy).toHaveBeenCalledTimes(1);
       expect(userSaveSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findByCredentialsInCompany', () => {
+    it('should return undefined if user not found', async () => {
+      const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
+        return undefined;
+      });
+
+      expect(await userService.findByCredentialsInCompany(1, 'credential')).toBeUndefined();
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the found user', async () => {
+      const findOneSpy = jest.spyOn(userRepository, 'findOne').mockImplementation(async () => {
+        return buildUserWithId1();
+      });
+
+      expect(await userService.findByCredentialsInCompany(1, 'credential')).toEqual(buildUserWithId1());
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getByUsernameOrFail', () => {
+    it('should throw a not found exception', async () => {
+      const findOneSpy = jest.spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => undefined);
+
+      await expect(userService.getByUsernameOrFail(1, 'username'))
+        .rejects
+        .toThrow(NotFoundException);
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return an user', async () => {
+      const getByUsernameSpy = jest.spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => buildUserWithId1());
+
+      expect(await userService.getByUsernameOrFail(1, 'username'))
+        .toEqual(buildUserWithId1());
+      expect(getByUsernameSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('create', () => {
+    it('should throw a conflict exception', async () => {
+      const findOneSpy = jest.spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => new User());
+
+      const createUserDto = new CreateUserDto();
+      createUserDto.email = 'phake@fake,com';
+      createUserDto.username = 'phake_fake';
+
+      await expect(userService.create(1, createUserDto))
+        .rejects.toThrow(ConflictException);
+      expect(findOneSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return the created user', async () => {
+      const findOneSpy = jest.spyOn(userRepository, 'findOne')
+        .mockImplementation(async () => undefined);
+
+      const hashSpy = jest.spyOn(bcryptProvider, 'hash')
+        .mockImplementation(async () => 'phakepassword');
+
+      const createUserDto = new CreateUserDto();
+      createUserDto.email = 'phake@fake.com';
+      createUserDto.name = 'phake name';
+      createUserDto.username = 'phake_fake';
+      createUserDto.password = 'phake';
+
+      const expectedResult = new User();
+      expectedResult.email = 'phake@fake.com';
+      expectedResult.name = 'phake name';
+      expectedResult.username = 'phake_fake';
+      expectedResult.password = 'phakepassword';
+      expectedResult.company = 1;
+
+      expect(await userService.create(1, createUserDto))
+        .toEqual(expectedResult);
+      expect(findOneSpy).toHaveBeenCalledTimes(2);
+      expect(hashSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('setAdminUser', () => {
+    it('should return an admin user', () => {
+      expect(userService.setAdminUser(
+        buildUserWithId1(),
+        { isAdmin: true },
+      )).toEqual(buildUser({ isAdmin: true }));
+    });
+
+    it('should return a non admin user', () => {
+      expect(userService.setAdminUser(
+        buildUser({ isAdmin: true }),
+        { isAdmin: false },
+      )).toEqual(buildUserWithId1());
+    });
+  });
+
+  describe('setActive', () => {
+    it('should return an active user', () => {
+      expect(userService.setActive(
+        buildUser({ isActive: false }),
+        { isActive: true }))
+        .toEqual(buildUserWithId1());
+    });
+
+    it('should return an inactive user', () => {
+      expect(userService.setActive(buildUserWithId1(), { isActive: false }))
+        .toEqual(buildUser({ isActive: false }));
+    });
+  });
+
+  describe('delete', () => {
+    it('should return a deleted user', () => {
+      const unixSpy = jest.spyOn(momentProvider, 'unix')
+        .mockImplementation(() => {
+          return 123456;
+        });
+
+      expect(userService.delete(buildUserWithId1()))
+        .toEqual(buildUser({ deletedAt: 123456 }));
+      expect(unixSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('update', () => {
+    it('should return the updated user', () => {
+      expect(userService.update(buildUser(), { name: 'New name' }))
+        .toEqual(buildUser({ name: 'New name' }));
     });
   });
 });

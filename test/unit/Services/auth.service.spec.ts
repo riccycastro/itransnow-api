@@ -36,6 +36,10 @@ describe('AuthService', () => {
           provide: 'JWT_MODULE_OPTIONS',
           useValue: {},
         },
+        {
+          provide: 'MomentProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

@@ -38,6 +38,10 @@ describe('JwtStrategy', () => {
           provide: 'StringProvider',
           useValue: {},
         },
+        {
+          provide: 'MomentProvider',
+          useValue: {},
+        },
       ],
     }).compile();
 

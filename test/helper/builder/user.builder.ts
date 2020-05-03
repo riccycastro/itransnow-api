@@ -1,16 +1,20 @@
 import { User } from '../../../src/Entities/user.entity';
 
-export const buildUser = (index: number): User => {
+export const buildUser = (userData?: any): User => {
+  userData = userData || {};
   const user = new User();
-  user.id = index;
-  user.name = 'user_name_' + index;
-  user.email = 'user_email_' + index;
-  user.username = 'user_username_' + index;
-  user.isActive = true;
-  user.isAdmin = false;
-  user.deletedAt = 0;
-  user.isVisible = true;
+  user.id = userData.id || 1;
+  user.name = userData.name || 'user_name_1';
+  user.email = userData.email || 'user_email_1';
+  user.password = userData.password || '123456';
+  user.username = userData.username || 'user_username_1';
+  user.isActive = userData.isActive !== undefined ? userData.isActive : true;
+  user.isAdmin = userData.isAdmin !== undefined ? userData.isAdmin : false;
+  user.deletedAt = userData.deletedAt || 0;
+  user.isVisible = userData.isVisible !== undefined ? userData.isVisible : true;
+  user.company = userData.company;
   return user;
 };
 
-export const buildUserWithId1 = () => buildUser(1);
+export const buildUserWithId1 = () => buildUser();
+export const buildUserArray = () => [1, 2, 3, 4, 5].map(index => buildUser());
