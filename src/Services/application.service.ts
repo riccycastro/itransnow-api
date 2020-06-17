@@ -93,7 +93,7 @@ export class ApplicationService extends AbstractEntityListingService<
     const application = await this.findByAlias(companyId, alias);
 
     if (!application) {
-      throw new NotFoundException('Application not found!');
+      throw new NotFoundException(`Application ${alias} not found!`);
     }
 
     return await this.getIncludes(companyId, application, query);
@@ -149,6 +149,11 @@ export class ApplicationService extends AbstractEntityListingService<
     updateApplicationDto: ApplicationDto,
   ): Promise<Application> {
     application.name = updateApplicationDto.name;
+
+    if (updateApplicationDto.isActive !== undefined) {
+      application.isActive = updateApplicationDto.isActive;
+    }
+
     return await this.save(application);
   }
 

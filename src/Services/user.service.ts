@@ -109,7 +109,7 @@ export class UserService extends AbstractEntityListingService<User> {
 
     for (const existentUser of existentUsers) {
       if (existentUser) {
-        throw new ConflictException('User');
+        throw new ConflictException('User already exists');
       }
     }
 

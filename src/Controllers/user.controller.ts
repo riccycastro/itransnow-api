@@ -21,6 +21,7 @@ import { ListResult } from '../Types/type';
 import { ActiveUserDto, AdminUserDto, CreateUserDto, UserDto } from '../Dto/user.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UserController {
@@ -30,7 +31,6 @@ export class UserController {
   ) {
   }
 
-  @ApiBearerAuth()
   @Get('profile')
   profileAction(@Request() req): Promise<User> {
     return req.user;
