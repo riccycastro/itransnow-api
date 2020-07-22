@@ -20,10 +20,12 @@ import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { WhiteLabelTranslationDto } from '../Dto/white-label-translation.dto';
 import { ApplicationService } from '../Services/application.service';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('applications/:alias/white-labels')
 export class WhiteLabelController {
   constructor(private readonly applicationService: ApplicationService) {}

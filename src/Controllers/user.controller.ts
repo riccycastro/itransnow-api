@@ -19,10 +19,12 @@ import { UserService } from '../Services/user.service';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { ActiveUserDto, AdminUserDto, CreateUserDto, UserDto } from '../Dto/user.dto';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
 

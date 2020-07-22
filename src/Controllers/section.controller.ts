@@ -12,29 +12,71 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { SectionIncludesEnum, SectionService } from '../Services/section.service';
 import { Section } from '../Entities/section.entity';
 import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
-import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
-import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApplicationService } from '../Services/application.service';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
+import { SectionIncludesEnum, SectionService } from '../Services/section.service';
 import { ListResult } from '../Types/type';
+import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('sections')
+@UseGuards(JwtAuthGuard)
+@Controller('applications/:alias/sections')
 export class SectionController {
-  constructor(private readonly sectionService: SectionService) {}
+  constructor(
+    private readonly applicationService: ApplicationService,
+    private readonly sectionService: SectionService,
+  ) {
+  }
 
-  @Get(':alias')
+  @ApiParam({ required: true, name: 'alias', type: 'string' })
+  @Post()
+  async addSectionToApplicationAction(
+    @Request() req,
+    @Body() sectionDto: SectionDto,
+    @Param('alias') alias: string,
+  ): Promise<Section> {
+    const section = await this.applicationService.createSection(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      sectionDto,
+    );
+
+    section.application = undefined;
+
+    return section;
+  }
+
+  @Patch(':sectionAlias')
+  async updateSectionAction(
+    @Request() req,
+    @Body() sectionDto: SectionDto,
+    @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
+  ): Promise<Section> {
+    return this.applicationService.updateSection(
+      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+      sectionDto,
+      sectionAlias,
+    );
+  }
+
+  @Get(':sectionAlias')
   async getSectionAction(
     @Request() req,
     @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
   ): Promise<Section> {
-    return await this.sectionService.findByAliasOrFail(
-      req.user.companyId,
-      alias,
+    return this.applicationService.getSection(
+      await this.applicationService.getByAliasOrFail(
+        req.user.companyId,
+        alias,
+      ),
+      sectionAlias,
       req.query,
     );
   }
@@ -57,72 +99,83 @@ export class SectionController {
     enum: SectionIncludesEnum,
   })
   @Get()
-  async getSectionsAction(@Request() req): Promise<ListResult<Section>> {
-    return await this.sectionService.findInList(req.user.companyId, req.query);
+  async getSectionsAction(
+    @Request() req,
+    @Param('alias') alias: string,
+  ): Promise<ListResult<Section>> {
+    return await this.applicationService.getSections(
+      await this.applicationService.getByAliasOrFail(
+        req.user.companyId,
+        alias),
+      req.query);
   }
 
-  @Delete(':alias')
+  @Delete(':sectionAlias')
   async deleteSectionAction(
     @Request() req,
     @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
   ): Promise<void> {
-    await this.sectionService.save(
-      this.sectionService.delete(
-        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
+    await this.applicationService.deleteSection(
+      await this.applicationService.getByAliasOrFail(
+        req.user.companyId,
+        alias,
       ),
+      sectionAlias,
     );
   }
 
-  @Patch(':alias')
-  async updateSectionAction(
-    @Request() req,
-    @Body() sectionDto: SectionDto,
-    @Param('alias') alias: string,
-  ): Promise<Section> {
-    return await this.sectionService.save(
-      await this.sectionService.update(
-        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
-        sectionDto,
-      ),
-    );
-  }
-
-  @Patch(':alias/active')
+  @Patch(':sectionAlias/active')
   async activeSectionAction(
     @Request() req,
     @Body() activeSectionDto: ActiveSectionDto,
     @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
   ): Promise<Section> {
-    return await this.sectionService.save(
-      await this.sectionService.active(
-        await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
-        activeSectionDto,
+    return await this.applicationService.activeSection(
+      await this.applicationService.getByAliasOrFail(
+        req.user.companyId,
+        alias,
       ),
+      sectionAlias,
+      activeSectionDto,
     );
   }
 
-  @Post(':alias/translation-keys')
+  @Post(':sectionAlias/translation-keys')
   async addTranslationKeyToSectionAction(
     @Request() req,
     @Body() addTranslationKeyToSectionDto: TranslationKeyToSectionDto,
     @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
   ): Promise<void> {
     await this.sectionService.addTranslationKeys(
       req.user.companyId,
-      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getSection(
+        await this.applicationService.getByAliasOrFail(
+          req.user.companyId,
+          alias,
+        ),
+        sectionAlias),
       addTranslationKeyToSectionDto,
     );
   }
 
-  @Delete(':alias/translation-keys')
+  @Delete(':sectionAlias/translation-keys')
   async removeTranslationKeyToSectionAction(
     @Request() req,
     @Body() removeTranslationKeyToSectionDto: TranslationKeyToSectionDto,
     @Param('alias') alias: string,
+    @Param('sectionAlias') sectionAlias: string,
   ): Promise<void> {
     await this.sectionService.removeTranslationKeys(
       req.user.companyId,
-      await this.sectionService.findByAliasOrFail(req.user.companyId, alias),
+      await this.applicationService.getSection(
+        await this.applicationService.getByAliasOrFail(
+          req.user.companyId,
+          alias,
+        ),
+        sectionAlias),
       removeTranslationKeyToSectionDto,
     );
   }

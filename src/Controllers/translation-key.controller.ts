@@ -18,10 +18,12 @@ import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { TranslationKeyIncludesEnum, TranslationKeyService } from '../Services/translation-key.service';
 import { TranslationStatusDto } from '../Dto/translation.dto';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('applications/:alias/translation-keys')
 export class TranslationKeyController {
   constructor(

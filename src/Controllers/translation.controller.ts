@@ -15,10 +15,12 @@ import { TranslationService } from '../Services/translation.service';
 import { TranslationDto, TranslationStatusDto } from '../Dto/translation.dto';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { TranslationStatusEnum, TranslationStatusService } from '../Services/translation-status.service';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class TranslationController {
   private readonly translationService: TranslationService;

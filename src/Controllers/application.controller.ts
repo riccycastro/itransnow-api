@@ -14,18 +14,18 @@ import {
 import { ApplicationIncludesEnum, ApplicationService } from '../Services/application.service';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { SectionDto } from '../Dto/section.dto';
-import { Section } from '../Entities/section.entity';
 import { Application } from '../Entities/application.entity';
 import { LanguageToApplicationDto } from '../Dto/language.dto';
 import { TranslationDto } from '../Dto/translation.dto';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
+import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('applications')
 export class ApplicationController {
   private readonly applicationService: ApplicationService;
@@ -141,23 +141,6 @@ export class ApplicationController {
         activeApplicationDto,
       ),
     );
-  }
-
-  @ApiParam({ required: true, name: 'alias', type: 'string' })
-  @Post(':alias/sections')
-  async addSectionToApplicationAction(
-    @Request() req,
-    @Body() sectionDto: SectionDto,
-    @Param('alias') alias: string,
-  ): Promise<Section> {
-    const section = await this.applicationService.createSection(
-      await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
-      sectionDto,
-    );
-
-    section.application = undefined;
-
-    return section;
   }
 
   @Post(':alias/languages')
