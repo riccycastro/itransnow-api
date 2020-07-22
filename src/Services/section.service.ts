@@ -15,7 +15,7 @@ import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { TranslationKeyToSectionDto } from '../Dto/translation-key.dto';
 import { TranslationKeyService } from './translation-key.service';
-import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { AbstractEntityListingService } from './abstract-entity-listing.service';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
 import { StringProvider } from './Provider/string.provider';
@@ -45,25 +45,25 @@ export class SectionService extends AbstractEntityListingService<Section> {
   }
 
   async findByAliasOrFail(
-    companyId: number,
+    applicationId: number,
     alias: string,
     query?: any,
   ): Promise<Section> {
-    const section = await this.findByAlias(companyId, alias);
+    const section = await this.findByAlias(applicationId, alias);
 
     if (!section) {
       throw new NotFoundException('Section not found!');
     }
 
-    return await this.getIncludes(companyId, section, query);
+    return await this.getIncludes(applicationId, section, query);
   }
 
   private async findByAlias(
-    companyId: number,
+    applicationId: number,
     alias: string,
   ): Promise<Section> {
     return await (this.repository as SectionRepository).findByAlias(
-      companyId,
+      applicationId,
       alias,
     );
   }
@@ -131,10 +131,14 @@ export class SectionService extends AbstractEntityListingService<Section> {
     return section;
   }
 
-  update(section: Section, sectionDto: SectionDto): Section {
+  async update(
+    section: Section,
+    application: Application,
+    sectionDto: SectionDto,
+    ): Promise<Section> {
     section.name = sectionDto.name;
     section.alias = sectionDto.alias
-      ? this.stringProvider.removeDiacritics(sectionDto.alias)
+      ? await this.validateAlias(sectionDto, application)
       : section.alias;
     return section;
   }
@@ -217,7 +221,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
   }
 
   protected async getIncludes(
-    companyId: number,
+    applicationId: number,
     section: Section,
     query: QueryPaginationInterface,
   ): Promise<Section> {
@@ -227,7 +231,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
     if (query.includes.includes('application')) {
       section.application = await this.applicationService.getById(
-        section.applicationId,
+        applicationId,
       );
     }
 
@@ -236,4 +240,28 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
     return section;
   }
+
+  private async validateAlias(
+    sectionDto: SectionDto,
+    application: Application,
+  ): Promise<string> {
+    const sectionAlias = this.stringProvider.removeDiacritics(
+      sectionDto.alias,
+    );
+
+    if (
+      await this.repository.findOne({
+        alias: sectionAlias,
+        application: application,
+        deletedAt: 0,
+      })
+    ) {
+      throw new BadRequestException(
+        `Section with alias "${sectionDto.alias}" already exists in ${application.name} application`,
+      );
+    }
+
+    return sectionAlias;
+  }
+
 }

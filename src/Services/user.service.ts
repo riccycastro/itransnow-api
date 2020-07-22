@@ -5,7 +5,7 @@ import { RegisterUserDto } from '../Dto/register-user.dto';
 import { BcryptProvider } from './Provider/bcrypt.provider';
 import { CompanyService } from './company.service';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
-import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { AbstractEntityListingService } from './abstract-entity-listing.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { ActiveUserDto, AdminUserDto, CreateUserDto, UserDto } from '../Dto/user.dto';
 import { MomentProvider } from './Provider/moment.provider';

@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { AbstractEntityService } from './AbstractEntityService';
+import { AbstractEntityService } from './abstract-entity.service';
 import { Translation } from '../Entities/translation.entity';
 import { TranslationRepository } from '../Repositories/translation.repository';
 import { TranslationDto, TranslationNodeDto } from '../Dto/translation.dto';

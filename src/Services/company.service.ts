@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CompanyRepository } from '../Repositories/company.repository';
 import { Company } from '../Entities/company.entity';
-import { AbstractEntityService } from './AbstractEntityService';
+import { AbstractEntityService } from './abstract-entity.service';
 import { StringProvider } from './Provider/string.provider';
 
 @Injectable()

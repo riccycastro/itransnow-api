@@ -19,7 +19,7 @@ import { TranslationKeyService } from './translation-key.service';
 import { WhiteLabelTranslation } from '../Entities/white-label-translation.entity';
 import { TranslationService } from './translation.service';
 import { TranslationStatusService } from './translation-status.service';
-import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { AbstractEntityListingService } from './abstract-entity-listing.service';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
 import { StringProvider } from './Provider/string.provider';

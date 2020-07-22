@@ -46,11 +46,11 @@ export class SectionRepository extends AbstractRepository<Section> {
     ).getManyAndCount();
   }
 
-  async findByAlias(companyId: number, alias: string): Promise<Section> {
+  async findByAlias(applicationId: number, alias: string): Promise<Section> {
     return await this.createQueryBuilder('section')
       .innerJoin('section.application', 'application')
-      .innerJoin('application.company', 'company')
-      .where('company.id = :companyId', { companyId: companyId })
+      .where('application.id = :applicationId', { applicationId })
+      .andWhere('application.deletedAt = 0')
       .andWhere('section.alias LIKE :alias', { alias: alias })
       .getOne();
   }

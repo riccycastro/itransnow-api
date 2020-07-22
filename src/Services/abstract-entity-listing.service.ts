@@ -1,4 +1,4 @@
-import { AbstractEntityService } from './AbstractEntityService';
+import { AbstractEntityService } from './abstract-entity.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { classToClass } from 'class-transformer';

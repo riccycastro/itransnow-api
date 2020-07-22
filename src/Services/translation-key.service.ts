@@ -1,7 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TranslationKey } from '../Entities/translation-key.entity';
 import { TranslationKeyRepository } from '../Repositories/translation-key.repository';
-import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { AbstractEntityListingService } from './abstract-entity-listing.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
 import { TranslationService } from './translation.service';
 import { MomentProvider } from './Provider/moment.provider';

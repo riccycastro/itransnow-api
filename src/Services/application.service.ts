@@ -10,7 +10,7 @@ import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
 import { LanguageService } from './language.service';
-import { SectionDto } from '../Dto/section.dto';
+import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
 import { SectionService } from './section.service';
 import { LanguageToApplicationDto } from '../Dto/language.dto';
@@ -21,7 +21,7 @@ import { User } from '../Entities/user.entity';
 import { TranslationDto } from '../Dto/translation.dto';
 import { TranslationService } from './translation.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
-import { AbstractEntityListingService } from './AbstractEntityListingService';
+import { AbstractEntityListingService } from './abstract-entity-listing.service';
 import { Translation } from '../Entities/translation.entity';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryRunnerProvider } from './Provider/query-runner.provider';
@@ -166,6 +166,72 @@ export class ApplicationService extends AbstractEntityListingService<
     );
   }
 
+  async updateSection(
+    application: Application,
+    sectionDto: SectionDto,
+    sectionAlias: string,
+  ): Promise<Section> {
+    return this.sectionService.save(
+      await this.sectionService.update(
+        await this.sectionService.findByAliasOrFail(
+          application.companyId,
+          sectionAlias,
+        ),
+        application,
+        sectionDto,
+      ),
+    );
+  }
+
+  async getSection(
+    application: Application,
+    sectionAlias: string,
+    query?: QueryPaginationInterface,
+  ): Promise<Section> {
+    return this.sectionService.findByAliasOrFail(
+      application.id,
+      sectionAlias,
+      query,
+    );
+  }
+
+  getSections(
+    application: Application,
+    query: QueryPaginationInterface,
+  ): Promise<ListResult<Section>> {
+    return this.sectionService.findInList(application.id, query);
+  }
+
+  async deleteSection(
+    application: Application,
+    sectionAlias: string,
+  ): Promise<Section> {
+    return await this.sectionService.save(
+      this.sectionService.delete(
+        await this.sectionService.findByAliasOrFail(
+          application.id,
+          sectionAlias,
+        ),
+      ),
+    );
+  }
+
+  async activeSection(
+    application: Application,
+    sectionAlias: string,
+    activeSectionDto: ActiveSectionDto,
+  ): Promise<Section> {
+    return await this.sectionService.save(
+      this.sectionService.active(
+        await this.sectionService.findByAliasOrFail(
+          application.id,
+          sectionAlias,
+        ),
+        activeSectionDto,
+      ),
+    );
+  }
+
   async createWhiteLabel(
     application: Application,
     whiteLabelDto: WhiteLabelDto,
@@ -197,7 +263,7 @@ export class ApplicationService extends AbstractEntityListingService<
     whiteLabelAlias: string,
     query?: QueryPaginationInterface,
   ): Promise<WhiteLabel> {
-    return await this.whiteLabelService.findByAliasOrFail(
+    return this.whiteLabelService.findByAliasOrFail(
       application.id,
       whiteLabelAlias,
       query,

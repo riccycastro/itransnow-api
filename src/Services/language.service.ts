@@ -1,4 +1,4 @@
-import { AbstractEntityService } from './AbstractEntityService';
+import { AbstractEntityService } from './abstract-entity.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LanguageRepository } from '../Repositories/language.repository';
 import { Language } from '../Entities/language.entity';

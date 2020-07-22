@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AbstractEntityService } from './AbstractEntityService';
+import { AbstractEntityService } from './abstract-entity.service';
 import { TranslationStatus } from '../Entities/translation-status.entity';
 import { TranslationStatusRepository } from '../Repositories/translation-status.repository';
 
