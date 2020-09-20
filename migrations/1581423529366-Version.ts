@@ -1,31 +1,23 @@
-import { getRepository, In, MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from 'typeorm';
 import { TranslationStatusSeed } from '../seeds/translation-status.seed';
 import { SectionSeed } from '../seeds/section.seed';
 import { TranslationKeySeed } from '../seeds/translation-key.seed';
-import { TranslationStatus } from '../src/Entities/translation-status.entity';
-import { Application } from '../src/Entities/application.entity';
-import { Section } from '../src/Entities/section.entity';
-import { TranslationKey } from '../src/Entities/translation-key.entity';
-import { User } from '../src/Entities/user.entity';
-import { Language } from '../src/Entities/language.entity';
-import { LanguageTeam } from '../src/Entities/language-team.entity';
 import { TranslationSeed } from '../seeds/translation.seed';
 import { Translation } from '../src/Entities/translation.entity';
+import { ApplicationSeed } from '../seeds/application.seed';
 
 export class Version1581423529366 implements MigrationInterface {
 
-  private readonly applicationId = 1;
-
   public async up(queryRunner: QueryRunner): Promise<any> {
-    const application = await getRepository(Application).findOneOrFail(this.applicationId);
-    const users = await getRepository(User).find();
-    const languages = await getRepository(Language).find({ where: { code: In(['pt', 'fr', 'en']) } });
-    const languageTeams = await getRepository(LanguageTeam).find();
-    const translationStatus = await this.populateTranslationStatus();
-    const sections = await this.populateSection(application);
-    const translationKeys = await this.populateTranslationKey(application);
-    await this.joinSectionsWithTranslations(sections, translationKeys);
-    await this.populateTranslations(users, translationStatus[1], translationKeys, languages, languageTeams);
+    const applicationId = await this.getApplicationId(queryRunner);
+    const usersId = await this.getUsersId(queryRunner);
+    const languagesId = await this.getLanguagesIds(queryRunner);
+    await this.populateTranslationStatus(queryRunner);
+    const sectionsId = await this.populateSection(applicationId, queryRunner);
+    const translationKeysId = await this.populateTranslationKey(applicationId, queryRunner);
+
+    await this.joinSectionWithTranslationKeys(sectionsId, translationKeysId, queryRunner);
+    await this.populateTranslations(usersId, translationKeysId, languagesId, queryRunner);
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
@@ -36,91 +28,93 @@ export class Version1581423529366 implements MigrationInterface {
     await queryRunner.query('DELETE FROM `translation_status` WHERE 1');
   }
 
-  private async populateTranslationStatus(): Promise<TranslationStatus[]> {
-    const translationStatus = [];
+  private async populateTranslationStatus(queryRunner: QueryRunner): Promise<number[]> {
+    const inserts = [];
+
     for (const translationStatusSeedElement of TranslationStatusSeed) {
-      translationStatus.push(await getRepository(TranslationStatus).save(translationStatusSeedElement));
+      inserts.push(`('${translationStatusSeedElement.status}')`);
     }
-    return translationStatus;
+    return queryRunner.query('INSERT INTO translation_status(status) VALUES ' + inserts.join(', '));
   }
 
-  private async populateSection(application: Application): Promise<Section[]> {
-    const sections = [];
+  private async populateSection(applicationId: number, queryRunner: QueryRunner): Promise<number[]> {
+    const tasks = [];
     for (const sectionSeedElement of SectionSeed) {
-      sectionSeedElement.application = application;
-      sections.push(await getRepository(Section).save(sectionSeedElement));
+      tasks.push(queryRunner.query(`INSERT INTO sections(name, alias, application_id) VALUES ('${sectionSeedElement.name}', '${sectionSeedElement.alias}', ${applicationId})`));
     }
-    return sections;
+    return Promise.all(tasks).then(result => result.map(insertSection => insertSection.insertId));
   }
 
-  private async populateTranslationKey(application: Application): Promise<TranslationKey[]> {
-    const translationKeys = [];
+  private async populateTranslationKey(applicationId: number, queryRunner: QueryRunner): Promise<number[]> {
+    const tasks = [];
     for (const translationKeySeedElement of TranslationKeySeed) {
-      translationKeySeedElement.application = application;
-      translationKeys.push(await getRepository(TranslationKey).save(translationKeySeedElement));
+      tasks.push(queryRunner.query(`INSERT INTO translation_keys(alias, application_id) VALUES('${translationKeySeedElement.alias}', ${applicationId})`));
     }
-    return translationKeys;
+    return Promise.all(tasks).then(result => result.map(insertTranslationKey => insertTranslationKey.insertId));
   }
 
-  private async joinSectionsWithTranslations(sections: Section[], translationKeys: TranslationKey[]) {
-    for (const section of sections) {
-      let slicedTranslationKeys = [];
+  private async joinSectionWithTranslationKeys(sectionsId: number[], translationKeysId: number[], queryRunner: QueryRunner) {
 
-      if (section.alias === 'home_page') {
-        slicedTranslationKeys = translationKeys.slice(0, 2);
-      } else {
-        slicedTranslationKeys = translationKeys.slice(2, 4);
+    const query = 'INSERT INTO section_translation_key(section_id, translation_key_id) VALUES ';
+    const inserts = [];
+
+    for (const sectionId of sectionsId) {
+      for (const translationKeyId of translationKeysId) {
+        inserts.push(`(${sectionId}, ${translationKeyId})`);
       }
-
-      await this.joinSectionWithTranslationKeys(section, slicedTranslationKeys);
     }
-  }
 
-  private async joinSectionWithTranslationKeys(section: Section, translationKeys: TranslationKey[]) {
-    section.translationKeys = translationKeys;
-    await getRepository(Section).save(section);
+    return queryRunner.query(query + inserts.join(', '));
   }
 
   private async populateTranslations(
-    users: User[],
-    translationStatus: TranslationStatus,
-    translationKeys: TranslationKey[],
-    languages: Language[],
-    languageTeams: LanguageTeam[],
+    usersId: number[],
+    translationKeysId: number[],
+    languagesId: number[],
+    queryRunner: QueryRunner,
   ): Promise<Translation[]> {
     const translationSeed = TranslationSeed;
-    const translations = [];
 
     let translationKeyCounter = 0;
     let languagesCounter = 0;
-    let languageTeamCounter = 0;
+    const inserts = [];
+
+    const translationStatusId = await this.getApprovedTranslationStatusId(queryRunner);
 
     for (const translationSeedElement of translationSeed) {
-      translationSeedElement.acceptedBy = users[0];
-      translationSeedElement.createdBy = users[1];
-      translationSeedElement.translationStatus = translationStatus;
-      translationSeedElement.translationKey = translationKeys[translationKeyCounter];
-      translationSeedElement.language = languages[languagesCounter];
-      translationSeedElement.languageTeam = languageTeams[languageTeamCounter];
-
-      translations.push(await getRepository(Translation).save(translationSeedElement));
+      inserts.push(`('${usersId[0]}', '${usersId[1]}', ${translationStatusId}, ${translationKeysId[translationKeyCounter]}, ${languagesId[languagesCounter]}, '${translationSeedElement.translation}')`);
 
       translationKeyCounter++;
-      if (translationKeyCounter === translationKeys.length) {
+      if (translationKeyCounter === translationKeysId.length) {
         translationKeyCounter = 0;
       }
 
       languagesCounter++;
-      if (languagesCounter === languages.length) {
+      if (languagesCounter === languagesId.length) {
         languagesCounter = 0;
-      }
-
-      languageTeamCounter++;
-      if (languageTeamCounter === languageTeams.length) {
-        languageTeamCounter = 0;
       }
     }
 
-    return translations;
+    return queryRunner.query('INSERT INTO translations(accepted_by, created_by, translation_status_id, translation_key_id, language_id, translation) VALUES ' + inserts.join(', '));
+  }
+
+  private async getApplicationId(queryRunner: QueryRunner): Promise<number> {
+    const application = await queryRunner.query(`SELECT id FROM applications WHERE alias = '${ApplicationSeed.alias}'`);
+    return application[0].id;
+  }
+
+  private async getUsersId(queryRunner: QueryRunner): Promise<number[]> {
+    const users = await queryRunner.query(`SELECT id FROM users;`);
+    return users.map(user => user.id);
+  }
+
+  private async getLanguagesIds(queryRunner: QueryRunner) {
+    const languages = await queryRunner.query(`SELECT id FROM languages WHERE code in ('pt', 'fr', 'en')`);
+    return languages.map(language => language.id);
+  }
+
+  private async getApprovedTranslationStatusId(queryRunner: QueryRunner) {
+    const translationStatus = await queryRunner.query(`SELECT id FROM translation_status WHERE status = 'approved';`);
+    return translationStatus[0].id;
   }
 }

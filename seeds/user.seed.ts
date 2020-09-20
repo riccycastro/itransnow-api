@@ -1,5 +1,4 @@
 interface UserSeedInterface {
-  id: number,
   name: string,
   username: string,
   email: string,
@@ -10,7 +9,6 @@ interface UserSeedInterface {
 
 export const UserSeed: UserSeedInterface[] = [
   {
-    id: 1,
     name: 'System',
     username: 'system',
     email: 'system@itransnow.com',
@@ -19,7 +17,6 @@ export const UserSeed: UserSeedInterface[] = [
     isAdmin: true,
   },
   {
-    id: 2,
     name: "Ricardo Castro",
     username: "rcastro",
     email: "ricardo.castro@itransnow.com",

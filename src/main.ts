@@ -15,7 +15,7 @@ async function bootstrap() {
   const options = new DocumentBuilder().addBearerAuth().build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs-hidden', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT);
 }
