@@ -41,3 +41,10 @@ $ npm run test:cov
 ## License
 
   iTranslateNow is [MIT licensed](https://github.com/riccycastro/itransnow-api/blob/master/LICENSE).
+  
+
+## todo
+* Integration tests
+* Add database cache
+* Add a config layer
+* Language teams CRUD
