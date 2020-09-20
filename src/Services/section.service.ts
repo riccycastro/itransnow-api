@@ -263,5 +263,4 @@ export class SectionService extends AbstractEntityListingService<Section> {
 
     return sectionAlias;
   }
-
 }

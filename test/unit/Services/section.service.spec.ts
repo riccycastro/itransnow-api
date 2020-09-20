@@ -212,17 +212,27 @@ describe('SectionService', () => {
   });
 
   describe('update', () => {
-    it('should return he updated section', () => {
+    it('should return the updated section', async () => {
       const expectedResult = buildSection();
       expectedResult.name = 'The nice Section';
       expectedResult.alias = 'the_nice_section';
 
+      const findOneSpy = jest
+        .spyOn(sectionRepository, 'findOne')
+        .mockImplementation(async () => {
+          return undefined;
+        });
+
       expect(
-        sectionService.update(buildSection(), {
-          name: 'The nice Section',
-          alias: 'The nice Section',
-        }),
+        await sectionService.update(buildSection(),
+          buildApplication(),
+          {
+            name: 'The nice Section',
+            alias: 'The nice Section',
+          }),
       ).toEqual(expectedResult);
+
+      expect(findOneSpy).toHaveBeenCalledTimes(1);
     });
   });
 
