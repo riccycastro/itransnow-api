@@ -15,13 +15,5 @@ export const UserSeed: UserSeedInterface[] = [
     password: process.env.SYSTEM_PASSWORD,
     isVisible: false,
     isAdmin: true,
-  },
-  {
-    name: "Ricardo Castro",
-    username: "rcastro",
-    email: "ricardo.castro@itransnow.com",
-    password: "123456",
-    isVisible: true,
-    isAdmin: true,
   }
 ];

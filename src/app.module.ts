@@ -37,6 +37,8 @@ import { MomentProvider } from './Services/Provider/moment.provider';
 import { QueryRunnerProvider } from './Services/Provider/query-runner.provider';
 import { StringProvider } from './Services/Provider/string.provider';
 import { TranslationKeyController } from './Controllers/translation-key.controller';
+import { CommandModule } from 'nestjs-command';
+import { UserCommand } from './Commands/user.command';
 
 @Module({
   imports: [
@@ -57,6 +59,7 @@ import { TranslationKeyController } from './Controllers/translation-key.controll
       secret: process.env.SECRET,
       signOptions: { expiresIn: process.env.HASH_EXPIRES_IN },
     }),
+    CommandModule,
   ],
   controllers: [
     AppController,
@@ -85,6 +88,7 @@ import { TranslationKeyController } from './Controllers/translation-key.controll
     StringProvider,
     LocalStrategy,
     JwtStrategy,
+    UserCommand,
   ],
 })
 export class AppModule implements NestModule {

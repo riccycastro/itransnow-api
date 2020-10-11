@@ -101,7 +101,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
     translationDto: TranslationDto,
   ): Promise<Translation> {
     const translationStatus = await this.translationStatusService.getByStatus(
-      TranslationStatusService.APPROVAL_PENDING,
+      TranslationStatusService.APPROVED,
     );
     const language = await this.languageService.getByCodeInApplication(
       application.id,
@@ -109,7 +109,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
     );
 
     const translationKey = await this.translationKeyService.get(
-      user.companyId,
+      application.companyId,
       application.id,
       translationDto.translationKey,
     );
@@ -138,6 +138,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
       return translation;
     } catch (e) {
+      // console.log(e);
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
       throw new InternalServerErrorException();

@@ -37,6 +37,17 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Commands
+[nestjs-command](https://gitlab.com/aa900031/nestjs-command)
+
+For development purpose you may need to create some fake translations, you can use 
+the following command to generate fake translation keys and translations
+
+```bash
+$ npx nestjs-command translation:populate
+```
+
+_Note:_ You need to register CLI_PATH=./dist/src/cli.js as a env var
 
 ## License
 

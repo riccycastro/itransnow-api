@@ -12,19 +12,15 @@ import { MomentProvider } from './Provider/moment.provider';
 
 @Injectable()
 export class UserService extends AbstractEntityListingService<User> {
-  private readonly bcryptProvider: BcryptProvider;
-  private readonly companyService: CompanyService;
 
   constructor(
     userRepository: UserRepository,
-    bcryptProvider: BcryptProvider,
-    companyService: CompanyService,
+    private readonly bcryptProvider: BcryptProvider,
+    private readonly companyService: CompanyService,
     private readonly queryRunnerProvider: QueryRunnerProvider,
     private readonly momentProvider: MomentProvider,
   ) {
     super(userRepository);
-    this.bcryptProvider = bcryptProvider;
-    this.companyService = companyService;
   }
 
   async findByCredentials(username: string): Promise<User | undefined> {
@@ -140,6 +136,10 @@ export class UserService extends AbstractEntityListingService<User> {
   update(user: User, userDto: UserDto) {
     user.name = userDto.name;
     return user;
+  }
+
+  async getSystemUser(): Promise<User> {
+    return this.repository.findOne({ isVisible: false, id: 1 });
   }
 
   protected async getEntityListAndCount(companyId: number, query?: QueryPaginationInterface): Promise<[User[], number]> {

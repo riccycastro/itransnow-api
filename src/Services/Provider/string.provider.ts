@@ -1,5 +1,7 @@
 import { remove as removeDiacritics } from 'diacritics';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class StringProvider {
   generateRandomString(length: number): string {
     return [...Array(length)]

@@ -45,4 +45,8 @@ export class LanguageService extends AbstractEntityService<Language> {
 
     return language;
   }
+
+  async getByIds(translationIds: number[]): Promise<Language[]> {
+    return this.repository.findByIds(translationIds);
+  }
 }
