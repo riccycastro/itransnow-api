@@ -10,7 +10,7 @@ import { UserService } from '../Services/user.service';
 import { TranslationDto } from '../Dto/translation.dto';
 
 @Injectable()
-export class UserCommand {
+export class TranslationCommand {
   constructor(
     private readonly companyService: CompanyService,
     private readonly applicationService: ApplicationService,

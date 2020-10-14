@@ -38,7 +38,7 @@ import { QueryRunnerProvider } from './Services/Provider/query-runner.provider';
 import { StringProvider } from './Services/Provider/string.provider';
 import { TranslationKeyController } from './Controllers/translation-key.controller';
 import { CommandModule } from 'nestjs-command';
-import { UserCommand } from './Commands/user.command';
+import { TranslationCommand } from './Commands/translation.command';
 
 @Module({
   imports: [
@@ -88,7 +88,7 @@ import { UserCommand } from './Commands/user.command';
     StringProvider,
     LocalStrategy,
     JwtStrategy,
-    UserCommand,
+    TranslationCommand,
   ],
 })
 export class AppModule implements NestModule {
