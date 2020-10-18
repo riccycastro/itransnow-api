@@ -386,31 +386,6 @@ describe('TranslationService', () => {
     });
   });
 
-  describe('getTranslationInWhiteLabelByLanguage', () => {
-    it('it should return an array of translation', async () => {
-      const findTranslationInApplicationByLanguageSpy = jest
-        .spyOn(
-          translationRepository,
-          'findTranslationInWhiteLabelTranslationByLanguage',
-        )
-        .mockImplementation(async () => {
-          return buildTranslationArray();
-        });
-
-      expect(
-        await translationService.getTranslationInWhiteLabelByLanguage(
-          1,
-          1,
-          ['keys'],
-          ['sections'],
-        ),
-      ).toEqual(buildTranslationArray());
-      expect(findTranslationInApplicationByLanguageSpy).toHaveBeenCalledTimes(
-        1,
-      );
-    });
-  });
-
   describe('getTranslations', () => {
     it('should return default translation string result', async () => {
       const getApplicationByAliasOrFailSpy = jest

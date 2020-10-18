@@ -21,6 +21,7 @@ import { QueryRunnerProvider } from './Provider/query-runner.provider';
 import { StringProvider } from './Provider/string.provider';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
+import { TranslationExportData } from '../Types/type';
 
 @Injectable()
 export class TranslationService extends AbstractEntityService<Translation> {
@@ -150,28 +151,15 @@ export class TranslationService extends AbstractEntityService<Translation> {
     languageId: number,
     translationKeys: string[],
     sections: string[],
-  ): Promise<Translation[]> {
-    return await (this
+    whiteLabelId?: number,
+  ): Promise<TranslationExportData[]> {
+    return (this
       .repository as TranslationRepository).findTranslationInApplicationByLanguage(
       applicationId,
       languageId,
       translationKeys,
       sections,
-    );
-  }
-
-  async getTranslationInWhiteLabelByLanguage(
-    whiteLabelId: number,
-    languageId: number,
-    translationKeys: string[],
-    sections: string[],
-  ): Promise<Translation[]> {
-    return await (this
-      .repository as TranslationRepository).findTranslationInWhiteLabelTranslationByLanguage(
-      whiteLabelId,
-      languageId,
-      translationKeys,
-      sections,
+      whiteLabelId
     );
   }
 
@@ -180,15 +168,16 @@ export class TranslationService extends AbstractEntityService<Translation> {
       companyId,
       translationDto,
     );
-    const translations = await this.getTranslationInApplicationByLanguage(
+    const translationExportData = await this.getTranslationInApplicationByLanguage(
       translationNodeDto.application.id,
       translationNodeDto.language.id,
       translationNodeDto.translationKeys,
       translationNodeDto.sections,
     );
+
     let translationsIndexed = this.indexTranslationBy(
       translationDto.indexType,
-      translations,
+      translationExportData,
     );
 
     if (translationNodeDto.whiteLabel) {
@@ -196,6 +185,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
         translationDto,
         translationNodeDto,
       );
+
       translationsIndexed = deepmerge(
         translationsIndexed,
         whiteLabelTranslationsIndexed[translationNodeDto.whiteLabel.alias],
@@ -204,7 +194,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
     if (translationDto.includes.length) {
       const getWhiteLabelTask = [];
-      // todo@rcastro - change this to for await
+
       for (const include of translationDto.includes) {
         getWhiteLabelTask.push(
           this.getWhiteLabelsIncludes(
@@ -277,6 +267,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
     translationNodeDtoClone.translationKeys =
       translationNodeDto.translationKeys;
     translationNodeDtoClone.sections = translationNodeDto.sections;
+    translationNodeDtoClone.application = translationNodeDto.application;
 
     return await this.getWhiteLabelTranslations(
       translationDto,
@@ -288,19 +279,18 @@ export class TranslationService extends AbstractEntityService<Translation> {
     translationDto: TranslationDto,
     translationNodeDto: TranslationNodeDto,
   ) {
-    const translations = TranslationService.moveWhiteLabelSectionsToTranslation(
-      await this.getTranslationInWhiteLabelByLanguage(
-        translationNodeDto.whiteLabel.id,
-        translationNodeDto.language.id,
-        translationNodeDto.translationKeys,
-        translationNodeDto.sections,
-      ),
-    );
+    const translationExportDataArray =  await this.getTranslationInApplicationByLanguage(
+      translationNodeDto.application.id,
+      translationNodeDto.language.id,
+      translationNodeDto.translationKeys,
+      translationNodeDto.sections,
+      translationNodeDto.whiteLabel.id
+    )
 
     return {
       [translationNodeDto.whiteLabel.alias]: this.indexTranslationBy(
         translationDto.indexType,
-        translations,
+        translationExportDataArray,
       ),
     };
   }
@@ -312,12 +302,12 @@ export class TranslationService extends AbstractEntityService<Translation> {
     return JSON.stringify(translations);
   }
 
-  private indexTranslationBy(indexType: string, translations: Translation[]) {
+  private indexTranslationBy(indexType: string, translationExportDataArray: TranslationExportData[]) {
     if (this.indexValidOptions.includes(indexType) && indexType === 'nested') {
-      return new NestedIndexNode().apply(translations);
+      return new NestedIndexNode().apply(translationExportDataArray);
     }
 
-    return new FlatIndexNode().apply(translations);
+    return new FlatIndexNode().apply(translationExportDataArray);
   }
 
   private async getTranslationNodeDto(
@@ -365,34 +355,5 @@ export class TranslationService extends AbstractEntityService<Translation> {
     }
 
     return translation;
-  }
-
-  static moveWhiteLabelSectionsToTranslation(
-    translations: Translation[],
-  ): Translation[] {
-    for (const translation of translations) {
-      if (
-        translation.whiteLabelTranslations &&
-        translation.whiteLabelTranslations.length > 0
-      ) {
-        for (const whiteLabelTranslation of translation.whiteLabelTranslations) {
-          translation.translationKey = whiteLabelTranslation.translationKey;
-          if (
-            whiteLabelTranslation.translationKey &&
-            whiteLabelTranslation.translationKey.sections
-          ) {
-            for (const section of whiteLabelTranslation.translationKey
-              .sections) {
-              if (translation.translationKey.sections) {
-                translation.translationKey.sections = [];
-              }
-              translation.translationKey.sections.push(section);
-            }
-          }
-        }
-      }
-    }
-
-    return translations;
   }
 }

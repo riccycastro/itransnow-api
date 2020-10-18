@@ -1,23 +1,21 @@
-import { Translation } from '../../../Entities/translation.entity';
+import { TranslationExportData } from '../../../Types/type';
 
 export class NestedIndexNode {
-  apply(translations: Translation[]) {
+  apply(translationExportDataArray: TranslationExportData[]) {
     const result = {};
 
-    for (const translation of translations) {
-      if (translation.translationKey.sections) {
-        for (const section of translation.translationKey.sections) {
+    for (const translationExportData of translationExportDataArray) {
+      if (translationExportData.section) {
           this.extend(
             result,
-            `${section.alias}.${translation.translationKey.alias}`,
-            translation.translation,
+            `${translationExportData.section}.${translationExportData.translation_key}`,
+            translationExportData.translation,
           );
-        }
       } else {
         this.extend(
           result,
-          translation.translationKey.alias,
-          translation.translation,
+          translationExportData.translation_key,
+          translationExportData.translation,
         );
       }
     }

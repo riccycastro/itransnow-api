@@ -1,20 +1,18 @@
-import { Translation } from '../../../Entities/translation.entity';
+import { TranslationExportData } from '../../../Types/type';
 
 export class FlatIndexNode {
-  apply(translations: Translation[]) {
-    return translations.reduce(
-      (previousData: any, translation: Translation) => {
-        if (translation.translationKey.sections) {
-          for (const section of translation.translationKey.sections) {
-            previousData[section.alias] = previousData[section.alias]
-              ? previousData[section.alias]
-              : {};
-            previousData[section.alias][translation.translationKey.alias] =
-              translation.translation;
-          }
+  apply(translationExportDataArray: TranslationExportData[]) {
+    return translationExportDataArray.reduce(
+      (previousData: any, translationExportData: TranslationExportData) => {
+        if (translationExportData.section) {
+          previousData[translationExportData.section] = previousData[translationExportData.section]
+            ? previousData[translationExportData.section]
+            : {};
+          previousData[translationExportData.section][translationExportData.translation_key] =
+            translationExportData.translation;
         } else {
-          previousData[translation.translationKey.alias] =
-            translation.translation;
+          previousData[translationExportData.translation_key] =
+            translationExportData.translation;
         }
         return previousData;
       },

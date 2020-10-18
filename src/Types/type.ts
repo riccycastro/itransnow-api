@@ -16,3 +16,9 @@ export interface QueryRunner {
   rollbackTransaction(): Promise<void>;
   release(): Promise<void>;
 }
+
+export interface TranslationExportData {
+  translation: string;
+  translation_key: string;
+  section: string;
+}
