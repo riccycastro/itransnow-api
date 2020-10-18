@@ -1,7 +1,5 @@
-import { buildTranslation } from '../../../../helper/builder/translation.builder';
-import { buildTranslationKey } from '../../../../helper/builder/translation-key.build';
-import { Translation } from '../../../../../src/Entities/translation.entity';
 import { NestedIndexNode } from '../../../../../src/Services/TranslationChainResponsability/Node/nested-index.node';
+import { TranslationExportData } from '../../../../../src/Types/type';
 
 describe('NestedIndexNode', () => {
   let nestedIndex: NestedIndexNode;
@@ -12,7 +10,7 @@ describe('NestedIndexNode', () => {
 
   describe('apply', () => {
     it('should return translation request in with nested index', () => {
-      const translations: Translation[] = [];
+      const translations: TranslationExportData[] = [];
 
       const translationObject = {
         'qwe.rew.rte.ytry.rewr': 'lkzrsaghv esaprgj gnaog',
@@ -25,13 +23,11 @@ describe('NestedIndexNode', () => {
       };
 
       Object.keys(translationObject).forEach(translationKeys => {
-        const translation = buildTranslation();
-        const translationKey = buildTranslationKey();
-
-        translation.translation = translationObject[translationKeys];
-        translationKey.alias = translationKeys;
-        translation.translationKey = translationKey;
-        translations.push(translation);
+        translations.push({
+          translationKey: translationKeys,
+          translation: translationObject[translationKeys],
+          section: '',
+        });
       });
 
       expect(nestedIndex.apply(translations)).toEqual({

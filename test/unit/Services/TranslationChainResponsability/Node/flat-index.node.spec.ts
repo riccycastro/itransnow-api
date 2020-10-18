@@ -1,7 +1,5 @@
 import { FlatIndexNode } from '../../../../../src/Services/TranslationChainResponsability/Node/flat-index.node';
-import { Translation } from '../../../../../src/Entities/translation.entity';
-import { buildTranslation } from '../../../../helper/builder/translation.builder';
-import { buildTranslationKey } from '../../../../helper/builder/translation-key.build';
+import { TranslationExportData } from '../../../../../src/Types/type';
 
 describe('FlatIndexNode', () => {
   let flatIndexNode: FlatIndexNode;
@@ -12,7 +10,7 @@ describe('FlatIndexNode', () => {
 
   describe('apply', () => {
     it('should return translation request in with flat index', () => {
-      const translations: Translation[] = [];
+      const translations: TranslationExportData[] = [];
 
       const expectedResult = {
         'qwe.rew.rte.ytry.rewr': 'lkzrsaghv esaprgj gnaog',
@@ -23,13 +21,11 @@ describe('FlatIndexNode', () => {
       };
 
       Object.keys(expectedResult).forEach(translationKeys => {
-        const translation = buildTranslation();
-        const translationKey = buildTranslationKey();
-
-        translation.translation = expectedResult[translationKeys];
-        translationKey.alias = translationKeys;
-        translation.translationKey = translationKey;
-        translations.push(translation);
+        translations.push({
+          translationKey: translationKeys,
+          translation: expectedResult[translationKeys],
+          section: '',
+        });
       });
 
       expect(flatIndexNode.apply(translations)).toEqual(expectedResult);

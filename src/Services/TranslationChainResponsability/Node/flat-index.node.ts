@@ -8,10 +8,10 @@ export class FlatIndexNode {
           previousData[translationExportData.section] = previousData[translationExportData.section]
             ? previousData[translationExportData.section]
             : {};
-          previousData[translationExportData.section][translationExportData.translation_key] =
+          previousData[translationExportData.section][translationExportData.translationKey] =
             translationExportData.translation;
         } else {
-          previousData[translationExportData.translation_key] =
+          previousData[translationExportData.translationKey] =
             translationExportData.translation;
         }
         return previousData;

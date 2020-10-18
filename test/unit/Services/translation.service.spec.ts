@@ -15,20 +15,19 @@ import { QueryRunnerProvider } from '../../../src/Services/Provider/query-runner
 import { Application } from '../../../src/Entities/application.entity';
 import { TranslationDto } from '../../../src/Dto/translation.dto';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import {
-  buildTranslation,
-  buildTranslationArray,
-  buildTranslationArrayWhitTranslationKey,
-} from '../../helper/builder/translation.builder';
+import { buildTranslation, buildTranslationArray } from '../../helper/builder/translation.builder';
 import { buildApplication } from '../../helper/builder/application.builder';
 import { buildLanguage } from '../../helper/builder/language.builder';
 import { WhiteLabelService } from '../../../src/Services/white-label.service';
-import { buildTranslationKey } from '../../helper/builder/translation-key.build';
 import { buildWhitelabel } from '../../helper/builder/white-label.builder';
 import { StringProvider } from '../../../src/Services/Provider/string.provider';
 import { buildTranslationStatus } from '../../helper/builder/translation-status.builder';
 import { utc as MomentUtc } from 'moment';
 import { MomentProvider } from '../../../src/Services/Provider/moment.provider';
+import {
+  buildTranslationExportData,
+  buildTranslationExportDataArray,
+} from '../../helper/builder/translation-export-data.builder';
 
 describe('TranslationService', () => {
   let app: TestingModule;
@@ -369,7 +368,7 @@ describe('TranslationService', () => {
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          return buildTranslationArray();
+          return buildTranslationExportDataArray();
         });
 
       expect(
@@ -379,7 +378,7 @@ describe('TranslationService', () => {
           ['keys'],
           ['sections'],
         ),
-      ).toEqual(buildTranslationArray());
+      ).toEqual(buildTranslationExportDataArray());
       expect(findTranslationInApplicationByLanguageSpy).toHaveBeenCalledTimes(
         1,
       );
@@ -403,13 +402,13 @@ describe('TranslationService', () => {
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          return buildTranslationArrayWhitTranslationKey();
+          return buildTranslationExportDataArray();
         });
 
       expect(
         await translationService.getTranslations(1, new TranslationDto()),
       ).toEqual(
-        '{"translation_key_alias_1":"translation_translation_1","translation_key_alias_2":"translation_translation_2","translation_key_alias_3":"translation_translation_3","translation_key_alias_4":"translation_translation_4","translation_key_alias_5":"translation_translation_5"}',
+        '{"translation_translationKey_1":"translation_translation_1","translation_translationKey_2":"translation_translation_2","translation_translationKey_3":"translation_translation_3","translation_translationKey_4":"translation_translation_4","translation_translationKey_5":"translation_translation_5"}',
       );
       expect(getApplicationByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(getByCodeInApplicationSpy).toHaveBeenCalledTimes(1);
@@ -434,16 +433,11 @@ describe('TranslationService', () => {
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          const translation = buildTranslation();
-          const translation2 = buildTranslation({ id: 2, translation: 'translation_translation_2' });
-
-          const translationKey = buildTranslationKey();
-          translationKey.alias = 'translationTest.' + translationKey.alias;
-          translation.translationKey = translationKey;
-
-          const translationKey2 = buildTranslationKey({ id: 2, alias: 'translation_key_alias_2' });
-          translationKey2.alias = 'translationTest.' + translationKey2.alias;
-          translation2.translationKey = translationKey2;
+          const translation = buildTranslationExportData({ translationKey: 'translationTest.translation_key_alias_1' });
+          const translation2 = buildTranslationExportData({
+            translation: 'translation_translation_2',
+            translationKey: 'translationTest.translation_key_alias_2',
+          });
 
           return [translation, translation2];
         });
@@ -479,7 +473,7 @@ describe('TranslationService', () => {
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          return buildTranslationArrayWhitTranslationKey();
+          return buildTranslationExportDataArray();
         });
 
       const translationDto = new TranslationDto();
@@ -489,12 +483,12 @@ describe('TranslationService', () => {
         await translationService.getTranslations(1, translationDto),
       ).toEqual(
         '---\n' +
-          '  translation_key_alias_1: "translation_translation_1"\n' +
-          '  translation_key_alias_2: "translation_translation_2"\n' +
-          '  translation_key_alias_3: "translation_translation_3"\n' +
-          '  translation_key_alias_4: "translation_translation_4"\n' +
-          '  translation_key_alias_5: "translation_translation_5"\n' +
-          '',
+        '  translation_translationKey_1: "translation_translation_1"\n' +
+        '  translation_translationKey_2: "translation_translation_2"\n' +
+        '  translation_translationKey_3: "translation_translation_3"\n' +
+        '  translation_translationKey_4: "translation_translation_4"\n' +
+        '  translation_translationKey_5: "translation_translation_5"\n' +
+        '',
       );
       expect(getApplicationByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(getByCodeInApplicationSpy).toHaveBeenCalledTimes(1);
@@ -516,21 +510,16 @@ describe('TranslationService', () => {
           return buildLanguage();
         });
 
+      let callCounter = 0;
       const findTranslationInApplicationByLanguageSpy = jest
         .spyOn(translationRepository, 'findTranslationInApplicationByLanguage')
         .mockImplementation(async () => {
-          return [buildTranslation({ translationKey: buildTranslationKey() })];
-        });
+          if (!callCounter) {
+            callCounter++
+            return [buildTranslationExportData({ translationKey: 'translation_key_alias_1' })];
+          }
 
-      const findTranslationInWhiteLabelTranslationByLanguageSpy = jest
-        .spyOn(
-          translationRepository,
-          'findTranslationInWhiteLabelTranslationByLanguage',
-        )
-        .mockImplementation(async () => {
-          const translation = buildTranslation({ translationKey: buildTranslationKey() });
-          translation.translation = 'white label Translation';
-          return [translation];
+          return [buildTranslationExportData({ translationKey: 'translation_key_alias_1', translation: 'white label Translation' })];
         });
 
       const findWhiteLabelByAliasOrFail = jest
@@ -548,11 +537,8 @@ describe('TranslationService', () => {
       expect(getApplicationByAliasOrFailSpy).toHaveBeenCalledTimes(1);
       expect(findWhiteLabelByAliasOrFail).toHaveBeenCalledTimes(1);
       expect(getByCodeInApplicationSpy).toHaveBeenCalledTimes(1);
-      expect(
-        findTranslationInWhiteLabelTranslationByLanguageSpy,
-      ).toHaveBeenCalledTimes(1);
       expect(findTranslationInApplicationByLanguageSpy).toHaveBeenCalledTimes(
-        1,
+        2,
       );
     });
   });

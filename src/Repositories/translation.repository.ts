@@ -75,7 +75,7 @@ export class TranslationRepository extends AbstractRepository<Translation> {
   }
 
   private getCommonSelect(): string {
-    return 'SELECT translations.translation, translations.translation, translation_keys.alias as `translation_key` ';
+    return 'SELECT translations.translation, translations.translation, translation_keys.alias as `translationKey` ';
   }
 
   private addSectionSelects(query: string, sections: string[]): string {

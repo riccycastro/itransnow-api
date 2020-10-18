@@ -8,13 +8,13 @@ export class NestedIndexNode {
       if (translationExportData.section) {
           this.extend(
             result,
-            `${translationExportData.section}.${translationExportData.translation_key}`,
+            `${translationExportData.section}.${translationExportData.translationKey}`,
             translationExportData.translation,
           );
       } else {
         this.extend(
           result,
-          translationExportData.translation_key,
+          translationExportData.translationKey,
           translationExportData.translation,
         );
       }

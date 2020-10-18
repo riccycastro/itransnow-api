@@ -19,6 +19,6 @@ export interface QueryRunner {
 
 export interface TranslationExportData {
   translation: string;
-  translation_key: string;
+  translationKey: string;
   section: string;
 }
