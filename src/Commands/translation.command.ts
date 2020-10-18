@@ -8,6 +8,7 @@ import { LanguageService } from '../Services/language.service';
 import { TranslationService } from '../Services/translation.service';
 import { UserService } from '../Services/user.service';
 import { TranslationDto } from '../Dto/translation.dto';
+import { TranslationKeyService } from '../Services/translation-key.service';
 
 @Injectable()
 export class TranslationCommand {
@@ -18,7 +19,7 @@ export class TranslationCommand {
     private readonly languageService: LanguageService,
     private readonly translationService: TranslationService,
     private readonly userService: UserService,
-    private readonly: TranslationService,
+    private readonly translationKeyService: TranslationKeyService,
   ) {
   }
 
@@ -59,6 +60,12 @@ export class TranslationCommand {
 
     for (let i = 0; i < amount; i++) {
       const translationKey = this.stringProvider.removeDiacritics(faker.random.words());
+
+      try {
+        // this is to avoid repeated translation keys
+        await this.translationKeyService.getByTranslationKeyInApplication(company.id, application.id, translationKey);
+        continue;
+      } catch (e) { }
 
       for (const language of languages) {
 
