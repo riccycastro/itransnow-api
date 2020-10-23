@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Section } from '../Entities/section.entity';
-import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
+import { SectionDto } from '../Dto/section.dto';
 import { ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ApplicationService } from '../Services/application.service';
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
@@ -122,23 +122,6 @@ export class SectionController {
         alias,
       ),
       sectionAlias,
-    );
-  }
-
-  @Patch(':sectionAlias/active')
-  async activeSectionAction(
-    @Request() req,
-    @Body() activeSectionDto: ActiveSectionDto,
-    @Param('alias') alias: string,
-    @Param('sectionAlias') sectionAlias: string,
-  ): Promise<Section> {
-    return await this.applicationService.activeSection(
-      await this.applicationService.getByAliasOrFail(
-        req.user.companyId,
-        alias,
-      ),
-      sectionAlias,
-      activeSectionDto,
     );
   }
 

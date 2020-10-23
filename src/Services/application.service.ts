@@ -10,7 +10,7 @@ import { ApplicationRepository } from '../Repositories/application.repository';
 import { ActiveApplicationDto, ApplicationDto } from '../Dto/application.dto';
 import { Application } from '../Entities/application.entity';
 import { LanguageService } from './language.service';
-import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
+import { SectionDto } from '../Dto/section.dto';
 import { Section } from '../Entities/section.entity';
 import { SectionService } from './section.service';
 import { LanguageToApplicationDto } from '../Dto/language.dto';
@@ -212,22 +212,6 @@ export class ApplicationService extends AbstractEntityListingService<
           application.id,
           sectionAlias,
         ),
-      ),
-    );
-  }
-
-  async activeSection(
-    application: Application,
-    sectionAlias: string,
-    activeSectionDto: ActiveSectionDto,
-  ): Promise<Section> {
-    return await this.sectionService.save(
-      this.sectionService.active(
-        await this.sectionService.findByAliasOrFail(
-          application.id,
-          sectionAlias,
-        ),
-        activeSectionDto,
       ),
     );
   }

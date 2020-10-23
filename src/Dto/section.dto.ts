@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SectionDto {
@@ -14,10 +14,9 @@ export class SectionDto {
   @IsString()
   @IsNotEmpty()
   alias: string;
-}
 
-export class ActiveSectionDto {
   @ApiProperty()
-  @IsDefined({ groups: ['patch'] })
+  @IsOptional({ groups: ['patch', 'Post'] })
+  @IsBoolean()
   isActive: boolean;
 }

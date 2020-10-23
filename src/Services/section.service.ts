@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Section } from '../Entities/section.entity';
 import { SectionRepository } from '../Repositories/section.repository';
-import { ActiveSectionDto, SectionDto } from '../Dto/section.dto';
+import { SectionDto } from '../Dto/section.dto';
 import { Application } from '../Entities/application.entity';
 import { ApplicationService } from './application.service';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
@@ -126,11 +126,6 @@ export class SectionService extends AbstractEntityListingService<Section> {
     return section;
   }
 
-  active(section: Section, activeSectionDto: ActiveSectionDto): Section {
-    section.isActive = activeSectionDto.isActive;
-    return section;
-  }
-
   async update(
     section: Section,
     application: Application,
@@ -140,6 +135,7 @@ export class SectionService extends AbstractEntityListingService<Section> {
     section.alias = sectionDto.alias
       ? await this.validateAlias(sectionDto, application)
       : section.alias;
+    section.isActive = sectionDto.isActive !== undefined ? sectionDto.isActive : section.isActive;
     return section;
   }
 
