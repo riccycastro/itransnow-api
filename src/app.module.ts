@@ -39,6 +39,8 @@ import { StringProvider } from './Services/Provider/string.provider';
 import { TranslationKeyController } from './Controllers/translation-key.controller';
 import { CommandModule } from 'nestjs-command';
 import { TranslationCommand } from './Commands/translation.command';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TimeoutInterceptor } from './Interceptors/TimeoutInterceptor';
 
 @Module({
   imports: [
@@ -89,6 +91,10 @@ import { TranslationCommand } from './Commands/translation.command';
     LocalStrategy,
     JwtStrategy,
     TranslationCommand,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeoutInterceptor
+    }
   ],
 })
 export class AppModule implements NestModule {
