@@ -105,8 +105,7 @@ export class AppModule implements NestModule {
         { path: 'applications*', method: RequestMethod.GET },
         { path: 'sections*', method: RequestMethod.GET },
         { path: 'white-labels*', method: RequestMethod.GET },
-        { path: 'translations', method: RequestMethod.GET },
-        { path: 'translations.*', method: RequestMethod.GET },
+        { path: 'users*', method: RequestMethod.GET },
       )
       .apply(ExtensionValidatorMiddleware)
       .forRoutes({ path: 'translations.*', method: RequestMethod.GET });
