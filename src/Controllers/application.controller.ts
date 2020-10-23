@@ -21,6 +21,7 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger'
 import { OrderDirectionEnum } from '../Repositories/abstract.repository';
 import { ListResult } from '../Types/type';
 import { JwtAuthGuard } from '../AuthGuard/jwt-auth.guard';
+import { Translation } from '../Entities/translation.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -183,5 +184,47 @@ export class ApplicationController {
       await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
       translationDto,
     );
+  }
+
+  @ApiQuery({ name: 'offset', required: false, type: 'number' })
+  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @ApiQuery({ name: 'orderField', required: false, type: 'string' })
+  @ApiQuery({ name: 'name', required: false, type: 'string' })
+  @ApiQuery({ name: 'alias', required: false, type: 'string' })
+  @ApiQuery({
+    name: 'orderDirection',
+    required: false,
+    type: 'string',
+    enum: OrderDirectionEnum,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of a application translations',
+    isArray: true,
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          alias: { type: 'string' },
+          isActive: { type: 'boolean' },
+          createdAt: { type: 'string' },
+          updatedAt: { type: 'string' },
+        },
+      },
+    },
+  })
+  @Get(':alias/translations/:languageCode')
+  async getTranslations(
+    @Request() req,
+    @Param('alias') alias: string,
+    @Param('languageCode') languageCode: string,
+  ): Promise<ListResult<Translation>> {
+      return await this.applicationService.getTranslations(
+        await this.applicationService.getByAliasOrFail(req.user.companyId, alias),
+        languageCode,
+        req.query
+      )
   }
 }

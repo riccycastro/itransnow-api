@@ -1,4 +1,4 @@
-import { IsArray, IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDefined, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
 import { Application } from '../Entities/application.entity';
 import { Language } from '../Entities/language.entity';
 import { WhiteLabel } from '../Entities/white-label.entity';
@@ -80,14 +80,26 @@ export class TranslationDto {
   @IsOptional({ groups: ['post', 'patch'] })
   @IsArray()
   includes: string[] = [];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumberString()
+  limit: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  offset: number
 }
 
-export class TranslationNodeDto {
+export class TranslationModelDto {
   application: Application;
   language: Language;
   whiteLabel: WhiteLabel;
   translationKeys: string[];
   sections: string[];
+  limit: number;
+  offset: number;
 }
 
 export class TranslationStatusDto {

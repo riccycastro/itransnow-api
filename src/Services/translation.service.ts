@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundE
 import { AbstractEntityService } from './abstract-entity.service';
 import { Translation } from '../Entities/translation.entity';
 import { TranslationRepository } from '../Repositories/translation.repository';
-import { TranslationDto, TranslationNodeDto } from '../Dto/translation.dto';
+import { TranslationDto, TranslationModelDto } from '../Dto/translation.dto';
 import { User } from '../Entities/user.entity';
 import { LanguageService } from './language.service';
 import { TranslationKeyService } from './translation-key.service';
@@ -21,7 +21,8 @@ import { QueryRunnerProvider } from './Provider/query-runner.provider';
 import { StringProvider } from './Provider/string.provider';
 import { MomentProvider } from './Provider/moment.provider';
 import { QueryPaginationInterface } from '../Repositories/abstract.repository';
-import { TranslationExportData } from '../Types/type';
+import { ListResult, TranslationExportData } from '../Types/type';
+import { classToClass } from 'class-transformer';
 
 @Injectable()
 export class TranslationService extends AbstractEntityService<Translation> {
@@ -147,32 +148,21 @@ export class TranslationService extends AbstractEntityService<Translation> {
   }
 
   async getTranslationInApplicationByLanguage(
-    applicationId: number,
-    languageId: number,
-    translationKeys: string[],
-    sections: string[],
-    whiteLabelId?: number,
+    translationModelDto: TranslationModelDto,
   ): Promise<TranslationExportData[]> {
     return (this
       .repository as TranslationRepository).findTranslationInApplicationByLanguage(
-      applicationId,
-      languageId,
-      translationKeys,
-      sections,
-      whiteLabelId
+      translationModelDto,
     );
   }
 
   async getTranslations(companyId: number, translationDto: TranslationDto) {
-    const translationNodeDto = await this.getTranslationNodeDto(
+    const translationModelDto = await this.getTranslationNodeDto(
       companyId,
       translationDto,
     );
     const translationExportData = await this.getTranslationInApplicationByLanguage(
-      translationNodeDto.application.id,
-      translationNodeDto.language.id,
-      translationNodeDto.translationKeys,
-      translationNodeDto.sections,
+      translationModelDto,
     );
 
     let translationsIndexed = this.indexTranslationBy(
@@ -180,15 +170,15 @@ export class TranslationService extends AbstractEntityService<Translation> {
       translationExportData,
     );
 
-    if (translationNodeDto.whiteLabel) {
+    if (translationModelDto.whiteLabel) {
       const whiteLabelTranslationsIndexed = await this.getWhiteLabelTranslations(
         translationDto,
-        translationNodeDto,
+        translationModelDto,
       );
 
       translationsIndexed = deepmerge(
         translationsIndexed,
-        whiteLabelTranslationsIndexed[translationNodeDto.whiteLabel.alias],
+        whiteLabelTranslationsIndexed[translationModelDto.whiteLabel.alias],
       );
     }
 
@@ -200,7 +190,7 @@ export class TranslationService extends AbstractEntityService<Translation> {
           this.getWhiteLabelsIncludes(
             include,
             translationDto,
-            translationNodeDto,
+            translationModelDto,
           ),
         );
       }
@@ -254,14 +244,14 @@ export class TranslationService extends AbstractEntityService<Translation> {
   private async getWhiteLabelsIncludes(
     alias: string,
     translationDto: TranslationDto,
-    translationNodeDto: TranslationNodeDto,
+    translationNodeDto: TranslationModelDto,
   ) {
     const whiteLabel = await this.whiteLabelService.findByAliasOrFail(
       translationNodeDto.application.id,
       alias,
     );
 
-    const translationNodeDtoClone = new TranslationNodeDto();
+    const translationNodeDtoClone = new TranslationModelDto();
     translationNodeDtoClone.whiteLabel = whiteLabel;
     translationNodeDtoClone.language = translationNodeDto.language;
     translationNodeDtoClone.translationKeys =
@@ -277,15 +267,11 @@ export class TranslationService extends AbstractEntityService<Translation> {
 
   private async getWhiteLabelTranslations(
     translationDto: TranslationDto,
-    translationNodeDto: TranslationNodeDto,
+    translationNodeDto: TranslationModelDto,
   ) {
-    const translationExportDataArray =  await this.getTranslationInApplicationByLanguage(
-      translationNodeDto.application.id,
-      translationNodeDto.language.id,
-      translationNodeDto.translationKeys,
-      translationNodeDto.sections,
-      translationNodeDto.whiteLabel.id
-    )
+    const translationExportDataArray = await this.getTranslationInApplicationByLanguage(
+      translationNodeDto,
+    );
 
     return {
       [translationNodeDto.whiteLabel.alias]: this.indexTranslationBy(
@@ -313,29 +299,41 @@ export class TranslationService extends AbstractEntityService<Translation> {
   private async getTranslationNodeDto(
     companyId: number,
     translationDto: TranslationDto,
-  ): Promise<TranslationNodeDto> {
-    const translationNodeDto = new TranslationNodeDto();
-    translationNodeDto.application = await this.applicationService.getByAliasOrFail(
+  ): Promise<TranslationModelDto> {
+    const translationModelDto = new TranslationModelDto();
+    translationModelDto.application = await this.applicationService.getByAliasOrFail(
       companyId,
       translationDto.application,
     );
-    translationNodeDto.language = await this.languageService.getByCodeInApplication(
-      translationNodeDto.application.id,
+    translationModelDto.language = await this.languageService.getByCodeInApplication(
+      translationModelDto.application.id,
       translationDto.language,
     );
-    translationNodeDto.translationKeys = translationDto.translationKey
+    translationModelDto.translationKeys = translationDto.translationKey
       ? translationDto.translationKey.split(',')
       : undefined;
-    translationNodeDto.sections = translationDto.section
+    translationModelDto.sections = translationDto.section
       ? translationDto.section.split(',')
       : undefined;
-    translationNodeDto.whiteLabel = translationDto.whiteLabel
+    translationModelDto.whiteLabel = translationDto.whiteLabel
       ? await this.whiteLabelService.findByAliasOrFail(
-          companyId,
-          translationDto.whiteLabel,
-        )
+        companyId,
+        translationDto.whiteLabel,
+      )
       : undefined;
-    return translationNodeDto;
+
+    translationModelDto.limit = translationDto.limit;
+    translationModelDto.offset = translationDto.offset;
+
+    return translationModelDto;
+  }
+
+  async findInList(applicationId: number, languageId: number, query?: QueryPaginationInterface): Promise<ListResult<Translation>> {
+    const listResult = await this.getEntityListAndCount(applicationId, languageId, query);
+    return {
+      data: classToClass(listResult[0]),
+      count: listResult[1],
+    };
   }
 
   protected async getIncludes(
@@ -355,5 +353,10 @@ export class TranslationService extends AbstractEntityService<Translation> {
     }
 
     return translation;
+  }
+
+  protected async getEntityListAndCount(applicationId: number, languageId: number, query: QueryPaginationInterface | undefined): Promise<[Translation[], number]> {
+    return await (this
+      .repository as TranslationRepository).findInList(applicationId, languageId, query);
   }
 }

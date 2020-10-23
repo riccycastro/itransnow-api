@@ -1,34 +1,32 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, SelectQueryBuilder } from 'typeorm';
 import { Translation } from '../Entities/translation.entity';
-import { AbstractRepository } from './abstract.repository';
+import { AbstractRepository, QueryPaginationInterface } from './abstract.repository';
 import { TranslationStatusService } from '../Services/translation-status.service';
 import { TranslationExportData } from '../Types/type';
+import { TranslationModelDto } from '../Dto/translation.dto';
+import { WhiteLabel } from '../Entities/white-label.entity';
 
 @EntityRepository(Translation)
 export class TranslationRepository extends AbstractRepository<Translation> {
   async findTranslationInApplicationByLanguage(
-    applicationId: number,
-    languageId: number,
-    translationKeys: string[],
-    sections: string[],
-    whiteLabelId?: number,
+    translationModelDto: TranslationModelDto,
   ): Promise<TranslationExportData[]> {
-
-    let params: any = [applicationId, languageId];
+    let params: any = [translationModelDto.application.id, translationModelDto.language.id];
     let query = this.getCommonSelect();
-    query = this.addSectionSelects(query, sections);
-    query = this.addWhiteLabelSelects(query, whiteLabelId);
-    query = this.addFrom(query)
-    query = this.joinTranslationKey(query,  whiteLabelId)
-    query = this.commonJoin(query)
-    query = this.joinSection(query, sections)
+    query = this.addSectionSelects(query, translationModelDto.sections);
+    query = this.addWhiteLabelSelects(query, translationModelDto.whiteLabel);
+    query = this.addFrom(query);
+    query = this.joinTranslationKey(query, translationModelDto.whiteLabel);
+    query = this.commonJoin(query);
+    query = this.joinSection(query, translationModelDto.sections);
     query = this.commonWhere(query);
-    [query, params] = this.whereTranslationKey(query, params, translationKeys);
-    [query, params] = this.whereSection(query, params, sections);
-    [query, params] = this.whereWhiteLabel(query, params, whiteLabelId);
+    [query, params] = this.whereTranslationKey(query, params, translationModelDto.translationKeys);
+    [query, params] = this.whereSection(query, params, translationModelDto.sections);
+    [query, params] = this.whereWhiteLabel(query, params, translationModelDto.whiteLabel);
+    query = this.orderBy(query);
+    query = this.limit(query, translationModelDto.limit);
 
-    // todo@rcastro - this limit should be a configuration
-    return this.query(query + ' limit 6000', params);
+    return this.query(query, params);
   }
 
   async findTranslationsWithLanguageAndStatus(
@@ -74,6 +72,58 @@ export class TranslationRepository extends AbstractRepository<Translation> {
       .getOne();
   }
 
+  async findInList(
+    applicationId: number,
+    languageId: number,
+    query: QueryPaginationInterface,
+  ): Promise<[Translation[], number]> {
+    const queryBuilder = this.listQuery(applicationId, languageId, query);
+    return await this.setPagination(
+      queryBuilder,
+      query,
+      'translations',
+    ).getManyAndCount();
+  }
+
+  private listQuery(applicationId: number, languageId: number, query: QueryPaginationInterface): SelectQueryBuilder<Translation> {
+    const queryBuilder = this.createQueryBuilder('translations')
+      .addSelect('translationKey')
+      .addSelect('translationStatus')
+      .innerJoin('translations.language', 'language')
+      .innerJoin('translations.translationStatus', 'translationStatus');
+
+
+    if (query.section) {
+      queryBuilder
+        .innerJoin('translationKey.sections', 'sections')
+        .andWhere('sections.alias = :section', { section: query.section });
+    }
+
+    if (query.whiteLabel) {
+      queryBuilder
+        .innerJoin('translations.whiteLabelTranslations', 'whiteLabelTranslations')
+        .innerJoin('whiteLabelTranslations.whiteLabel', 'whiteLabel')
+        .innerJoin('whiteLabelTranslations.translationKey', 'translationKey')
+        .innerJoin('translationKey.application', 'application')
+        .andWhere('whiteLabel.alias = :whiteLabel', { whiteLabel: query.whiteLabel });
+    } else {
+      queryBuilder
+        .innerJoin('translations.translationKey', 'translationKey')
+        .innerJoin('translationKey.application', 'application');
+    }
+
+    if (query.translationKey) {
+      queryBuilder
+        .andWhere('translationKey.alias LIKE :translationKey', { translationKey: `%${query.translationKey}%` });
+    }
+
+    return queryBuilder
+      .andWhere('language.id = :languageId', { languageId })
+      .andWhere('language.isActive = 1')
+      .andWhere('application.deletedAt = 0')
+      .andWhere('application.id = :applicationId', { applicationId });
+  }
+
   private getCommonSelect(): string {
     return 'SELECT translations.translation, translations.translation, translation_keys.alias as `translationKey` ';
   }
@@ -85,19 +135,19 @@ export class TranslationRepository extends AbstractRepository<Translation> {
     return query;
   }
 
-  private addWhiteLabelSelects(query: string, whiteLabelId?: number): string {
-    if (whiteLabelId) {
+  private addWhiteLabelSelects(query: string, whiteLabel?: WhiteLabel): string {
+    if (whiteLabel) {
       query += ' , white_labels.alias as `white_label` ';
     }
     return query;
   }
 
   private addFrom(query: string): string {
-    return query + ' FROM translations '
+    return query + ' FROM translations ';
   }
 
-  private joinTranslationKey(query: string, whiteLabelId?: number): string {
-    if (whiteLabelId) {
+  private joinTranslationKey(query: string, whiteLabel?: WhiteLabel): string {
+    if (whiteLabel) {
       query += ` INNER JOIN white_label_translations ON white_label_translations.translation_id = translations.id
       INNER JOIN translation_keys ON white_label_translations.translation_key_id = translation_keys.id 
       INNER JOIN white_labels ON white_label_translations.white_label_id = white_labels.id `;
@@ -147,11 +197,22 @@ export class TranslationRepository extends AbstractRepository<Translation> {
     return [query, params];
   }
 
-  private whereWhiteLabel(query: string, params: any[], whiteLabelId?: number): [string, any[]] {
-    if (whiteLabelId) {
+  private whereWhiteLabel(query: string, params: any[], whiteLabel?: WhiteLabel): [string, any[]] {
+    if (whiteLabel) {
       query += ' AND white_labels.id = ? AND white_labels.is_active = 1 ';
-      params.push(whiteLabelId);
+      params.push(whiteLabel.id);
     }
     return [query, params];
+  }
+
+  private orderBy(query: string): string {
+    return query + ' order by translation_keys.alias ASC ';
+  }
+
+  private limit(query: string, limit?: number): string {
+    if (limit) {
+      query += ' limit ' + limit;
+    }
+    return query;
   }
 }

@@ -42,17 +42,13 @@ export enum ApplicationIncludesEnum {
 export class ApplicationService extends AbstractEntityListingService<
   Application
 > {
-  private readonly languageService: LanguageService;
-  private readonly sectionService: SectionService;
-  private readonly whiteLabelService: WhiteLabelService;
-
   constructor(
     applicationRepository: ApplicationRepository,
-    languageService: LanguageService,
+    private readonly languageService: LanguageService,
     @Inject(forwardRef(() => SectionService))
-    sectionService: SectionService,
+    private readonly sectionService: SectionService,
     @Inject(forwardRef(() => WhiteLabelService))
-    whiteLabelService: WhiteLabelService,
+    private readonly whiteLabelService: WhiteLabelService,
     @Inject(forwardRef(() => TranslationService))
     private readonly translationService: TranslationService,
     private readonly momentProvider: MomentProvider,
@@ -61,9 +57,6 @@ export class ApplicationService extends AbstractEntityListingService<
     private readonly translationKeyService: TranslationKeyService,
   ) {
     super(applicationRepository);
-    this.languageService = languageService;
-    this.sectionService = sectionService;
-    this.whiteLabelService = whiteLabelService;
   }
 
   async create(
@@ -423,6 +416,15 @@ export class ApplicationService extends AbstractEntityListingService<
     await Promise.all(removeLanguageTask);
 
     return application;
+  }
+
+  async getTranslations(
+    application: Application,
+    languageCode: string,
+    query?: QueryPaginationInterface
+  ): Promise<ListResult<Translation>> {
+    const language = await this.languageService.getByCodeInApplication(application.id, languageCode);
+   return await this.translationService.findInList(application.id, language.id, query);
   }
 
   protected async getIncludes(

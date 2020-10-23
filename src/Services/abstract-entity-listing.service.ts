@@ -7,10 +7,10 @@ export abstract class AbstractEntityListingService<
   Entity
 > extends AbstractEntityService<Entity> {
   async findInList(
-    companyId: number,
+    entityId: number,
     query?: QueryPaginationInterface,
   ): Promise<ListResult<Entity>> {
-    const listResult = await this.getEntityListAndCount(companyId, query);
+    const listResult = await this.getEntityListAndCount(entityId, query);
 
     return {
       data: classToClass(listResult[0]),
