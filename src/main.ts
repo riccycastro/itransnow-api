@@ -13,7 +13,7 @@ async function bootstrap() {
   );
   app.enableCors({ origin: 'http://app.itransnow.local' });
   const options = new DocumentBuilder().addBearerAuth().build();
-
+  app.setGlobalPrefix('v1');
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
