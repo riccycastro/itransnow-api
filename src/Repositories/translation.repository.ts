@@ -92,7 +92,6 @@ export class TranslationRepository extends AbstractRepository<Translation> {
       .innerJoin('translations.language', 'language')
       .innerJoin('translations.translationStatus', 'translationStatus');
 
-
     if (query.section) {
       queryBuilder
         .innerJoin('translationKey.sections', 'sections')
@@ -112,16 +111,22 @@ export class TranslationRepository extends AbstractRepository<Translation> {
         .innerJoin('translationKey.application', 'application');
     }
 
-    if (query.translationKey) {
-      queryBuilder
-        .andWhere('translationKey.alias LIKE :translationKey', { translationKey: `%${query.translationKey}%` });
-    }
-
-    return queryBuilder
+    queryBuilder
       .andWhere('language.id = :languageId', { languageId })
       .andWhere('language.isActive = 1')
       .andWhere('application.deletedAt = 0')
       .andWhere('application.id = :applicationId', { applicationId });
+
+    if (query.search) {
+      queryBuilder
+        .andWhere('(translationKey.alias LIKE :translationKeySearch OR translations.translation LIKE :translationSearch OR translationStatus.status LIKE :statusSearch)', {
+          translationKeySearch: `%${query.search}%`,
+          translationSearch: `%${query.search}%`,
+          statusSearch: `%${query.search}%`,
+        });
+    }
+
+    return queryBuilder;
   }
 
   private getCommonSelect(): string {
