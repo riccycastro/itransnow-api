@@ -8,7 +8,7 @@ import { UserService } from './user.service';
 export class AuthService {
   constructor(
     private readonly usersService: UserService,
-    private readonly jwtService: JwtService,
+    // private readonly jwtService: JwtService,
     private readonly bcryptProvider: BcryptProvider,
   ) {}
 
@@ -30,7 +30,7 @@ export class AuthService {
     };
 
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: {},
     };
   }
 }

@@ -1,0 +1,57 @@
+@layout('base_template')
+
+@section('body')
+<div class="container" style="height: 100vh">
+    <div class="card" style="width: 25vw; margin: 30vh auto">
+        <div class="card-body" >
+            <h5 class="card-title">Welcome to iTranslateNow</h5>
+            <form method="post" id="form-login">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username"
+                           aria-describedby="basic-addon1" data-authentication-target="username">
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" placeholder="Password" aria-label="Password"
+                           name="password" data-authentication-target="password"
+                           aria-describedby="basic-addon1">
+                </div>
+                <button class="btn btn-primary" type="submit" data-action="click->authentication#submit">Login</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div data-controller="hello">
+    <input data-hello-target="name" type="text">
+    …
+</div>
+<script>
+
+    // const form = document.getElementById('form-login')
+    //
+    // form.addEventListener('submit', (event) => {
+    //     event.preventDefault()
+    //
+    //     const data = {
+    //         username: document.getElementById('username').value,
+    //         password: document.getElementById('password').value,
+    //     }
+    //
+    //     console.log(data)
+    //
+    //     fetch('/auth/login', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(data)
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             localStorage.setItem('token', data.accessToken)
+    //         })
+    //         .catch(error => console.log(error))
+    // })
+
+
+</script>
+@endsection
