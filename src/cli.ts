@@ -7,10 +7,13 @@ async function bootstrap() {
     logger: ['error'], // only errors
   });
 
-  app
-    .select(CommandModule)
-    .get(CommandService)
-    .exec();
+  try {
+    app.select(CommandModule).get(CommandService).exec();
+  } catch (error) {
+    console.error(error);
+    await app.close();
+    process.exit(1);
+  }
 }
 
 bootstrap();

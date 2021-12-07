@@ -40,12 +40,18 @@ $ npm run test:cov
 ## Commands
 [nestjs-command](https://gitlab.com/aa900031/nestjs-command)
 
-For development purpose you may need to create some fake translations, you can use 
+For development purpose you may need to create some fake translations, you can use
 the following command to generate fake translation keys and translations
 
 ```bash
 $ npx nestjs-command translation:populate
 ```
+
+To run tenants migration
+```bash
+$ npx nestjs-command tenant:migration:run migrate-all
+```
+In both cases you can use --help to get more information about these commands.
 
 _Note:_ You need to register CLI_PATH=./dist/src/cli.js as a env var
 
@@ -60,8 +66,8 @@ _Note:_ You need to register CLI_PATH=./dist/src/cli.js as a env var
 
 ## License
 
-  iTranslateNow is [MIT licensed](https://github.com/riccycastro/itransnow-api/blob/master/LICENSE).
-  
+iTranslateNow is [MIT licensed](https://github.com/riccycastro/itransnow-api/blob/master/LICENSE).
+
 
 ## todo
 * Integration tests

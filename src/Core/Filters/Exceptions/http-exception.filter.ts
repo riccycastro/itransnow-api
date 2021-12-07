@@ -1,22 +1,35 @@
-import {ArgumentsHost, Catch, ExceptionFilter, HttpException, UnauthorizedException} from '@nestjs/common';
-import {Request, Response} from 'express';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Response } from 'express';
 
-@Catch(HttpException)
+@Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: HttpException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
-        const request = ctx.getRequest<Request>();
-        const status = exception.getStatus();
+  catch(exception: any, host: ArgumentsHost): any {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    let status: number;
 
-        console.log('error', status)
-
-        if (exception instanceof UnauthorizedException) {
-            response.redirect('/auth/login')
-        } else if (status >= 500 && status < 600) {
-
-        } else if (status >= 400 && status < 500) {
-            response.render('exception/404')
-        }
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+    } else {
+      status = exception.status;
     }
+
+    console.log(exception);
+
+    if (exception instanceof UnauthorizedException) {
+      response.redirect('/auth/login');
+    } else if (status >= 500 && status < 600) {
+      response.render('exception/5xx');
+    } else if (status >= 400 && status < 500) {
+      response.render('exception/4xx');
+    } else {
+      response.json(exception);
+    }
+  }
 }
