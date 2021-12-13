@@ -1,25 +1,24 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Req,
-  Request,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../../Application/Services/auth.service';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../../Application/AuthGuard/jwt-auth.guard';
 import { TOKEN_KEY } from '../../../../Core/Extractor/cookie.extractor';
+import { ControllerCore } from '../../../../Core/Controller/controller.core';
+import { EdgeProvider } from '../../../../Core/View/edge.provider';
 
 @Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+export class AuthController extends ControllerCore {
+  constructor(
+    edgeProvider: EdgeProvider,
+    private readonly authService: AuthService,
+  ) {
+    super(edgeProvider);
+  }
 
   @Get('login')
-  async showLoginPage(@Request() req, @Res() res: Response) {
-    return res.render('auth/login');
+  async showLoginPage() {
+    return this.render('auth/login');
   }
 
   @UseGuards(AuthGuard('local'))
@@ -33,8 +32,8 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async showProfilePage(@Req() req, @Res() res: Response) {
-    return res.render('profile', { user: req.user });
+  async showProfilePage(@Req() req) {
+    return this.render('profile', { user: req.user });
   }
 
   @Get('logout')

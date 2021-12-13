@@ -2,8 +2,82 @@
 
 @section('page_name')
 Create Application
-@endsection
+@end
 
 @section('body')
+<div class="container-fluid application">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <form class="form" id="application-form" method="post">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="application-name" class="">Name</label>
+                                    <input type="text" name="name" class="form-control
+                                            @if(errors && errors['name'])
+                                              is-invalid
+                                            @end
+                                           " id="application-name"
+                                           placeholder="Enter application name" value="{{ application.name }}">
+                                    @if(errors && errors['name'])
+                                    <span id="application-name-error" class="error invalid-feedback text-title"
+                                          style="">
+                                          {{ errors['name'][0] }}
+                                    </span>
+                                    @end
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="application-name">Alias</label>
+                                    <input type="text" name="alias" class="form-control
+                                            @if(errors && errors['alias'])
+                                              is-invalid
+                                            @end
+                                           " id="application-alias"
+                                           placeholder="Enter application alias" value="{{ application.alias }}">
+                                    @if(errors && errors['alias'])
+                                    <span id="application-alias-error" class="error invalid-feedback text-title"
+                                          style="">
+                                          {{ errors['alias'][0] }}
+                                    </span>
+                                    @end
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group
+                                            @if(errors && errors['isActive'])
+                                              is-invalid
+                                            @end
+                                           ">
+                                    <label for="application-name" class="w-100">Active</label>
+                                    <input type="checkbox" name="isActive"
+                                           @if(stringToBoolean(application.isActive))
+                                           checked
+                                           @end
+                                           data-bootstrap-switch>
+                                    @if(errors && errors['isActive'])
+                                    <span id="application-isActive-error" class="error invalid-feedback text-title"
+                                          style="">
+                                          {{ errors['isActive'][0] }}
+                                    </span>
+                                    @end
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@end
 
-@endsection
+@section('script')
+<script src="/js/components/applications/application-form.js"></script>
+@end

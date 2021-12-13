@@ -15,7 +15,7 @@ import {
 } from 'typeorm';
 
 import { Tenant } from './tenant.entity';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { createTenantOrmConfig } from './orm.config';
 
 export const TENANT_CONNECTION = 'TENANT_CONNECTION';
@@ -40,7 +40,7 @@ export class TenantModule {
 
   configure(consumer: MiddlewareConsumer): void {
     consumer
-      .apply(async (req: Request, res, next) => {
+      .apply(async (req: Request, res: Response, next) => {
         const tenant: Tenant = await this.connection
           .getRepository(Tenant)
           .findOne({ where: { code: req.subdomains[0] } });

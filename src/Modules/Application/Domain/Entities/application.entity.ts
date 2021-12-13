@@ -7,25 +7,17 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-@Entity('users')
-export class User {
+@Entity('applications')
+export class Application {
   private _id: number;
 
-  private _name: string;
+  private _name = '';
 
-  private _username: string;
+  private _alias = '';
 
-  private _email: string;
-
-  private _password: string;
-
-  private _isActive: boolean;
+  private _isActive = true;
 
   private _deletedAt: number;
-
-  private _isVisible: boolean;
-
-  private _isAdmin: boolean;
 
   private _createdAt: string;
 
@@ -50,32 +42,13 @@ export class User {
     this._name = name;
   }
 
-  @Column({ length: 100 })
-  get username(): string {
-    return this._username;
-  }
-
-  set username(username: string) {
-    this._username = username;
-  }
-
   @Column()
-  get email(): string {
-    return this._email;
+  get alias(): string {
+    return this._alias;
   }
 
-  set email(email: string) {
-    this._email = email;
-  }
-
-  @Exclude()
-  @Column()
-  get password(): string {
-    return this._password;
-  }
-
-  set password(password: string) {
-    this._password = password;
+  set alias(alias: string) {
+    this._alias = alias;
   }
 
   @Column({ name: 'is_active' })
@@ -95,25 +68,6 @@ export class User {
 
   set deletedAt(deletedAt: number) {
     this._deletedAt = deletedAt;
-  }
-
-  @Exclude()
-  @Column({ name: 'is_visible' })
-  get isVisible(): boolean {
-    return this._isVisible;
-  }
-
-  set isVisible(isVisible: boolean) {
-    this._isVisible = isVisible;
-  }
-
-  @Column({ name: 'is_admin' })
-  get isAdmin(): boolean {
-    return this._isAdmin;
-  }
-
-  set isAdmin(isAdmin: boolean) {
-    this._isAdmin = isAdmin;
   }
 
   @CreateDateColumn({

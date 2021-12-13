@@ -6,11 +6,15 @@
     <title>Log in | iTranslateNow</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="/template/plugins/fontawesome-free/css/all.min.css">
+
+    <link rel="stylesheet" href="/template/plugins/toastr/toastr.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/template/css/adminlte.min.css">
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -215,6 +219,7 @@
 
         <!-- Main content -->
         <section class="content">
+
             <!-- Default box -->
             @!section('body')
             <!-- /.card -->
@@ -237,14 +242,21 @@
     <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-
+@if(notification)
+<input type="hidden" value="{{ JSON.stringify(notification) }}" id="base-edge-notifications">
+@end
 <!-- jQuery -->
 <script src="/template/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="/template/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="/template/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="/template/js/demo.js"></script>
+
+<script src="/template/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="/template/plugins/jquery-validation/additional-methods.min.js"></script>
+<script src="/template/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<script src="/template/plugins/toastr/toastr.min.js"></script>
+<script src="/js/initializer.js"></script>
+@!section('script')
 </body>
 </html>
