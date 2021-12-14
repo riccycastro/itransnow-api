@@ -1,0 +1,10 @@
+@if(page && page.path.length)
+<ol class="breadcrumb float-sm-right">
+
+    @each(pathName in page.path)
+    @set('route', resolveRoute(pathName))
+    <li class="breadcrumb-item"><a href="{{ route.url.reverse() }}">{{ route.title }}</a></li>
+    @end
+    <li class="breadcrumb-item">{{ page.title }}</li>
+</ol>
+@end

@@ -17,6 +17,7 @@ import { ControllerCore } from '../../../../Core/Controller/controller.core';
 import { EdgeProvider } from '../../../../Core/View/edge.provider';
 import { ApplicationAliasExistsException } from '../../Domain/Exceptions/application-alias-exists.exception';
 import { Application } from '../../Domain/Entities/application.entity';
+import { RoutesDefinition } from '../../../../Core/View/routes-definition';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard)
@@ -27,6 +28,12 @@ export class ApplicationController extends ControllerCore {
     private readonly applicationAdapter: ApplicationAdapter,
   ) {
     super(edgeProvider);
+  }
+
+  @Get()
+  async showListAction() {
+    const [applications, total] = await this.applicationAdapter.getList();
+    return this.render('application/list', { applications, total });
   }
 
   @Get('create')
@@ -52,14 +59,19 @@ export class ApplicationController extends ControllerCore {
         session,
         errors,
       );
-      res.redirect('/applications/create');
+      res.redirect(RoutesDefinition.url('application_create'));
       return;
     }
 
     try {
-      await this.applicationAdapter.createApplication(applicationInputDto);
-      this.flashSuccessNotification('Application created', session);
-      res.redirect('/applications/create'); // todo@rcastro: should redirect to application list
+      const application = await this.applicationAdapter.createApplication(
+        applicationInputDto,
+      );
+      this.flashSuccessNotification(
+        `Application ${application.name} created`,
+        session,
+      );
+      res.redirect(RoutesDefinition.url('application_list'));
     } catch (err) {
       let errMessage = 'Failed to create application';
       if (err instanceof ApplicationAliasExistsException) {
@@ -73,7 +85,7 @@ export class ApplicationController extends ControllerCore {
         applicationInputDto,
       );
 
-      res.redirect('/applications/create');
+      res.redirect(RoutesDefinition.url('application_create'));
     }
   }
 }

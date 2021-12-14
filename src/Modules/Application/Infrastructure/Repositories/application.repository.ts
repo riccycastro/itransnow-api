@@ -24,4 +24,8 @@ export default class ApplicationRepository
   findOneByAlias(alias?: string): Promise<Application | undefined> {
     return this.repository.findOne({ where: { alias: alias } });
   }
+
+  findList(): Promise<[Application[], number]> {
+    return this.repository.findAndCount();
+  }
 }

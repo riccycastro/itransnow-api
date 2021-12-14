@@ -9,4 +9,6 @@ export interface ApplicationRepositoryInterface {
   ): Promise<T & Application> | Promise<T[]> | Promise<(T & Application)[]>;
 
   findOneByAlias(alias?: string): Promise<Application | undefined>;
+
+  findList(): Promise<[Application[], number]>;
 }

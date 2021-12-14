@@ -1,0 +1,34 @@
+@layout('home_template')
+
+@section('body')
+<div>
+    <a href="{{ resolveUrl('application_create') }}" type="button" class="btn btn-sm btn-primary mb-4 justify-content-end">Create
+    </a>
+</div>
+
+<div class="card card-solid">
+    <div class="card-body pb-0">
+        <div class="row">
+            @each(application in applications)
+            @!component('application/list_item', {
+            application
+            })
+            @end
+        </div>
+    </div>
+    <div class="card-footer">
+        <nav aria-label="Contacts Page Navigation">
+            <ul class="pagination justify-content-center m-0">
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                <li class="page-item"><a class="page-link" href="#">6</a></li>
+                <li class="page-item"><a class="page-link" href="#">7</a></li>
+                <li class="page-item"><a class="page-link" href="#">8</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+@end

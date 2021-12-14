@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../Application/AuthGuard/jwt-auth.guard';
 import { TOKEN_KEY } from '../../../../Core/Extractor/cookie.extractor';
 import { ControllerCore } from '../../../../Core/Controller/controller.core';
 import { EdgeProvider } from '../../../../Core/View/edge.provider';
+import { RoutesDefinition } from '../../../../Core/View/routes-definition';
 
 @Controller('auth')
 export class AuthController extends ControllerCore {
@@ -26,7 +27,7 @@ export class AuthController extends ControllerCore {
   async loginAction(@Req() req, @Res() response: Response) {
     const token = await this.authService.login(req.user);
     response.cookie(TOKEN_KEY, token.accessToken);
-    response.redirect('/auth/profile');
+    response.redirect(RoutesDefinition.url('application_list'));
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -39,6 +40,6 @@ export class AuthController extends ControllerCore {
   @Get('logout')
   async logoutAction(@Res() res: Response) {
     res.cookie('token', '');
-    res.redirect('/auth/login');
+    res.redirect(RoutesDefinition.url('auth_login'));
   }
 }

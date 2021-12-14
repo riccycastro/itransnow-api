@@ -1,8 +1,4 @@
-@layout('base_template')
-
-@section('page_name')
-Create Application
-@end
+@layout('home_template')
 
 @section('body')
 <div class="container-fluid application">
@@ -16,9 +12,9 @@ Create Application
                                 <div class="form-group">
                                     <label for="application-name" class="">Name</label>
                                     <input type="text" name="name" class="form-control
-                                            @if(errors && errors['name'])
+                                            @if(errors && errors['name'])~
                                               is-invalid
-                                            @end
+                                            @end~
                                            " id="application-name"
                                            placeholder="Enter application name" value="{{ application.name }}">
                                     @if(errors && errors['name'])
@@ -33,24 +29,24 @@ Create Application
                                 <div class="form-group">
                                     <label for="application-name">Alias</label>
                                     <input type="text" name="alias" class="form-control
-                                            @if(errors && errors['alias'])
+                                            @if(errors && errors['alias'])~
                                               is-invalid
-                                            @end
+                                            @end~
                                            " id="application-alias"
                                            placeholder="Enter application alias" value="{{ application.alias }}">
-                                    @if(errors && errors['alias'])
+                                    @if(errors && errors['alias'])~
                                     <span id="application-alias-error" class="error invalid-feedback text-title"
                                           style="">
                                           {{ errors['alias'][0] }}
                                     </span>
-                                    @end
+                                    @end~
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group
-                                            @if(errors && errors['isActive'])
+                                            @if(errors && errors['isActive'])~
                                               is-invalid
-                                            @end
+                                            @end~
                                            ">
                                     <label for="application-name" class="w-100">Active</label>
                                     <input type="checkbox" name="isActive"
@@ -58,12 +54,12 @@ Create Application
                                            checked
                                            @end
                                            data-bootstrap-switch>
-                                    @if(errors && errors['isActive'])
+                                    @if(errors && errors['isActive'])~
                                     <span id="application-isActive-error" class="error invalid-feedback text-title"
                                           style="">
                                           {{ errors['isActive'][0] }}
                                     </span>
-                                    @end
+                                    @end~
                                 </div>
                             </div>
                         </div>

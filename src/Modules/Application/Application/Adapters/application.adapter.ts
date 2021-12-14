@@ -1,12 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import ApplicationService from '../../Domain/Services/application.service';
 import { ApplicationInputDto } from '../Dtos/application-input.dto';
+import { Application } from '../../Domain/Entities/application.entity';
+import { ApplicationRepositoryInterface } from '../../Domain/Interfaces/application.repository.interface';
 
 @Injectable()
 export default class ApplicationAdapter {
-  constructor(private readonly applicationService: ApplicationService) {}
+  constructor(
+    @Inject('ApplicationRepositoryInterface')
+    private readonly applicationRepository: ApplicationRepositoryInterface,
+    private readonly applicationService: ApplicationService,
+  ) {}
 
-  async createApplication(applicationInputDto: ApplicationInputDto) {
-    await this.applicationService.createApplication(applicationInputDto);
+  async getList(): Promise<[Application[], number]> {
+    return this.applicationRepository.findList();
+  }
+
+  async createApplication(
+    applicationInputDto: ApplicationInputDto,
+  ): Promise<Application> {
+    return this.applicationService.createApplication(applicationInputDto);
   }
 }
