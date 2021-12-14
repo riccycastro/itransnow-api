@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { User } from './user.entity';
 
 @Entity('applications')
 export class Application {
@@ -22,6 +25,8 @@ export class Application {
   private _createdAt: string;
 
   private _updatedAt: string;
+
+  private _createdBy: User;
 
   @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -94,5 +99,15 @@ export class Application {
 
   set updatedAt(updatedAt: string) {
     this._updatedAt = updatedAt;
+  }
+
+  @ManyToOne((type) => User, (user) => user.applications, { eager: true })
+  @JoinColumn({ name: 'created_by' })
+  get createdBy(): User {
+    return this._createdBy;
+  }
+
+  set createdBy(user: User) {
+    this._createdBy = user;
   }
 }

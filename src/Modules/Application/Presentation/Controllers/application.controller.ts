@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Res,
   Session,
   UseGuards,
@@ -48,6 +49,7 @@ export class ApplicationController extends ControllerCore {
   async createAction(
     @Body() applicationInputDto: ApplicationInputDto,
     @Res() res: Response,
+    @Req() req,
     @Session() session: Record<string, any>,
   ) {
     applicationInputDto = new ApplicationInputDto(applicationInputDto);
@@ -66,6 +68,7 @@ export class ApplicationController extends ControllerCore {
     try {
       const application = await this.applicationAdapter.createApplication(
         applicationInputDto,
+        req.user,
       );
       this.flashSuccessNotification(
         `Application ${application.name} created`,

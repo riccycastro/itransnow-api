@@ -14,7 +14,7 @@ export class ApplicationInputDto {
 
   @IsDefined({ groups: ['patch', 'post'] })
   @IsString()
-  isActive: string = 'OFF';
+  isActive = 'OFF';
 
   constructor(init?: Partial<ApplicationInputDto>) {
     Object.assign(this, init);

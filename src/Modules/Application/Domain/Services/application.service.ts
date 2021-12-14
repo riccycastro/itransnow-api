@@ -7,6 +7,7 @@ import { ApplicationCreatedEvent } from '../Events/application-created.event';
 import { ApplicationRepositoryInterface } from '../Interfaces/application.repository.interface';
 import { StringProvider } from '../../../../Core/Providers/string.provider';
 import { ApplicationAliasExistsException } from '../Exceptions/application-alias-exists.exception';
+import { User } from '../Entities/user.entity';
 
 Injectable();
 export default class ApplicationService {
@@ -18,11 +19,13 @@ export default class ApplicationService {
 
   public async createApplication(
     applicationType: ApplicationCreateType,
+    createdBy: User,
   ): Promise<Application> {
     let application = new Application();
     application.name = applicationType.name;
     application.alias = StringProvider.removeDiacritics(applicationType.alias);
     application.isActive = BooleanProvider.toBoolean(applicationType.isActive);
+    application.createdBy = createdBy;
 
     if (await this.applicationRepository.findOneByAlias(application.alias)) {
       throw new ApplicationAliasExistsException(application.alias);
