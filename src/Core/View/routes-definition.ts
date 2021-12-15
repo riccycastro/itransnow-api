@@ -57,5 +57,10 @@ export class RoutesDefinition {
       title: 'Create Application',
       url: new Route('/auth/login(/)'),
     },
+    user_list: {
+      title: 'Users',
+      url: new Route('/users(/)'),
+      path: [],
+    },
   };
 }

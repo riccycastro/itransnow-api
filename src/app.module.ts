@@ -9,6 +9,7 @@ import { TenantMigrationCommand } from './Core/Commands/tenant.migration.command
 import { ApplicationModule } from './Modules/Application/application.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ViewModule } from './Core/View/view.module';
+import { UserModule } from './Modules/User/user.module';
 
 @Global()
 @Module({
@@ -22,6 +23,7 @@ import { ViewModule } from './Core/View/view.module';
     ViewModule,
     AuthModule,
     ApplicationModule,
+    UserModule,
     CommandModule,
     TenantMigrationCommand,
   ],

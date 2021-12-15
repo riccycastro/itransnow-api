@@ -1,0 +1,76 @@
+@layout('home_template')
+
+@section('body')
+<div class="card">
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="users-table" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>email</th>
+                <th>Active</th>
+                <th>Admin</th>
+                <th>Created at</th>
+                <th>Updated at</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @each(user in users)
+            <tr id="{{ user.id }}">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.isActive }}</td>
+                <td>{{ user.isAdmin }}</td>
+                <td>{{ date(user.createdAt) }}</td>
+                <td>{{ date(user.updatedAt) }}</td>
+                <td>
+                    <a><i class="fas fa-edit"></i></a>
+                    <a><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            @end
+            </tbody>
+            <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>email</th>
+                <th>Active</th>
+                <th>Admin</th>
+                <th>Created at</th>
+                <th>Updated at</th>
+                <th>Actions</th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <!-- /.card-body -->
+</div>
+@end
+
+@section('style')
+<link rel="stylesheet" href="/template/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/template/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/template/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+@end
+
+@section('script')
+<script src="/template/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/template/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/template/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/template/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/template/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/template/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/template/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/template/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/template/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(function () {
+        $('#users-table').DataTable({
+            responsive: true, lengthChange: false, autoWidth: false,
+            buttons: ["colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
+@end

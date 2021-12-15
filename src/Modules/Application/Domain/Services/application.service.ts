@@ -4,17 +4,17 @@ import BooleanProvider from '../../../../Core/Providers/boolean.provider';
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ApplicationCreatedEvent } from '../Events/application-created.event';
-import { ApplicationRepositoryInterface } from '../Interfaces/application.repository.interface';
 import { StringProvider } from '../../../../Core/Providers/string.provider';
 import { ApplicationAliasExistsException } from '../Exceptions/application-alias-exists.exception';
 import { User } from '../Entities/user.entity';
+import DomainRepositoryInterface from '../../../../Core/Interfaces/domain.repository.interface';
 
 Injectable();
 export default class ApplicationService {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     @Inject('ApplicationRepositoryInterface')
-    private readonly applicationRepository: ApplicationRepositoryInterface,
+    private readonly applicationRepository: DomainRepositoryInterface<Application>,
   ) {}
 
   public async createApplication(
@@ -27,7 +27,11 @@ export default class ApplicationService {
     application.isActive = BooleanProvider.toBoolean(applicationType.isActive);
     application.createdBy = createdBy;
 
-    if (await this.applicationRepository.findOneByAlias(application.alias)) {
+    if (
+      await this.applicationRepository.findOne(null, {
+        where: { alias: application.alias },
+      })
+    ) {
       throw new ApplicationAliasExistsException(application.alias);
     }
 

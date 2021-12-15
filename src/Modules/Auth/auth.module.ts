@@ -9,6 +9,7 @@ import { LocalStrategy } from './Application/Strategy/local.strategy';
 import { JwtStrategy } from './Application/Strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { TenantModule } from '../../Core/Tenant/tenant.module';
+import MomentProvider from '../../Core/Providers/moment.provider';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TenantModule } from '../../Core/Tenant/tenant.module';
   providers: [
     AuthService,
     BcryptProvider,
+    MomentProvider,
     LocalStrategy,
     JwtStrategy,
     UserRepository,

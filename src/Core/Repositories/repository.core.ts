@@ -33,6 +33,12 @@ export class RepositoryCore<Entity> {
     return this.repository.findOne(id, options);
   }
 
+  findAndCount(
+    options?: FindManyOptions<Entity> | FindConditions<Entity>,
+  ): Promise<[Entity[], number]> {
+    return this.repository.findAndCount(options);
+  }
+
   save<T extends DeepPartial<Entity>>(
     entity: T | T[],
     options?: SaveOptions,

@@ -1,8 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')
-export class User {
+export default class User {
   private _id: number;
 
   private _name: string;
@@ -17,7 +23,14 @@ export class User {
 
   private _deletedAt: number;
 
+  private _isVisible: boolean;
+
   private _isAdmin: boolean;
+
+  private _createdAt: Date;
+
+  private _updatedAt: Date;
+
   @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
   get id(): number {
@@ -84,6 +97,16 @@ export class User {
     this._deletedAt = deletedAt;
   }
 
+  @Exclude()
+  @Column({ name: 'is_visible' })
+  get isVisible(): boolean {
+    return this._isVisible;
+  }
+
+  set isVisible(isVisible: boolean) {
+    this._isVisible = isVisible;
+  }
+
   @Column({ name: 'is_admin' })
   get isAdmin(): boolean {
     return this._isAdmin;
@@ -91,5 +114,31 @@ export class User {
 
   set isAdmin(isAdmin: boolean) {
     this._isAdmin = isAdmin;
+  }
+
+  @CreateDateColumn({
+    name: 'created_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  set createdAt(createdAt: Date) {
+    this._createdAt = createdAt;
+  }
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+
+  set updatedAt(updatedAt: Date) {
+    this._updatedAt = updatedAt;
   }
 }
