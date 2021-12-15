@@ -5,16 +5,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../../Application/AuthGuard/jwt-auth.guard';
 import { TOKEN_KEY } from '../../../../Core/Extractor/cookie.extractor';
 import { ControllerCore } from '../../../../Core/Controller/controller.core';
-import { EdgeProvider } from '../../../../Core/View/edge.provider';
 import { RoutesDefinition } from '../../../../Core/View/routes-definition';
 
 @Controller('auth')
 export class AuthController extends ControllerCore {
-  constructor(
-    edgeProvider: EdgeProvider,
-    private readonly authService: AuthService,
-  ) {
-    super(edgeProvider);
+  constructor(private readonly authService: AuthService) {
+    super();
   }
 
   @Get('login')

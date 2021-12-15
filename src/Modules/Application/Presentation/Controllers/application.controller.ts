@@ -15,7 +15,6 @@ import { Response } from 'express';
 import ApplicationAdapter from '../../Application/Adapters/application.adapter';
 import { ApplicationInputDto } from '../../Application/Dtos/application-input.dto';
 import { ControllerCore } from '../../../../Core/Controller/controller.core';
-import { EdgeProvider } from '../../../../Core/View/edge.provider';
 import { ApplicationAliasExistsException } from '../../Domain/Exceptions/application-alias-exists.exception';
 import { Application } from '../../Domain/Entities/application.entity';
 import { RoutesDefinition } from '../../../../Core/View/routes-definition';
@@ -24,11 +23,8 @@ import { RoutesDefinition } from '../../../../Core/View/routes-definition';
 @UseGuards(JwtAuthGuard)
 @Controller('applications')
 export class ApplicationController extends ControllerCore {
-  constructor(
-    edgeProvider: EdgeProvider,
-    private readonly applicationAdapter: ApplicationAdapter,
-  ) {
-    super(edgeProvider);
+  constructor(private readonly applicationAdapter: ApplicationAdapter) {
+    super();
   }
 
   @Get()

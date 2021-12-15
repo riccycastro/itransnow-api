@@ -3,10 +3,8 @@ import { ValidationConstraint } from '../Type/Type.core';
 import { EdgeProvider } from '../View/edge.provider';
 
 export class ControllerCore {
-  constructor(private readonly edgeProvider: EdgeProvider) {}
-
   async render(templatePath: string, state?: any): Promise<string> {
-    return this.edgeProvider.render(templatePath, state);
+    return EdgeProvider.INSTANCE.render(templatePath, state);
   }
 
   protected async validate<Dto extends object>(
