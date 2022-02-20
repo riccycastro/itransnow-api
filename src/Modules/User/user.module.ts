@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import UserAdapter from './Application/Adapters/user.adapter';
-import UserController from './Presentation/Controllers/user.controller';
-import UserRepository from './Infrastructure/Repositories/user.repository';
+import UserController from './Controllers/user.controller';
+import UserRepository from './Repositories/user.repository';
+import { GetUsersUseCase } from './UseCase/GetUsersUseCase';
+import { CreateUserUseCase } from './UseCase/CreateUserUseCase';
 
 @Module({
   controllers: [UserController],
   providers: [
-    UserAdapter,
+    GetUsersUseCase,
+    CreateUserUseCase,
     {
       provide: 'UserRepositoryInterface',
       useClass: UserRepository,

@@ -62,5 +62,10 @@ export class RoutesDefinition {
       url: new Route('/users(/)'),
       path: [],
     },
+    user_create: {
+      title: 'Create User',
+      url: new Route('/users/create(/)'),
+      path: ['user_list'],
+    },
   };
 }

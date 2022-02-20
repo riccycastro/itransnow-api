@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import edge from 'edge.js';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -26,9 +25,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof UnauthorizedException) {
       response.redirect('/auth/login');
     } else if (status >= 500 && status < 600) {
-      return await edge.render('exception/5xx');
+      return await response.render('exception/5xx');
     } else if (status >= 400 && status < 500) {
-      return await edge.render('exception/4xx');
+      return await response.render('exception/4xx');
     } else {
       response.json(exception);
     }

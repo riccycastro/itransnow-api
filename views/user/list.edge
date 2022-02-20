@@ -2,7 +2,12 @@
 
 @section('body')
 <div class="card">
-    <!-- /.card-header -->
+    <div class="card-header text-right">
+        <a href="{{ resolveUrl('user_create') }}" type="button"
+           class="btn btn-sm btn-primary ">
+            Create
+        </a>
+    </div>
     <div class="card-body">
         <table id="users-table" class="table table-bordered table-striped">
             <thead>
@@ -32,20 +37,8 @@
             </tr>
             @end
             </tbody>
-            <tfoot>
-            <tr>
-                <th>Name</th>
-                <th>email</th>
-                <th>Active</th>
-                <th>Admin</th>
-                <th>Created at</th>
-                <th>Updated at</th>
-                <th>Actions</th>
-            </tr>
-            </tfoot>
         </table>
     </div>
-    <!-- /.card-body -->
 </div>
 @end
 
@@ -69,8 +62,10 @@
     $(function () {
         $('#users-table').DataTable({
             responsive: true, lengthChange: false, autoWidth: false,
-            buttons: ["colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            buttons: [
+                'colvis',
+            ]
+        }).buttons().container().appendTo('#users-table_wrapper .col-md-6:eq(0)');
     });
 </script>
 @end

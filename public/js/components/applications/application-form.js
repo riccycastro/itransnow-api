@@ -1,7 +1,7 @@
 $(document).ready(function () {
   const module = (() => {
     function init() {
-      console.log('init module');
+      console.log('init module application-form');
       initFormValidator();
     }
 

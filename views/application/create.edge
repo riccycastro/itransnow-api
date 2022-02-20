@@ -12,15 +12,15 @@
                                 <div class="form-group">
                                     <label for="application-name" class="">Name</label>
                                     <input type="text" name="name" class="form-control
-                                            @if(errors && errors['name'])~
+                                            @if(form?.error?.data?.name)~
                                               is-invalid
                                             @end~
                                            " id="application-name"
                                            placeholder="Enter application name" value="{{ application.name }}">
-                                    @if(errors && errors['name'])
+                                    @if(form?.error?.data?.name)
                                     <span id="application-name-error" class="error invalid-feedback text-title"
                                           style="">
-                                          {{ errors['name'][0] }}
+                                          {{ form?.error?.data?.name }}
                                     </span>
                                     @end
                                 </div>
@@ -29,22 +29,22 @@
                                 <div class="form-group">
                                     <label for="application-name">Alias</label>
                                     <input type="text" name="alias" class="form-control
-                                            @if(errors && errors['alias'])~
+                                            @if(form?.error?.data?.alias)~
                                               is-invalid
                                             @end~
                                            " id="application-alias"
                                            placeholder="Enter application alias" value="{{ application.alias }}">
-                                    @if(errors && errors['alias'])~
+                                    @if(form?.error?.data?.alias)~
                                     <span id="application-alias-error" class="error invalid-feedback text-title"
                                           style="">
-                                          {{ errors['alias'][0] }}
+                                          {{ form?.error?.data?.alias }}
                                     </span>
                                     @end~
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group
-                                            @if(errors && errors['isActive'])~
+                                            @if(form?.error?.data?.isActive)~
                                               is-invalid
                                             @end~
                                            ">
@@ -54,10 +54,10 @@
                                            checked
                                            @end
                                            data-bootstrap-switch>
-                                    @if(errors && errors['isActive'])~
+                                    @if(form?.error?.data?.isActive)~
                                     <span id="application-isActive-error" class="error invalid-feedback text-title"
                                           style="">
-                                          {{ errors['isActive'][0] }}
+                                          {{ form?.error?.data?.isActive }}
                                     </span>
                                     @end~
                                 </div>

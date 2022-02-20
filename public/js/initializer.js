@@ -24,9 +24,9 @@ $(document).ready(function () {
       $.validator.addMethod(
         'isAlias',
         function (value, element) {
-          return /^[a-zA-Z0-9_.-]+$/.test(value);
+          return /^[a-zA-Z0-9_-]+$/.test(value);
         },
-        'This field accepts only aA-zZ, 0-9 and _ . -',
+        'This field accepts only aA-zZ, 0-9 and _ -',
       );
     }
 
@@ -44,9 +44,11 @@ $(document).ready(function () {
       }
       try {
         const notifications = JSON.parse(notificationInput.val());
-
+        console.log(notifications);
         Object.keys(notifications).map((key) => {
-          toastr[key](notifications[key]);
+          notifications[key].map((message) => {
+            toastr[key](message);
+          });
         });
       } catch (err) {}
     }

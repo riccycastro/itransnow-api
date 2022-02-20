@@ -6,39 +6,31 @@ import {
   Scope,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { EdgeProvider } from './edge.provider';
 import { RoutesDefinition } from './routes-definition';
-import { Request } from 'express';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ViewInterceptor implements NestInterceptor {
-  constructor(private readonly edgeProvider: EdgeProvider) {}
-
   intercept(
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<any> | Promise<Observable<any>> {
-    const req: Request = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest();
+    const res = context.switchToHttp().getResponse();
     const shareData: any = {
       user: req.user,
     };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const edgeNotification = req.session.edge;
+    const edgeNotification = req.flash('edge');
 
-    if (edgeNotification) {
-      Object.assign(shareData, edgeNotification);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      req.session.edge = undefined;
+    if (edgeNotification.length) {
+      Object.assign(shareData, edgeNotification[0]);
     }
     try {
       shareData.page = RoutesDefinition.routeByUrl(req.url);
     } catch (err) {
       console.log(err);
     }
-    this.edgeProvider.share(shareData);
+    res.share(shareData);
 
     return next.handle();
   }

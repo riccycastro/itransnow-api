@@ -1,28 +1,20 @@
-import { validate } from 'class-validator';
+import { Req } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 import { ValidationConstraint } from '../Type/Type.core';
-import { EdgeProvider } from '../View/edge.provider';
+import { generateEdgeDataStructure } from '../View/structure';
 
 export class ControllerCore {
-  async render(templatePath: string, state?: any): Promise<string> {
-    return EdgeProvider.INSTANCE.render(templatePath, state);
-  }
+  protected async HandleValidationErrors(
+    validationErrors: ValidationError[],
+  ): Promise<ValidationConstraint> {
+    const constraints: ValidationConstraint = {};
 
-  protected async validate<Dto extends object>(
-    dto: Dto,
-  ): Promise<ValidationConstraint[]> {
-    const errors = await validate(dto);
-
-    if (!errors.length) {
-      return [];
-    }
-
-    const constraints: ValidationConstraint[] = [];
-    for (const error of errors) {
+    for (const error of validationErrors) {
       constraints[error.property] = Object.keys(error.constraints).map(
         (key) => {
           return error.constraints[key];
         },
-      );
+      )[0];
     }
 
     return constraints;
@@ -30,35 +22,29 @@ export class ControllerCore {
 
   protected flashSuccessNotification(
     notification: string,
-    session: Record<string, any>,
+    @Req() req,
     data: any = undefined,
   ): void {
-    let flash = session.edge;
+    const flash = generateEdgeDataStructure();
 
-    if (!flash?.notification) {
-      flash = { notification: { success: {} } };
-    }
-    flash.notification.success = notification;
+    flash.notification.success.push(notification);
 
-    session.edge = flash;
-    session.data = data;
+    req.flash('edge', flash);
+    req.flash('data', data);
   }
 
   protected flashErrorNotification(
     notification: string,
-    session: Record<string, any>,
+    @Req() req,
     errors: any = undefined,
     data: any = undefined,
   ): void {
-    let flash = session.edge;
+    const flash = generateEdgeDataStructure();
 
-    if (!flash?.notification) {
-      flash = { notification: { error: {} } };
-    }
-    flash.notification.error = notification;
+    flash.notification.error.push(notification);
+    flash.form.error.data = errors;
 
-    session.edge = flash;
-    session.errors = errors;
-    session.data = Object.assign({}, data);
+    req.flash('edge', flash);
+    req.flash('data', Object.assign({}, data));
   }
 }

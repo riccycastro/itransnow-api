@@ -83,6 +83,7 @@ export class TenantMigrationCommand {
   }
 
   private async getTenantConnection(tenantCode: string): Promise<Connection> {
+    console.log('Connecting to '+tenantCode)
     return createConnection(createTenantOrmConfig(tenantCode));
   }
 }

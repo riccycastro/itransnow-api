@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ApplicationController } from './Presentation/Controllers/application.controller';
-import ApplicationAdapter from './Application/Adapters/application.adapter';
-import ApplicationRepository from './Infrastructure/Repositories/application.repository';
-import ApplicationService from './Domain/Services/application.service';
-import { EdgeProvider } from '../../Core/View/edge.provider';
+import { ApplicationController } from './Controllers/application.controller';
+import ApplicationRepository from './Repositories/application.repository';
+import { CreateApplicationUseCase } from './UseCase/CreateApplicationUseCase';
+import { GetApplicationsUserCase } from './UseCase/GetApplicationsUserCase';
 
 @Module({
-  imports: [EdgeProvider],
   controllers: [ApplicationController],
   providers: [
-    ApplicationService,
-    ApplicationAdapter,
+    CreateApplicationUseCase,
+    GetApplicationsUserCase,
     ApplicationRepository,
     {
       provide: 'ApplicationRepositoryInterface',

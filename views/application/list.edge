@@ -1,13 +1,13 @@
 @layout('home_template')
 
 @section('body')
-<div>
-    <a href="{{ resolveUrl('application_create') }}" type="button" class="btn btn-sm btn-primary mb-4 justify-content-end">
-        Create
-    </a>
-</div>
-
 <div class="card card-solid">
+    <div class="card-header text-right">
+        <a href="{{ resolveUrl('application_create') }}" type="button"
+           class="btn btn-sm btn-primary ">
+            Create
+        </a>
+    </div>
     <div class="card-body pb-0">
         <div class="row">
             @each(application in applications)
